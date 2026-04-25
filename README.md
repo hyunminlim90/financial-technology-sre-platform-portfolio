@@ -23,9 +23,16 @@
 ```plaintext
 apps/
 ├── web-console/     # React 기반 운영 콘솔
-├── api-server/      # Spring Boot API 서버
+├── api-server/      # Spring Boot WebFlux / Netty 기반 논블로킹 API 서버 (Event Loop)
 ├── agent-server/    # Python AI Agent / LLM Orchestrator
-└── worker/          # 비동기 작업 처리 (Queue 기반)
+└── worker/          # Queue 기반 백그라운드 처리 (RAG, LLM, 분석, 인프라 작업)
+
+> ⚡ Architecture Principle
+
+- **api-server는 요청을 빠르게 처리하고 절대 오래 걸리는 작업을 직접 수행하지 않는다**
+- 모든 무거운 작업은 **Queue를 통해 Worker로 위임**
+- Worker는 독립적으로 확장되며, LLM / RAG / 분석 / 인프라 작업을 수행
+
 ```
 
 ---
