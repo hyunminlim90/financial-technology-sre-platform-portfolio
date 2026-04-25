@@ -141,7 +141,7 @@ rag/
 
 ```plaintext
 agent/
-├── tools/               # 로그/메트릭/트레이스 분석
+├── tools/               # 메트릭/트레이스/로그 분석
 ├── guardrails/          # 실행 제어 및 안전장치
 ├── workflows/           # 장애 대응 자동화 흐름
 ├── memory/              # Agent Memory 구조
