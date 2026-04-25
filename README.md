@@ -66,7 +66,7 @@ platform/
 
 ```plaintext
 rag/
-├── sources/         # 원본 데이터 (SRE, SaaS, AI)
+├── sources/         # SRE 운영 지식, 분산 시스템 분석, SaaS 아키텍처 개선, AI Agent 도입 전략 문서
 ├── docs/            # 사람이 읽는 문서
 ├── metadata/        # 문서 메타데이터
 ├── chunks/          # Chunk 분리 결과
@@ -74,6 +74,18 @@ rag/
 ├── prompts/         # RAG / Agent Prompt
 └── pipelines/       # Indexing Pipeline
 ```
+
+> 📌 Sources 설명
+
+- SRE 관점에서 **요청 흐름, 병목, 장애 원인 분석, 복구 전략**을 다루는 운영 지식
+- 기존 Spring 기반 SaaS 시스템의 **Thread 기반 구조 한계와 Non-blocking 전환(WebFlux) 분석**
+- Redis, Kafka, DB, Network 등 **실제 병목 지점과 튜닝 전략**
+- Kubernetes, Terraform, Observability 기반의 **플랫폼 운영 구조**
+- AI Agent 도입 시 필요한 **권한 통제, 검증, 롤백, 감사 로그 설계**
+- 단순 자동화가 아닌 **“안전하게 실행 가능한 운영 자동화 시스템”을 위한 설계 문서들**
+
+➡️ 이 데이터는 단순 문서가 아니라  
+AI Agent가 장애를 이해하고 판단하기 위한 **운영 지식 베이스 (Operational Intelligence)** 역할을 합니다.
 
 ---
 
