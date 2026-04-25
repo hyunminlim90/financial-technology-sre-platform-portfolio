@@ -1,22 +1,22 @@
 # 🚀 Financial Technology SRE Platform Portfolio
-
+</br>
 > SRE + Platform Engineering + AI Agent + RAG 기반의 **차세대 운영 자동화 플랫폼**
-
+</br>
 ---
-
+</br>
 ## 🧭 Project Overview
-
+</br>
 이 프로젝트는 다음을 목표로 합니다:
-
+</br>
 * 장애를 **자동으로 감지하고 분석**
 * AI Agent가 **원인 파악 + 대응 실행 (권한 통제)**
 * RAG 기반으로 **Runbook / Docs 활용**
 * SRE 관점에서 **신뢰성(SLO) 관리 자동화**
-
+</br>
 ---
-
+</br>
 ## 🏗️ Architecture Layers
-
+</br>
 ### 1️⃣ Application Layer
 
 ```plaintext
