@@ -66,7 +66,7 @@ platform/
 
 ```plaintext
 rag/
-├── sources/         # SRE 운영 지식, 분산 시스템 분석, SaaS 아키텍처 개선, AI Agent 도입 전략 문서
+├── sources/         # SRE 운영 지식, 분산 시스템 분석, SaaS 플랫폼 개선(자체 개발), AI Agent 도입 전략 문서
 ├── docs/            # 사람이 읽는 문서
 ├── metadata/        # 문서 메타데이터
 ├── chunks/          # Chunk 분리 결과
