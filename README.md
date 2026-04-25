@@ -16,6 +16,55 @@
 
 ---
 
+## 🔄 End-to-End Flow
+
+```plaintext
+[Client Request]
+        ↓
+api-server (WebFlux)
+        ↓
+Queue (비동기 처리)
+        ↓
+worker
+        ↓
+AI Agent + RAG
+        ↓
+Runbook 기반 대응 수행
+        ↓
+(필요 시) 자동 복구 / 롤백
+```
+
+> 요청 처리부터 장애 대응까지 전 과정을 자동화한 구조입니다.
+
+---
+
+## 📚 Documentation Strategy
+
+이 프로젝트에서는 문서를 세 가지 역할로 분리하여 관리합니다:
+
+- `docs/`  
+  → 시스템 설계 및 포트폴리오 설명을 위한 문서 (사람용)
+
+- `runbooks/`  
+  → 실제 장애 대응을 위한 실행 매뉴얼 (SRE 운영 기준)
+
+- `rag/docs/`  
+  → AI Agent가 사용하는 RAG 기반 지식 데이터 (Chunking / Embedding 대상)
+
+### 🔁 Single Source of Truth
+
+모든 문서는 `docs/`에서 한 번만 작성됩니다.
+
+이후:
+
+* `runbooks/` → 운영 매뉴얼로 활용
+* `rag/` → Chunking / Embedding → AI Agent 활용
+
+즉,
+**하나의 문서를 기반으로 사람과 AI가 함께 사용하는 구조입니다.**
+
+---
+
 ## 🏗️ Architecture Layers
 
 ### 1️⃣ Application Layer
@@ -67,7 +116,7 @@ platform/
 ```plaintext
 rag/
 ├── sources/         # SRE 운영 지식, 분산 시스템 분석, SaaS 플랫폼 개선(자체 개발), AI Agent 도입 전략 문서
-├── docs/            # 사람이 읽는 문서
+├── docs/            # AI Agent가 참조하는 구조화된 RAG 문서
 ├── metadata/        # 문서 메타데이터
 ├── chunks/          # Chunk 분리 결과
 ├── embeddings/      # 벡터 데이터
@@ -84,7 +133,7 @@ rag/
 - AI Agent 도입 시 필요한 **권한 통제, 검증, 롤백, 감사 로그 설계**
 - 단순 자동화가 아닌 **“안전하게 실행 가능한 운영 자동화 시스템”을 위한 설계 문서들**
 
-⤷ 이 데이터는 단순 문서가 아니라 AI Agent가 장애를 이해하고 판단하기 위한 **운영 지식 베이스 (Operational Intelligence)** 역할을 합니다.
+⤷ 이 영역의 문서는 AI Agent가 장애를 이해하고 판단하기 위한 **운영 지식 베이스 (Operational Intelligence)** 역할을 합니다.
 
 ---
 
