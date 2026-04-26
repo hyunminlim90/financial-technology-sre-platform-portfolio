@@ -21,7 +21,9 @@
 ```plaintext
 [Client Request]
         ↓
-api-server (WebFlux)
+Nginx / Reverse Proxy
+        ↓
+api-server (Spring Boot WebFlux API)
         ↓
 Queue (비동기 처리)
         ↓
