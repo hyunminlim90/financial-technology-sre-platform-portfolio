@@ -4,15 +4,13 @@
 
 ```text
 [Client / User]
-      |
-      v
+      ↓
 172.30.1.105 gateway
 - Nginx
 - React Web Console
 - Jenkins or GoCD
 - Git Webhook Endpoint
-      |
-      v
+      ↓
 Kubernetes Cluster
       |
       +-- 172.30.1.109 platform-node
