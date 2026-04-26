@@ -23,10 +23,9 @@ Kubernetes Cluster
       |   - Terraform/OpenTofu Runner
       |
       +-- 172.30.1.106 app-node-1
-      |   - Spring Boot WebFlux API
-      |   - Spring Batch
+      |   - Spring Boot WebFlux API (+ R2DBC ─ 실시간 결제 요청 / 비동기 API)
+      |   - Spring Batch (+ JPA/Hibernate ─ 정산 / 리포트 / 관리자성 작업)
       |   - Kafka Client
-      |   - JPA/Hibernate
       |
       +-- 172.30.1.107 data-node
       |   - MySQL
