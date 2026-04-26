@@ -23,11 +23,11 @@
         ↓
 Nginx / Reverse Proxy
         ↓
-api-server (Spring Boot WebFlux API)
+api-server (Spring Boot WebFlux API + R2DBC ─ 실시간 결제 요청 / 비동기 API)
         ↓
 Queue (비동기 처리)
         ↓
-worker
+worker (Spring Batch + JPA/Hibernate ─ 정산 / 리포트 / 관리자성 작업)
         ↓
 AI Agent + RAG
         ↓
