@@ -6,9 +6,10 @@
 |---|---|
 | IP | 172.30.1.106 |
 | Hostname | app-node-1 |
-| OS | Amazon Linux 계열 |
+| OS | Amazon Linux 2 |
 | Network | ExternalSwitch |
 | Kubernetes Role | Worker |
+| Node Label | node-role=app |
 
 ## 역할
 
@@ -46,6 +47,58 @@ app-node-1은 서비스 장애의 주요 분석 대상이다.
 - Redis timeout
 - JVM GC pause
 - Thread pool saturation
+
+## 구축 이력
+
+### 2026-04-26
+
+**공통 패키지 및 Docker 설치**
+
+bootstrap.sh 실행. Docker CE CentOS repo가 Amazon Linux 2 환경에서 404 오류 발생.
+
+```bash
+# 실패한 방식
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install -y containerd.io
+# → https://download.docker.com/linux/centos/2/x86_64/stable/repodata/repomd.xml: 404 Not Found
+```
+
+bootstrap.sh의 분기 처리에 따라 `amazon-linux-extras install docker`로 해결 완료.
+
+```bash
+sudo amazon-linux-extras install docker -y
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+
+**containerd 활성화 확인**
+
+Docker 설치 시 containerd가 함께 구성되어 활성화됨. 상태 확인 완료.
+
+```bash
+sudo systemctl status containerd
+# → active (running)
+```
+
+**Worker Node Join 완료**
+
+```bash
+kubeadm join 172.30.1.109:6443 \
+  --token <token> \
+  --discovery-token-ca-cert-hash sha256:<hash>
+```
+
+클러스터 합류 및 Ready 확인 완료:
+
+```
+app-node-1   Ready   <none>   6m46s   v1.30.14
+```
+
+**노드 라벨 적용 완료**
+
+```bash
+kubectl label node app-node-1 node-role=app
+```
 
 ## 추후 구성
 

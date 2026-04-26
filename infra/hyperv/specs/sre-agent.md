@@ -1,14 +1,15 @@
-# platform-node
+# platform-node (control-plane-1)
 
 ## 기본 정보
 
 | 항목 | 값 |
 |---|---|
 | IP | 172.30.1.109 |
-| Hostname | platform-node |
-| OS | Amazon Linux 계열 |
+| Hostname | control-plane-1 |
+| OS | Amazon Linux 2 |
 | Network | ExternalSwitch |
 | Kubernetes Role | Control Plane |
+| Node Label | node-role=platform |
 
 ## 역할
 
@@ -50,6 +51,76 @@ platform-node는 운영 자동화의 두뇌 역할을 한다.
 - 승인 기반 실행
 - 롤백 수행
 
+## 구축 이력
+
+### 2026-04-26
+
+**공통 패키지 및 Docker 설치**
+
+bootstrap.sh 실행. Docker CE CentOS repo가 Amazon Linux 2 환경에서 404 오류 발생.
+`amazon-linux-extras install docker` 방식으로 해결 완료.
+
+```bash
+sudo amazon-linux-extras install docker -y
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+
+**containerd 활성화 확인**
+
+```
+● containerd.service - containerd container runtime
+   Active: active (running) since 일 2026-04-26 10:05:52 KST
+   Main PID: 32036 (containerd)
+   containerd successfully booted in 0.012175s
+```
+
+**kubeadm init 실행**
+
+```bash
+sudo kubeadm init \
+  --apiserver-advertise-address=172.30.1.109 \
+  --pod-network-cidr=192.168.0.0/16 \
+  --cri-socket=unix:///run/containerd/containerd.sock
+```
+
+- Kubernetes 버전: v1.30.14 (remote v1.36.0, stable-1.30으로 fallback)
+
+**kubeconfig 설정**
+
+Control Plane 노드에서만 수행.
+
+```bash
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+**Calico CNI 설치 (tigera-operator 방식 오류 → 해결 완료)**
+
+tigera-operator.yaml 적용 중 CRD annotation size 초과 오류 발생:
+
+```
+The CustomResourceDefinition "installations.operator.tigera.io" is invalid:
+metadata.annotations: Too long: must have at most 262144 bytes
+```
+
+tigera-operator 전체 삭제 및 CRD 잔여 리소스 정리 후 재설치하여 해결 완료.
+
+**Worker Node Join 완료**
+
+app-node-1, data-node-1, obs-node-1 세 노드 join 성공.
+
+**4노드 Ready 확인 및 노드 라벨 적용 완료**
+
+```
+NAME              STATUS   ROLES           AGE     VERSION    LABELS(요약)
+app-node-1        Ready    <none>          6m46s   v1.30.14   node-role=app
+control-plane-1   Ready    control-plane   15m     v1.30.14   node-role=platform
+data-node-1       Ready    <none>          6m41s   v1.30.14   node-role=data
+obs-node-1        Ready    <none>          6m37s   v1.30.14   node-role=observability
+```
+
 ## Kubernetes 초기화 기준
 
 ```bash
@@ -61,12 +132,18 @@ sudo kubeadm init \
 
 ## kubeconfig 설정
 
-이 설정은 **Control Plane 노드인 platform-node에서 수행한다.**
+이 설정은 Control Plane 노드인 control-plane-1에서만 수행한다.
 
 ```bash
 mkdir -p $HOME/.kube
-
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
+
+## 추후 구성
+
+- ArgoCD 설치
+- Istio 설치
+- SRE Agent 배포
+- RAG / LLM Gateway 구성
+- Terraform/OpenTofu Runner 구성
