@@ -76,9 +76,9 @@ Kubernetes Cluster
 
 ### 2. 장애는 관측 가능해야 한다
 - 모든 주요 구성 요소는 다음 정보를 반드시 남긴다:
-  - 로그 (Logs)
   - 메트릭 (Metrics)
   - 트레이스 (Traces)
+  - 로그 (Logs)
   - 이벤트 (Events)
 
 ---
