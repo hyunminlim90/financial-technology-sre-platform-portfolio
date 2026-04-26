@@ -1,6 +1,6 @@
 # Hyper-V FinTech SRE Platform Infrastructure
 
-이 디렉토리는 토스페이먼츠와 유사한 핀테크/SRE 플랫폼을 Hyper-V VM 5대 위에 구축하기 위한 인프라 문서와 설치 스크립트를 관리한다.
+이 디렉토리는 핀테크/SRE 플랫폼을 Hyper-V VM 5대 위에 구축하기 위한 인프라 문서와 설치 스크립트를 관리한다.
 
 ## 목표
 
