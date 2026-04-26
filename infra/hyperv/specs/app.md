@@ -100,6 +100,14 @@ app-node-1   Ready   <none>   6m46s   v1.30.14
 kubectl label node app-node-1 node-role=app
 ```
 
+## 모든 노드에서 영구 적용 검증 단계
+sudo systemctl is-enabled kubelet
+sudo systemctl is-enabled containerd
+sudo systemctl is-enabled docker
+
+## 재부팅 후 control-plane-1에서
+kubectl get nodes
+
 ## 추후 구성
 
 - Spring Boot WebFlux API 배포

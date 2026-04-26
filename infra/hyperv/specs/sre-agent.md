@@ -140,6 +140,21 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
+## 모든 노드에서 영구 적용 검증 단계
+sudo systemctl is-enabled kubelet
+sudo systemctl is-enabled containerd
+sudo systemctl is-enabled docker
+
+## 재부팅 후 control-plane-1에서
+kubectl get nodes
+
+```
+VM 재시작 및 중지 후 재시작 시 영구 적용 요청에 따라
+swap 비활성화(/etc/fstab), 커널 모듈(/etc/modules-load.d/k8s.conf),
+sysctl(/etc/sysctl.d/k8s.conf), containerd/docker systemctl enable
+모두 영구 적용 설정 완료 확인.
+```
+
 ## 추후 구성
 
 - ArgoCD 설치
