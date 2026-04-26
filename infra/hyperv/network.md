@@ -1,4 +1,4 @@
-# 🖧 Hyper-V Network Design
+# Hyper-V Network Design
 
 ---
 
