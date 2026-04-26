@@ -101,9 +101,9 @@ kubectl label node app-node-1 node-role=app
 ```
 
 ## 모든 노드에서 영구 적용 검증 단계
-sudo systemctl is-enabled kubelet
-sudo systemctl is-enabled containerd
-sudo systemctl is-enabled docker
+sudo systemctl is-enabled kubelet <br/>
+sudo systemctl is-enabled containerd <br/>
+sudo systemctl is-enabled docker <br/>
 
 ## 재부팅 후 control-plane-1에서
 kubectl get nodes

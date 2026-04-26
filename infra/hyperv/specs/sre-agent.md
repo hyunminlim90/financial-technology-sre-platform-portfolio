@@ -149,10 +149,14 @@ sudo systemctl is-enabled docker <br/>
 kubectl get nodes
 
 ```
-VM 재시작 및 중지 후 재시작 시 영구 적용 요청에 따라
-swap 비활성화(/etc/fstab), 커널 모듈(/etc/modules-load.d/k8s.conf),
-sysctl(/etc/sysctl.d/k8s.conf), containerd/docker systemctl enable
-모두 영구 적용 설정 완료 확인.
+VM 재시작 시 영구 적용
+
+swap 비활성화(/etc/fstab)
+커널 모듈(/etc/modules-load.d/k8s.conf)
+sysctl(/etc/sysctl.d/k8s.conf)
+containerd/docker systemctl enable
+
+설정 완료 확인.
 ```
 
 ## 추후 구성
