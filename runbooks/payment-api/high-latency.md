@@ -91,6 +91,36 @@ LIMIT 10;
 ```sql
 SELECT count(*) FROM pg_stat_activity;
 ```
+<br/>
+
+### SRE Tip: Connection Pool Saturation 확인
+
+### 개요
+
+단순 connection 개수보다 중요한 것은 connection을 얻기 위해 대기 중인 요청 수이다.
+
+---
+
+### 확인 지표
+
+```
+r2dbc.pool.pending
+r2dbc.pool.acquired
+db.connections.pending
+db.lock.wait
+```
+
+---
+
+### 해석
+
+```
+pending 증가
+→ DB connection pool saturation 가능성 높음
+
+lock.wait 증가
+→ connection 자체보다 lock contention으로 인한 대기 가능성 높음
+```
 
 ### Step 3. Redis 확인
 
@@ -105,6 +135,38 @@ Redis Dashboard에서 다음 항목 확인:
 
 - timeout 증가 여부
 - error rate 증가 여부
+<br/>
+
+### SRE Tip: Circuit Breaker 상태 확인
+
+### 개요
+
+External Provider 지연 시 Circuit Breaker가 Open 상태인지 확인한다.
+
+---
+
+### 확인 대상
+
+```
+Resilience4j Circuit Breaker
+Istio outlier detection / circuit breaking
+Gateway 503 증가 여부
+```
+
+---
+
+### 해석
+
+```
+Circuit Open
+→ latency는 줄어들 수 있지만 503 / error rate가 증가할 수 있음
+
+Circuit Closed
+→ 외부 지연이 그대로 API latency로 전파될 수 있음
+
+Half-Open
+→ 일부 요청만 통과하므로 성공률과 latency를 함께 확인해야 함
+```
 
 ### Step 5. Kubernetes 리소스 확인
 
@@ -226,6 +288,32 @@ argocd app rollback <app-name>
 - external API timeout 단축
 - rollback
 
+### SRE Tip: Latency 증가 시 중복 결제 위험 확인
+
+### 개요
+
+Latency 증가 시 client / gateway retry가 증가할 수 있다.  
+이때 Redis idempotency 저장 실패 또는 지연이 함께 발생하면 중복 결제 위험이 커진다.
+
+---
+
+### 확인 지표
+
+```
+payment_duplicate_request_total
+payment_idempotency_conflict_total
+redis.command.latency
+redis.timeout.count
+```
+
+---
+
+### 확인 포인트
+
+- 동일 `merchantId` + `orderId` 중복 요청 증가 여부
+- `Idempotency-Key` 누락 또는 conflict 증가 여부
+- Redis 장애로 idempotency check가 지연되는지 여부
+
 ---
 
 ## 8. 근본 해결 (Resolution)
@@ -344,4 +432,6 @@ SELECT count(*) FROM pg_stat_activity;
 ## 17. 핵심 메시지
 
 > "Latency 문제는 어디가 느린지 찾는 게임이다.  
-> **Trace 없이 해결하려고 하면 무조건 오래 걸린다."**
+> **Trace 없이 해결하려고 하면 무조건 오래 걸린다."** <br/>
+> 결제 API latency 장애는 단순히 느린 구간을 찾는 문제가 아니라,  
+> retry, idempotency, circuit breaker 상태까지 함께 확인해야 하는 장애다.
