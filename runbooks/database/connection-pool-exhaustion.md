@@ -218,6 +218,59 @@ ORDER BY mean_time DESC
 LIMIT 10;
 ```
 
+### SRE Tip: Trace 연계 (Correlation)
+
+### 개요
+
+DB에서 발견된 문제 쿼리 또는 transaction을 애플리케이션 요청과 연결해야 한다.
+
+---
+
+### 확인 방법
+
+**DB 레벨**
+
+```
+pid
+query
+transaction duration
+```
+
+**Application 레벨**
+
+```
+traceId
+requestId
+paymentId
+```
+
+---
+
+### 매핑 전략
+
+```
+1. pg_stat_activity에서 문제 pid 확인
+2. 해당 query / timestamp 기준으로 로그 조회
+3. traceId 추출
+4. traceId → paymentId 매핑
+```
+
+---
+
+### 목적
+
+```
+어떤 결제 요청이 DB connection을 점유하고 있는지 식별
+```
+
+---
+
+### 효과
+
+```
+DB 문제 → 결제 건 식별 → 영향 범위 파악 가능
+```
+
 ---
 
 ## Step 5. Long Transaction 확인
@@ -473,6 +526,32 @@ argocd app rollback <app-name>
 - DB lock monitoring
 - load test 수행
 ```
+
+### R2DBC Pool Graceful Shutdown
+
+배포 또는 scale-in 시 connection이 정상적으로 반환되지 않으면 순간적인 latency 증가가 발생할 수 있다.
+
+---
+
+### 확인 포인트
+
+- connection drain이 정상적으로 수행되는가
+- shutdown 시 active connection이 강제 종료되는가
+- in-flight request 처리 완료 후 종료되는가
+
+---
+
+### 권장 설정
+
+- graceful shutdown timeout 설정
+- readiness probe로 traffic 차단 후 종료
+- connection close 대기 설정
+
+---
+
+### 운영 리스크
+
+> 비정상 종료 시 connection leak 또는 DB 부하 증가 가능
 
 ---
 
