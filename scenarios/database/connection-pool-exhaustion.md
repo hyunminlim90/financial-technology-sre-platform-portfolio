@@ -18,11 +18,13 @@ Connection pool 고갈은 다음과 같은 치명적인 문제를 유발합니�
 ### 조건
 
 ```
-connection.active >= max pool size
+r2dbc.pool.pending > 0 이 10초 이상 지속
 또는
-connection.wait 증가
+r2dbc.pool.acquired >= r2dbc.pool.max 에 근접
 또는
-DB connection timeout 발생
+ConnectionAcquisitionTimeoutException 발생
+또는
+JDBC 기반 컴포넌트에서 HikariCP pending / timeout 증가
 ```
 
 ---
@@ -39,9 +41,11 @@ DB connection timeout 발생
 ## 4. 시스템 영향 범위
 
 ```
-Payment API
+Payment API (Spring WebFlux)
+r2dbc-pool
 PostgreSQL
-Connection Pool (HikariCP)
+Payment Worker / JDBC 기반 컴포넌트
+HikariCP
 ```
 
 ---
@@ -102,6 +106,34 @@ postgres.query span 대기 증가
 
 ## 7. 탐지 방법
 
+### PromQL
+
+### R2DBC Pool
+
+```promql
+sum(r2dbc_pool_pending_connections) > 0
+```
+
+```promql
+sum(r2dbc_pool_acquired_connections)
+```
+
+```promql
+sum(rate(r2dbc_pool_acquire_seconds_count[1m]))
+```
+
+---
+
+### JDBC 컴포넌트 확인 (HikariCP)
+
+```promql
+sum(hikaricp_connections_pending)
+```
+
+```promql
+sum(rate(hikaricp_connections_timeout_total[1m]))
+```
+
 **Prometheus Alert**
 
 ```promql
@@ -122,26 +154,57 @@ hikaricp_connections_active / hikaricp_connections_max > 0.9
 
 ---
 
-## 9. 재현 방법
+## 9. 재현 방법 (Simulation)
 
-### 방법 1. Slow Query
+---
+
+### 패턴 A. Slow Query
 
 ```sql
-SELECT pg_sleep(5);
+SELECT pg_sleep(10);
 ```
 
-### 방법 2. Connection Leak
+대량 요청 상황에서 slow query가 connection을 오래 점유하도록 만든다.
+
+---
+
+### 패턴 B. Connection Leak
+
+WebFlux reactive chain에서 에러 발생 시 connection 반환이 지연되거나 누락되는 상황을 만든다.
+
+**예:**
+
+- `flatMap` 내부 예외 발생
+- `onErrorResume` 누락
+- `timeout` 미설정
+
+**관찰 포인트:**
+
+- 트래픽 감소 이후에도 `r2dbc.pool.acquired`가 줄어들지 않음
+- `r2dbc.pool.pending`이 계단식으로 증가
+
+---
+
+### 패턴 C. Transaction Block
+
+외부 Mock API 응답을 10초 이상 지연시킨 뒤, DB transaction이 유지된 상태에서 Payment API를 호출한다.
+
+**예시 흐름:**
 
 ```
-connection close 누락 코드
+DB transaction 시작
+→ Payment 상태 변경
+→ External Provider Mock 호출
+→ 10초 대기
+→ transaction commit
 ```
 
-### 방법 3. 트래픽 증가
+**기대 결과:**
 
-```bash
-# load test (k6, locust)
-k6 run load-test.js
-```
+- connection 점유 시간 증가
+- `r2dbc.pool.pending` 증가
+- API latency 증가
+- timeout 발생
 
 ---
 
