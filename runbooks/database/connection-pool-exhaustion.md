@@ -30,6 +30,41 @@ Connection Pool = 물리적 DB connection 제한
 > WebFlux는 thread 고갈을 막지만
 > DB connection 고갈은 막아주지 않는다.
 
+# SRE Tip: R2DBC Pool 특성 (중요)
+
+## 개요
+
+R2DBC는 JDBC와 다르게 비동기 방식으로 동작한다.
+
+```
+JDBC:
+Thread 1 : Connection 1  (1:1 매핑)
+
+R2DBC:
+Thread N (event loop) : Connection M (shared)  (N:M 매핑)
+```
+
+즉, 적은 수의 connection으로 더 많은 요청을 처리할 수 있다.
+
+---
+
+## 설정 기준
+
+| 종류 | maxPoolSize 예시 |
+|------|-----------------|
+| JDBC (HikariCP) | `50 ~ 200` |
+| R2DBC | `10 ~ 50` |
+
+---
+
+## ⚠️ 운영 포인트
+
+```
+R2DBC에서 pool size를 과도하게 늘리면
+→ DB connection 부담 증가
+→ 오히려 성능 저하 및 장애 유발 가능
+```
+
 ---
 
 ## 3. 증상
@@ -304,6 +339,40 @@ memory 부족
 - subscribe() misuse
 ```
 
+# SRE Tip: WebFlux Connection Leak 패턴
+
+## 개요
+
+WebFlux 환경에서는 reactive chain이 정상적으로 종료되지 않으면  
+connection이 반환되지 않고 유지될 수 있다.
+
+---
+
+## Leak이 발생하는 주요 패턴
+
+특히 다음과 같은 경우 leak이 발생할 수 있다.
+
+- `flatMap` 내부에서 에러 발생 후 적절한 처리(`onErrorResume` 등) 누락
+- `subscribe()`를 직접 호출하면서 lifecycle 관리 누락
+- timeout 없이 외부 API 호출
+
+---
+
+## 관찰 포인트
+
+```
+트래픽 감소 이후에도 r2dbc.pool.acquired가 감소하지 않는다
+pending이 점진적으로 증가한다
+```
+
+**특징적인 그래프 패턴**
+
+```
+"계단식으로 우상향하는 그래프"
+```
+
+> → 이는 connection leak 가능성이 매우 높다
+
 ---
 
 ### 7.4 Lock Contention
@@ -439,3 +508,4 @@ SELECT * FROM pg_locks WHERE NOT granted;
 
 > Connection pool 고갈은 단순히 DB capacity 문제가 아니라
 > **connection 점유 시간, transaction 구조, slow query, lock 문제의 결과이다.**
+> R2DBC는 connection을 덜 쓰는 것이지, connection이 필요 없는 것이 아니다.
