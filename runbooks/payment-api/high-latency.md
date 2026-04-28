@@ -93,7 +93,7 @@ SELECT count(*) FROM pg_stat_activity;
 ```
 <br/>
 
-### SRE Tip: Connection Pool Saturation 확인
+### SRE Tip: Connection Pool Saturation 확인 (PromQL 포함)
 
 ### 개요
 
@@ -120,6 +120,28 @@ pending 증가
 
 lock.wait 증가
 → connection 자체보다 lock contention으로 인한 대기 가능성 높음
+```
+
+---
+
+### PromQL: DB Connection 상태
+
+**현재 acquired connection 수**
+
+```promql
+r2dbc_pool_acquired_connections
+```
+
+**현재 pending connection 수**
+
+```promql
+r2dbc_pool_pending_connections
+```
+
+**Connection 대기 발생 비율**
+
+```promql
+rate(db_connections_wait_count[1m])
 ```
 
 ### Step 3. Redis 확인
@@ -168,6 +190,20 @@ Half-Open
 → 일부 요청만 통과하므로 성공률과 latency를 함께 확인해야 함
 ```
 
+### PromQL: External API Latency
+
+### p95 External API 응답 시간
+
+```promql
+histogram_quantile(0.95, sum(rate(external_api_duration_seconds_bucket[5m])) by (le))
+```
+
+### External API 에러 발생 비율
+
+```promql
+rate(external_api_error_total[1m])
+```
+
 ### Step 5. Kubernetes 리소스 확인
 
 ```bash
@@ -199,6 +235,32 @@ kubectl logs <payment-api-pod>
 - slow query log
 
 ---
+
+### SRE Tip: Latency 증가 시 중복 결제 위험 확인
+
+### 개요
+
+Latency 증가 시 client / gateway retry가 증가할 수 있다.  
+이때 Redis idempotency 저장 실패 또는 지연이 함께 발생하면 중복 결제 위험이 커진다.
+
+---
+
+### 확인 지표
+
+```
+payment_duplicate_request_total
+payment_idempotency_conflict_total
+redis.command.latency
+redis.timeout.count
+```
+
+---
+
+### 확인 포인트
+
+- 동일 `merchantId` + `orderId` 중복 요청 증가 여부
+- `Idempotency-Key` 누락 또는 conflict 증가 여부
+- Redis 장애로 idempotency check가 지연되는지 여부
 
 ## 6. 원인별 대응 방법
 
@@ -288,32 +350,6 @@ argocd app rollback <app-name>
 - external API timeout 단축
 - rollback
 
-### SRE Tip: Latency 증가 시 중복 결제 위험 확인
-
-### 개요
-
-Latency 증가 시 client / gateway retry가 증가할 수 있다.  
-이때 Redis idempotency 저장 실패 또는 지연이 함께 발생하면 중복 결제 위험이 커진다.
-
----
-
-### 확인 지표
-
-```
-payment_duplicate_request_total
-payment_idempotency_conflict_total
-redis.command.latency
-redis.timeout.count
-```
-
----
-
-### 확인 포인트
-
-- 동일 `merchantId` + `orderId` 중복 요청 증가 여부
-- `Idempotency-Key` 누락 또는 conflict 증가 여부
-- Redis 장애로 idempotency check가 지연되는지 여부
-
 ---
 
 ## 8. 근본 해결 (Resolution)
@@ -393,6 +429,58 @@ LIMIT 10;
 SELECT count(*) FROM pg_stat_activity;
 ```
 
+### PromQL 요약: Payment API 핵심 쿼리
+
+### 결제 API Latency
+
+**p95 latency**
+
+```promql
+histogram_quantile(0.95, sum(rate(payment_request_duration_seconds_bucket[5m])) by (le))
+```
+
+**p99 latency**
+
+```promql
+histogram_quantile(0.99, sum(rate(payment_request_duration_seconds_bucket[5m])) by (le))
+```
+
+---
+
+### 중복 결제
+
+**중복 요청 발생 비율**
+
+```promql
+sum(rate(payment_duplicate_request_total[5m]))
+```
+
+**Idempotency conflict 발생 비율**
+
+```promql
+sum(rate(payment_idempotency_conflict_total[5m]))
+```
+
+---
+
+### DB Connection Pool
+
+**현재 pending connection 수**
+
+```promql
+r2dbc_pool_pending_connections
+```
+
+---
+
+### External API Latency
+
+**p95 External API 응답 시간**
+
+```promql
+histogram_quantile(0.95, sum(rate(external_api_duration_seconds_bucket[5m])) by (le))
+```
+
 ---
 
 ## 14. 타임라인 예시
@@ -431,7 +519,5 @@ SELECT count(*) FROM pg_stat_activity;
 
 ## 17. 핵심 메시지
 
-> "Latency 문제는 어디가 느린지 찾는 게임이다.  
-> **Trace 없이 해결하려고 하면 무조건 오래 걸린다."** <br/>
 > 결제 API latency 장애는 단순히 느린 구간을 찾는 문제가 아니라,  
 > retry, idempotency, circuit breaker 상태까지 함께 확인해야 하는 장애다.
