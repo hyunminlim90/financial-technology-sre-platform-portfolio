@@ -29,8 +29,7 @@ Connection Pool = 물리적 DB connection 제한
 
 > WebFlux는 thread 고갈을 막지만
 > DB connection 고갈은 막아주지 않는다.
-
-
+<br/>
 ### SRE Tip: R2DBC Pool 특성 (중요)
 
 ### 개요
