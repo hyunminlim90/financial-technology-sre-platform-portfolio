@@ -106,7 +106,7 @@ postgres.query span 대기 증가
 
 ## 7. 탐지 방법
 
-### PromQL
+## PromQL
 
 ### R2DBC Pool
 
@@ -155,8 +155,6 @@ hikaricp_connections_active / hikaricp_connections_max > 0.9
 ---
 
 ## 9. 재현 방법 (Simulation)
-
----
 
 ### 패턴 A. Slow Query
 
