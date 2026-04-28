@@ -4,7 +4,7 @@
 
 이 문서는 FinTech 결제 도메인의 핵심 API 설계를 정의합니다.
 
-목표는 단순 CRUD API가 아니라, 실제 결제 시스템 운영에서 중요한 다음 요소를 함께 고려하는 것입니다.
+목표는 실제 결제 시스템 운영에서 중요한 다음 요소를 함께 고려하는 것입니다.
 
 - 중복 결제 방지
 - 결제 상태 관리
@@ -97,7 +97,7 @@ X-Request-Id: {request-id}
     "email": "user@example.com"
   },
   "metadata": {
-    "productName": "SRE 실전 강의",
+    "productName": "SRE 실전",
     "source": "web"
   }
 }
