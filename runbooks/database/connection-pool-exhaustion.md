@@ -350,7 +350,7 @@ connection이 반환되지 않고 유지될 수 있다.
 
 ---
 
-## Leak이 발생하는 주요 패턴
+### Leak이 발생하는 주요 패턴
 
 특히 다음과 같은 경우 leak이 발생할 수 있다.
 
@@ -360,7 +360,7 @@ connection이 반환되지 않고 유지될 수 있다.
 
 ---
 
-## 관찰 포인트
+### 관찰 포인트
 
 ```
 트래픽 감소 이후에도 r2dbc.pool.acquired가 감소하지 않는다
@@ -509,5 +509,5 @@ SELECT * FROM pg_locks WHERE NOT granted;
 ## 14. 핵심 메시지 (개정판)
 
 > Connection pool 고갈은 단순히 DB capacity 문제가 아니라
-> **connection 점유 시간, transaction 구조, slow query, lock 문제의 결과이다.**
+> **connection 점유 시간, transaction 구조, slow query, lock 문제의 결과이다.** <br/>
 > R2DBC는 connection을 덜 쓰는 것이지, connection이 필요 없는 것이 아니다.
