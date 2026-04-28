@@ -49,7 +49,7 @@ Thread N (event loop) : Connection M (shared)  (N:M 매핑)
 
 ---
 
-## 설정 기준
+### 설정 기준
 
 | 종류 | maxPoolSize 예시 |
 |------|-----------------|
@@ -58,7 +58,7 @@ Thread N (event loop) : Connection M (shared)  (N:M 매핑)
 
 ---
 
-## ⚠️ 운영 포인트
+### ⚠️ 운영 포인트
 
 ```
 R2DBC에서 pool size를 과도하게 늘리면
@@ -339,10 +339,11 @@ memory 부족
 - reactive chain 종료 안됨
 - subscribe() misuse
 ```
+<br/>
 
-# SRE Tip: WebFlux Connection Leak 패턴
+### SRE Tip: WebFlux Connection Leak 패턴
 
-## 개요
+### 개요
 
 WebFlux 환경에서는 reactive chain이 정상적으로 종료되지 않으면  
 connection이 반환되지 않고 유지될 수 있다.
