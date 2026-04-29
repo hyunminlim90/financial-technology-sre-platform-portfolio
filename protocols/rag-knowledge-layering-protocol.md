@@ -146,12 +146,125 @@ AI Agent는 `runbooks/`의 내용을 기본 대응 기준으로 삼되,
 
 ---
 
-## 9. 요약
+## 9. Document Metadata & Linking Rule
 
-```text
-프로토콜 문서 = RAG의 해석 규칙
-Scenario / Runbook = 기본 지식
-Postmortem / Improvement = 경험 기반 보정 지식
+RAG 문서는 파일명만으로 연결하지 않는다.  
+모든 Knowledge Source 문서는 다음 기준으로 연결한다.
+
+1. repository path
+2. filename
+3. document title
+4. front matter metadata
+5. body keywords
+
+---
+
+### 9.1 Required Front Matter
+
+모든 RAG 대상 문서는 문서 상단에 YAML front matter를 포함해야 한다.
+
+```yaml
+---
+title: Redis Timeout Scenario
+knowledge_type: scenario
+domain: redis
+failure_mode: redis-timeout
+services:
+  - payment-api
+  - redis
+  - postgresql
+related_scenarios: []
+related_runbooks:
+  - runbooks/redis/timeout.md
+related_postmortems: []
+related_improvements:
+  - improvements/redis-timeout-idempotency-hardening.md
+related_preventive_designs:
+  - preventive-designs/redis-timeout-idempotency-fallback.md
+tags:
+  - redis
+  - timeout
+  - idempotency
+  - duplicate-payment
+---
 ```
+
+---
+
+### 9.2 Naming Rule
+
+파일명은 가능한 한 다음 패턴을 따른다.
+
+```
+<domain>-<failure-mode>-<topic>.md
+```
+
+단, `scenarios/`와 `runbooks/`는 도메인 하위 디렉터리를 사용하므로 다음 패턴을 허용한다.
+
+```
+scenarios/<domain>/<failure-mode>.md
+runbooks/<domain>/<failure-mode>.md
+```
+
+**예:**
+
+```
+scenarios/redis/timeout.md
+runbooks/redis/timeout.md
+preventive-designs/redis-timeout-idempotency-fallback.md
+improvements/redis-timeout-idempotency-hardening.md
+```
+
+---
+
+### 9.3 Linking Rule
+
+새 문서를 추가할 때는 관련 문서를 명시적으로 연결해야 한다.
+
+**예:**
+
+```yaml
+related_scenarios:
+  - scenarios/redis/timeout.md
+
+related_runbooks:
+  - runbooks/redis/timeout.md
+
+related_preventive_designs:
+  - preventive-designs/redis-timeout-idempotency-fallback.md
+```
+
+---
+
+### 9.4 Retrieval Rule
+
+AI Agent는 장애 분석 시 다음 순서로 문서를 연결한다.
+
+1. `failure_mode` 일치
+2. `domain` 일치
+3. `related_*` 경로 일치
+4. `tags` 일치
+5. 본문 키워드 유사도
+
+> 파일명만으로 연관성을 판단하지 않는다.
+
+---
+
+### 9.5 Safety Rule
+
+`runbooks/`의 대응 절차보다 `postmortems/`, `improvements/`, `preventive-designs/`에서 더 안전한 제약 조건이 발견되면 최종 권장안에 반드시 반영한다.
+
+**예:**
+
+| 출처 | 내용 |
+|------|------|
+| Runbook | worker scale-out 가능 |
+| Postmortem | 이전 scale-out 이후 DB connection pool 고갈 발생 |
+| Preventive Design | downstream 상태 확인 전 scale-out 금지 |
+| **Final Recommendation** | scale-out 보류 → external provider latency와 DB connection pool pending 먼저 확인 |
+
+---
+
+> 이 규약을 프로토콜에 포함하면 RAG가 훨씬 안정적으로 동작한다.
 
 이 문서는 RAG 시스템이 반드시 참조해야 하는 핵심 정책 문서이다.
