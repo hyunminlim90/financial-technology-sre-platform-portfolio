@@ -149,6 +149,50 @@ consumer는 정상 동작하지만 backlog 증가
 
 ---
 
+### 6.7 Consumer Rebalancing
+
+Consumer 그룹에 변화가 발생하면 (scale-out, pod restart, crash 등)  
+Rebalancing이 발생하며 해당 기간 동안 메시지 처리가 일시적으로 중단될 수 있다.
+
+---
+
+### 결과
+
+- 일시적인 consumer lag 급증
+- 처리량 감소
+
+---
+
+### 관찰 포인트
+
+- consumer group 상태 변화
+- rebalance 발생 로그
+
+---
+
+### Metrics
+
+```promql
+max(kafka_consumer_rebalance_latency_max)
+```
+
+또는
+
+```
+consumer group state (Stable → Rebalancing)
+```
+
+---
+
+### 해석
+
+| 패턴 | 의미 |
+|------|------|
+| 짧은 시간 lag spike 후 정상화 | 정상적인 rebalancing 영향 |
+| rebalance 반복 발생 + lag 증가 | consumer instability 문제 |
+
+---
+
 ## 7. 탐지 방법
 
 ---
@@ -246,6 +290,39 @@ Kafka Lag은 “느림”이 아니라 “적체(backlog)” 문제다
 ---
 
 ## 11. SRE 관점 핵심 통찰
+
+### 처리량 vs 유입량 분석 (핵심 진단 로직)
+
+Kafka Lag 분석의 핵심은 **"처리량과 유입량의 관계"** 를 비교하는 것이다.
+
+---
+
+### 확인 지표
+
+```promql
+# Producer (유입량)
+sum(rate(kafka_producer_record_send_total[1m])) by (topic)
+
+# Consumer (처리량)
+sum(rate(kafka_consumer_records_consumed_total[1m])) by (topic, group)
+```
+
+---
+
+### 해석
+
+| 패턴 | 의미 |
+|------|------|
+| `producer rate > consumer rate` | backlog 증가 (정상적인 lag 증가) |
+| `consumer rate` 감소 | consumer 내부 병목 (CPU, 코드, downstream) |
+| `producer rate` 급증 + consumer 정상 | 트래픽 spike |
+| `consumer rate = 0` | consumer 장애 또는 poison message |
+
+---
+
+### 핵심 메시지
+
+> Lag 자체보다 **"왜 lag이 생겼는지"** 를 throughput vs incoming으로 판단하는 것이 중요하다.
 
 ```text
 lag 증가 = 시스템이 감당 못하는 상태
