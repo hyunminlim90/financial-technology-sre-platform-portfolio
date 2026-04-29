@@ -265,6 +265,107 @@ AI Agent는 장애 분석 시 다음 순서로 문서를 연결한다.
 
 ---
 
+### 9.6 Knowledge Priority Rule
+
+동일한 상황에서 Knowledge Source 간 내용이 충돌할 경우 다음 우선순위를 따른다.
+
+| 우선순위 | Knowledge Source | 특성 |
+|------|------|------|
+| 1 | Preventive Design / Improvement | 가장 보수적 |
+| 2 | Postmortem | 실제 장애 경험 |
+| 3 | Runbook | 기본 대응 |
+| 4 | Scenario | 장애 정의 |
+
+---
+
+### 원칙
+
+> 더 안전한 방향이 항상 우선된다.
+
+---
+
+### 예시
+
+| 출처 | 내용 |
+|------|------|
+| Runbook | scale-out 가능 |
+| Postmortem | scale-out 후 DB 장애 발생 |
+| Improvement | downstream 확인 전 scale-out 금지 |
+| **최종** | **scale-out 금지** |
+
+---
+
+### 9.7 Time Awareness Rule
+
+Learning Knowledge는 시간 순서에 따라 중요도가 달라진다.
+
+> 최신 Postmortem / Improvement가 더 높은 우선순위를 가진다.
+
+---
+
+#### 적용 기준
+
+- `updated_at`
+- `created_at`
+
+---
+
+### 원칙
+
+> 최근 장애 경험이 더 현실적인 판단 기준이다.
+
+---
+
+### 9.8 Context Matching Rule
+
+AI Agent는 단순 키워드 매칭이 아닌 컨텍스트 기반으로 문서를 선택한다.
+
+---
+
+### 주요 컨텍스트
+
+| 컨텍스트 | 예시 |
+|------|------|
+| `service` | payment-api, worker 등 |
+| `environment` | prod, staging |
+| `traffic pattern` | spike, steady |
+| `failure scope` | partial, global |
+
+---
+
+### 원칙
+
+> 동일 `failure_mode`라도 컨텍스트가 다르면 다른 판단을 할 수 있다.
+
+---
+
+### 10. Human Override Rule
+
+AI Agent의 모든 권장 사항은 참고용이며 최종 판단은 사람이 수행한다.
+
+---
+
+### 원칙
+
+> `AI Recommendation ≠ Final Decision`
+
+---
+
+### 적용 범위
+
+- 결제 관련 변경
+- 데이터 변경
+- 트래픽 제어
+- scale-out / scale-in
+
+---
+
+### 필수
+
+> **Human Approval Required**
+
+---
+
 > 이 규약을 프로토콜에 포함하면 RAG가 훨씬 안정적으로 동작한다.
 
 이 문서는 RAG 시스템이 반드시 참조해야 하는 핵심 정책 문서이다.
