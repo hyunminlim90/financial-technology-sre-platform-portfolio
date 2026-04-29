@@ -113,6 +113,44 @@ kubectl logs -n payment <payment-worker-pod>
 - deserialization error
 - timeout error
 
+### Thread Dump 확인
+
+Consumer Pod는 살아 있고 CPU 사용률도 높지 않은데 Lag이 증가한다면,  
+코드 내부 lock, blocking call, deadlock, thread starvation 가능성을 확인한다.
+
+---
+
+### 확인 조건
+
+- consumer pod는 `Running`
+- CPU 사용률은 낮음
+- consumer rate 감소
+- lag 지속 증가
+
+---
+
+### 확인 방법
+
+```bash
+kubectl exec -n payment <payment-worker-pod> -- jcmd 1 Thread.print
+```
+
+또는:
+
+```bash
+kubectl exec -n payment <payment-worker-pod> -- jstack 1
+```
+
+---
+
+### 확인 포인트
+
+- `BLOCKED` / `WAITING` thread 증가
+- `synchronized` lock 대기
+- blocking I/O 호출
+- 외부 SDK 동기 호출
+- DB / HTTP client 응답 대기
+
 ### Step 3. Downstream 병목 확인
 
 Kafka lag의 가장 흔한 원인은 Kafka 자체가 아니라 Consumer가 호출하는 downstream 지연입니다.
@@ -424,6 +462,45 @@ Consumer lag 장애에서도 eventId, paymentId, traceId 연결이 중요합니�
 - partition key / partition 수 재검토
 - worker resource request / limit 조정
 - batch size / concurrency 튜닝
+
+## 11.1 DLQ Replay 전략
+
+Poison Message를 DLQ로 격리한 뒤에는 원인 분석과 코드 수정이 완료된 후 안전하게 replay할 수 있어야 한다.
+
+---
+
+### Replay 전 확인 사항
+
+- 원인 코드 수정 완료
+- schema 호환성 확인
+- 동일 eventId 중복 처리 가능 여부 확인
+- paymentId 기준 idempotent 처리 보장
+- replay 대상 메시지 수 확인
+- replay 중 consumer lag 재증가 가능성 확인
+
+---
+
+### Replay 방식
+
+```
+DLQ topic
+→ replay tool / script
+→ original topic
+```
+
+**예시 경로:**
+
+```
+scripts/kafka/replay-dlq.sh
+tools/kafka-dlq-replayer/
+```
+
+---
+
+### 주의
+
+> DLQ replay는 새로운 장애를 만들 수 있으므로 **rate limit을 적용**한다.  
+> 대량 replay 시 **worker와 downstream 상태를 함께 모니터링**한다.
 
 ---
 
