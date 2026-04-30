@@ -7,25 +7,24 @@ knowledge_type: runbook
 domain: redis
 failure_mode: redis-timeout
 services:
-
-* payment-api
-* redis
-* postgresql
-  related_scenarios:
-* scenarios/redis/timeout.md
-  related_runbooks: []
-  related_postmortems: []
-  related_improvements:
-* improvements/redis-timeout-idempotency-hardening.md
-  related_preventive_designs:
-* preventive-designs/redis-timeout-idempotency-fallback.md
-  tags:
-* redis
-* timeout
-* latency
-* idempotency
-* duplicate-payment
-* payment-safety
+  - payment-api
+  - redis
+  - postgresql
+related_scenarios:
+  - scenarios/redis/timeout.md
+related_runbooks: []
+related_postmortems: []
+related_improvements:
+  - improvements/redis-timeout-idempotency-hardening.md
+related_preventive_designs:
+  - preventive-designs/redis-timeout-idempotency-fallback.md
+tags:
+  - redis
+  - timeout
+  - latency
+  - idempotency
+  - duplicate-payment
+  - payment-safety
 
 ---
 
@@ -447,7 +446,83 @@ preventive-designs/redis-timeout-idempotency-fallback.md
 
 ---
 
-## 9. 롤백 기준
+## 9. Action / Rollback / Verification Plan
+
+AI Agent는 Redis Timeout 대응 권장 시 아래 형식으로 Action, Risk, Rollback, Verification을 함께 제시해야 한다.
+
+| Action | Expected Effect | Risk | Rollback Plan | Verification |
+|---|---|---|---|---|
+| Redis 의존 비필수 기능 우회 | Redis 부하 감소 | 일부 기능 degraded | 우회 설정 비활성화 | Redis latency p95 정상화, API 5xx 감소 |
+| DB idempotency fallback 사용 | 중복 결제 방어 유지 | DB 부하 증가 | Redis 정상화 후 fallback 비율 축소 | duplicate request / conflict 증가 여부 확인 |
+| retry 제한 / backoff 강화 | retry storm 완화 | 일시 실패 응답 증가 가능 | 이전 retry 설정 복구 | redis_timeout_total, retry rate 감소 |
+| Payment API rate limit 적용 | Redis / DB 보호 | 일부 요청 제한 | rate limit threshold 원복 | API error rate, Redis latency 안정화 |
+| 최근 배포 rollback | 신규 코드 영향 제거 | 이전 버전 이슈 재노출 가능 | rollback 전 revision으로 재배포 | Redis timeout, API latency, idempotency conflict 감소 |
+| Payment API scale-out | API pod 리소스 부족 완화 | Redis / DB 부하 증폭 가능 | 이전 replica 수로 scale-in | scale-out 후 Redis timeout / DB fallback 부하 증가 여부 확인 |
+
+### 9.1 Action Sequencing Rule
+
+Redis Timeout 장애에서는 다음 순서로 대응한다.
+
+1. 중복 결제 위험 확인
+2. Redis timeout 범위 확인
+3. DB fallback 정상 동작 여부 확인
+4. retry / rate limit 조정
+5. Redis 의존 비필수 기능 우회
+6. 최근 배포 영향 확인 후 rollback 검토
+7. scale-out은 Redis / DB 상태 확인 후 마지막으로 판단
+
+### 9.2 Scale-out Safety Rule
+
+**다음 조건에서는 scale-out을 권장하지 않는다:**
+
+- Redis CPU / memory 포화
+- Redis timeout이 전체적으로 증가
+- retry storm 발생
+- DB fallback으로 DB 부하 증가
+- DB connection pool pending 증가
+
+**Scale-out은 다음 조건에서만 검토한다:**
+
+- Redis 자체는 정상
+- 일부 payment-api pod 리소스만 부족
+- DB fallback 부하가 증가하지 않음
+- retry storm 없음
+
+### 9.3 Verification Window
+
+Action 수행 후 최소 2~5분간 다음 지표를 확인한다.
+
+```promql
+histogram_quantile(0.95, sum(rate(redis_command_duration_seconds_bucket[5m])) by (le))
+```
+
+```promql
+sum(rate(redis_timeout_total[1m]))
+```
+
+```promql
+histogram_quantile(0.95, sum(rate(payment_request_duration_seconds_bucket[5m])) by (le))
+```
+
+```promql
+sum(rate(payment_duplicate_request_total[5m]))
+```
+
+```promql
+sum(rate(payment_idempotency_conflict_total[5m]))
+```
+
+### 정상화 기준
+
+- Redis timeout 증가 중단
+- Payment API latency 안정화
+- 5xx 감소
+- duplicate request 급증 없음
+- idempotency conflict 급증 없음
+
+---
+
+## 10. 롤백 기준
 
 다음 조건이면 최근 배포 rollback을 검토한다.
 
@@ -464,7 +539,7 @@ argocd app rollback <app-name>
 
 ---
 
-## 10. 근본 해결
+## 11. 근본 해결
 
 ```text
 - Redis timeout / retry 정책 재설계
@@ -477,7 +552,7 @@ argocd app rollback <app-name>
 
 ---
 
-## 11. 재발 방지
+## 12. 재발 방지
 
 ```text
 - Redis latency alert 설정
@@ -491,7 +566,7 @@ argocd app rollback <app-name>
 
 ---
 
-## 12. 관련 Dashboard
+## 13. 관련 Dashboard
 
 ```text
 Grafana:
@@ -506,7 +581,7 @@ Grafana:
 
 ---
 
-## 13. 관련 Alert
+## 14. 관련 Alert
 
 ```text
 RedisLatencyHigh
@@ -520,7 +595,7 @@ PaymentApiLatencyHigh
 
 ---
 
-## 14. Query 요약
+## 15. Query 요약
 
 ### PromQL
 
@@ -577,7 +652,7 @@ kubectl exec -n payment <payment-api-pod> -- nc -vz <redis-service> 6379
 
 ---
 
-## 15. 포스트모템 체크리스트
+## 16. 포스트모템 체크리스트
 
 ```text
 - Redis timeout이 언제부터 증가했는가?
@@ -592,7 +667,7 @@ kubectl exec -n payment <payment-api-pod> -- nc -vz <redis-service> 6379
 
 ---
 
-## 16. 핵심 메시지
+## 17. 핵심 메시지
 
 > Redis Timeout은 단순 캐시 장애가 아니다.
 > 결제 시스템에서는 Idempotency 실패와 중복 결제 위험으로 이어질 수 있다.
