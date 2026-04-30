@@ -165,7 +165,66 @@ Kafka Consumer Lag:
 AI는 우선순위 기준으로 분석해야 한다.
 ```
 
+각 지표는 다음 질문을 해결하기 위한 것이다:
+
+```
+- lag → backlog 존재 여부
+- consumer_rate → 처리 병목 여부
+- producer_rate → 유입 폭증 여부
+- rebalance_latency → 리밸런싱 영향 여부
+```
+
+효과:
+
+```
+AI가 "지표 해석 방향"을 틀리지 않음
+```
+
 ---
+
+### 5.0 Front Matter Required Fields (필수 확장)
+
+모든 Scenario는 다음 필드를 반드시 포함해야 한다.
+
+```
+---
+title: Redis Timeout Scenario
+knowledge_type: scenario
+domain: redis
+failure_mode: redis-timeout
+
+severity: SEV-2
+impact_scope: partial   # local | partial | global
+
+services:
+  - payment-api
+  - redis
+  - postgresql
+
+related_runbooks:
+  - runbooks/redis/timeout.md
+
+related_postmortems: []
+
+related_improvements:
+  - improvements/redis-timeout-idempotency-hardening.md
+
+related_preventive_designs:
+  - preventive-designs/redis-timeout-idempotency-fallback.md
+
+tags:
+  - redis
+  - timeout
+  - latency
+  - idempotency
+---
+```
+
+효과:
+
+```
+AI가 "얼마나 급한 장애인지" + "영향 범위"를 즉시 판단
+```
 
 ## 5. RAG Integration Rule
 
