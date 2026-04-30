@@ -1,0 +1,224 @@
+# protocols/scenario-authoring-protocol.md
+
+---
+
+## 1. 목적
+
+이 문서는 모든 Scenario 문서를 동일한 구조와 판단 기준으로 작성하기 위한 규칙을 정의한다.
+
+> Scenario는 설명 문서가 아니다.  
+> Scenario는 **"장애 상황 정의"** 이다.
+
+---
+
+## 2. 역할 정의 (Runbook과 차이)
+
+| 구분 | 역할 |
+|------|------|
+| **Scenario** | 무엇이 문제인가 정의 |
+| **Runbook** | 어떻게 해결할 것인가 정의 |
+
+---
+
+## 3. 필수 구조
+
+모든 Scenario는 반드시 다음 구조를 포함해야 한다.
+
+1. 개요
+2. 장애 정의 (Definition)
+3. 사용자 영향
+4. 시스템 영향 범위
+5. 주요 증상 (Metrics / Logs / Traces)
+6. 영향 흐름 (Propagation)
+7. 원인 후보 (Hypothesis)
+8. 탐지 방법 (Alert / PromQL)
+9. 진단 흐름 (High-level)
+10. 재현 방법 (Simulation)
+11. FinTech 리스크
+12. SRE 핵심 통찰
+13. Runbook 연결
+14. 요약
+
+---
+
+## 4. 핵심 규칙 (중요)
+
+### 4.1 Definition Rule (필수)
+
+> 장애는 반드시 **"정량 조건"** 으로 정의한다.
+
+**예:**
+
+- `p95 latency > 300ms` (5분 이상)
+- `r2dbc.pool.pending > 0` (10초 이상)
+- `kafka lag` 지속 증가 (5분 이상)
+
+### 4.2 Time Condition Rule
+
+> 모든 장애 정의에는 **"지속 시간"** 이 포함되어야 한다.
+
+| 구분 | 의미 |
+|------|------|
+| 스파이크 | 장애 아님 |
+| 지속 | 장애 |
+
+### 4.3 Symptom Rule
+
+> Metrics / Logs / Traces 반드시 포함
+
+### 4.4 Propagation Rule (핵심)
+
+Scenario는 반드시 장애 전파 흐름을 포함해야 한다.
+
+**예:**
+
+```
+Redis timeout
+→ API latency 증가
+→ retry 증가
+→ duplicate request 증가
+→ DB overload
+```
+
+> 이게 없으면 AI는 **"확산 위험"** 을 모른다.
+
+### 4.5 Hypothesis Rule
+
+> 원인은 확정하지 않는다.  
+> **"가능한 원인 후보"** 만 제시한다.
+
+### 4.6 Detection Rule
+
+> PromQL / Alert 기준 포함 필수
+
+### 4.7 Diagnosis Rule
+
+> High-level 흐름만 제공 (Runbook 수준 X)
+
+### 4.8 Simulation Rule
+
+> 반드시 재현 방법 포함
+
+테스트 가능한 시나리오만 가치 있음.
+
+### 4.9 FinTech Safety Rule
+
+결제 시스템에서는 반드시 포함:
+
+- duplicate payment 위험
+- idempotency 영향
+- retry amplification
+
+### 4.10 SRE Insight Rule
+
+> 단순 설명이 아니라 **"해석"** 포함
+
+**예:**
+
+```
+Latency 문제 ≠ Lag 문제
+```
+
+---
+
+## 5. RAG Integration Rule
+
+모든 Scenario는 반드시 YAML Front Matter 포함
+
+**필수 형식:**
+
+```yaml
+---
+title: Redis Timeout Scenario
+knowledge_type: scenario
+domain: redis
+failure_mode: redis-timeout
+
+services:
+  - payment-api
+  - redis
+  - postgresql
+
+related_runbooks:
+  - runbooks/redis/timeout.md
+
+related_postmortems: []
+
+related_improvements:
+  - improvements/redis-timeout-idempotency-hardening.md
+
+related_preventive_designs:
+  - preventive-designs/redis-timeout-idempotency-fallback.md
+
+tags:
+  - redis
+  - timeout
+  - latency
+  - idempotency
+---
+```
+
+---
+
+## 6. Naming Rule
+
+```
+scenarios/<domain>/<failure-mode>.md
+```
+
+**예:**
+
+```
+scenarios/redis/timeout.md
+scenarios/kafka/consumer-lag.md
+scenarios/database/connection-pool-exhaustion.md
+```
+
+---
+
+## 7. 금지 사항
+
+| 금지 | 이유 |
+|------|------|
+| ❌ 원인 확정 | Hypothesis Rule 위반 |
+| ❌ 해결 방법 포함 | Runbook 영역 |
+| ❌ 정량 조건 없는 장애 정의 | Definition Rule 위반 |
+| ❌ propagation 없는 문서 | Propagation Rule 위반 |
+| ❌ FinTech 리스크 없는 문서 | FinTech Safety Rule 위반 |
+
+---
+
+## 8. 핵심 원칙
+
+| 문서 | 역할 |
+|------|------|
+| **Scenario** | 문제 정의 |
+| **Runbook** | 해결 전략 |
+| **Postmortem** | 현실 |
+
+---
+
+## 🔥 지금 해야 할 것 (중요)
+
+### 1. 이 프로토콜 파일 생성
+
+```
+protocols/scenario-authoring-protocol.md
+```
+
+### 2. 기존 Scenario 리팩토링 대상
+
+| Scenario | 작업 |
+|------|------|
+| payment latency | metadata 추가 |
+| DB pool | propagation 추가 |
+| kafka lag | 구조 정리 |
+| redis | 기준으로 삼기 |
+
+---
+
+## 🎯 한 줄 핵심
+
+> Scenario가 흔들리면  
+> Runbook도 흔들리고  
+> **AI 판단도 틀린다.**
