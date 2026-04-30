@@ -180,6 +180,18 @@ AI는 다음 순서로 적용 여부를 판단한다:
 위 조건이 충족될 때만 Improvement를 적용한다.
 ```
 
+### 5.11 Anti-Pattern Rule
+
+```
+Improvement는 반드시 "금지해야 할 잘못된 패턴"을 명시할 수 있다.
+
+예:
+
+❌ Redis timeout 발생 시 무조건 scale-out
+❌ retry 증가 상황에서 thread pool 확장
+❌ latency 문제를 CPU 문제로 오판
+```
+
 ---
 
 ## 6. Front Matter Required Fields (필수)
