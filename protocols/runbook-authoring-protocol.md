@@ -82,6 +82,24 @@ Step 1 → Step 2 → Step 3
 3. Performance (성능)
 ```
 
+### 6.1 Severity Rule (필수)
+
+모든 Runbook은 장애 Severity 기준을 포함해야 한다.
+
+| Severity | 조건 |
+|----------|------|
+| SEV-1 | 결제 실패 / 중복 결제 |
+| SEV-2 | latency 증가 / 일부 장애 |
+| SEV-3 | 부분 기능 장애 |
+
+원칙:
+
+```text
+SEV-1 → 즉시 완화 (fallback 강제)
+SEV-2 → 원인 분석 후 대응
+SEV-3 → 관찰 중심 대응
+```
+
 ---
 
 ## 7. Scale-out Rule (필수)
@@ -129,6 +147,34 @@ related_scenarios
 related_improvements
 related_preventive_designs
 ```
+
+### 10.1 Front Matter Requirement (필수)
+
+모든 Runbook은 반드시 YAML Front Matter를 포함해야 한다.
+
+### 필수 형식
+
+```yaml
+---
+title: Redis Timeout Runbook
+knowledge_type: runbook
+domain: redis
+failure_mode: redis-timeout
+
+related_scenarios:
+  - scenarios/redis/timeout.md
+
+related_improvements:
+  - improvements/redis-timeout-idempotency-hardening.md
+
+related_preventive_designs:
+  - preventive-designs/redis-timeout-idempotency-fallback.md
+---
+```
+
+### 원칙
+
+> Front matter가 없는 Runbook은 RAG에서 사용되지 않는다.
 
 ---
 
