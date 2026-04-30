@@ -343,13 +343,9 @@ AI Agent는 단순 키워드 매칭이 아닌 컨텍스트 기반으로 문서�
 
 AI Agent의 모든 권장 사항은 참고용이며 최종 판단은 사람이 수행한다.
 
----
-
 ### 원칙
 
 > `AI Recommendation ≠ Final Decision`
-
----
 
 ### 적용 범위
 
@@ -358,11 +354,106 @@ AI Agent의 모든 권장 사항은 참고용이며 최종 판단은 사람이 �
 - 트래픽 제어
 - scale-out / scale-in
 
----
-
 ### 필수
 
 > **Human Approval Required**
+
+---
+
+### 11. Postmortem-Driven Learning Rule
+
+본 시스템은 Postmortem 중심으로 학습한다.
+
+### 11.1 Core Principle
+
+```text
+Scenario / Runbook은 수정하지 않는다
+Postmortem은 계속 추가한다
+AI는 두 데이터를 비교하여 판단한다
+```
+
+### 11.2 Document Update Policy
+
+| 문서 유형               | 수정 여부 | 정책                     |
+| ------------------- | ----- | ---------------------- |
+| scenarios/          | ❌     | 절대 수정 금지 (예외적 상황 제외)   |
+| runbooks/           | ❌     | 절대 수정 금지 (예외적 상황 제외)   |
+| improvements/       | ❌     | 기존 문서 수정 금지, 신규 문서 추가  |
+| preventive-designs/ | ❌     | 기존 문서 수정 금지, 신규 문서 추가  |
+| postmortems/        | ✔     | 장애 발생 시 지속적으로 신규 문서 추가 |
+
+### 11.3 Postmortem Naming Rule
+
+Postmortem 파일명은 다음 규칙을 따른다.
+
+```text
+<failure-mode>-<core-issue>-<date>.md
+```
+
+예:
+
+```text
+redis-timeout-scaleout-failure-2026-05-01.md
+db-connection-pool-leak-2026-05-03.md
+kafka-consumer-lag-rebalance-2026-05-05.md
+```
+
+### 11.4 RAG Linking Requirement
+
+모든 Postmortem 문서는 반드시 다음을 포함해야 한다.
+
+```yaml
+failure_mode
+domain
+related_scenarios
+related_runbooks
+related_improvements
+related_preventive_designs
+tags
+```
+
+이 조건을 만족해야 RAG에서 자동으로 연결된다.
+
+### 11.5 Learning Mechanism
+
+AI는 장애 분석 시 다음 방식으로 학습한다.
+
+```text
+1. Scenario → 장애 정의 확인
+2. Runbook → 기본 대응 확인
+3. Postmortem → 과거 실패 사례 확인
+4. Improvement → 개선된 대응 확인
+5. Preventive Design → 구조적 제한 확인
+```
+
+### 11.6 Decision Override Rule
+
+```text
+Postmortem / Improvement / Preventive Design이
+Runbook보다 더 안전한 제약을 제시할 경우
+
+→ 반드시 해당 제약을 우선 적용한다
+```
+
+### 11.7 Safety Rule
+
+```text
+검증되지 않은 Postmortem은 RAG에 포함하지 않는다
+```
+
+### 11.8 System Behavior Summary
+
+```text
+Runbook은 바뀌지 않는다
+Postmortem은 쌓인다
+AI는 경험을 기반으로 더 안전한 판단을 한다
+```
+
+### 11.9 Ultimate Goal
+
+```text
+장애 대응 시스템 → 학습 시스템 → 사고 예방 시스템
+```
 
 ---
 
