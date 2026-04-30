@@ -457,6 +457,62 @@ AI는 경험을 기반으로 더 안전한 판단을 한다
 
 ---
 
+### 12. Action & Rollback Pair Rule
+
+AI Agent는 모든 대응 권장 시 반드시 다음을 함께 제공해야 한다.
+
+```text
+1. Recommended Action (권장 조치)
+2. Expected Effect (기대 효과)
+3. Risk (리스크)
+4. Rollback Plan (되돌리는 방법)
+```
+
+#### 12.1 Rule
+
+```text
+모든 Action에는 반드시 Rollback이 존재해야 한다
+Rollback이 없는 Action은 권장하지 않는다
+```
+
+#### 12.2 Example
+
+```text
+[Action]
+payment-api scale-out
+
+[Expected Effect]
+처리량 증가
+
+[Risk]
+DB connection pool saturation 가능
+
+[Rollback Plan]
+- scale-in to previous replica count
+- HPA 비활성화
+```
+
+#### 12.3 High-Risk Action Policy
+
+다음 Action은 반드시 Rollback 포함:
+
+```text
+- scale-out / scale-in
+- retry 정책 변경
+- timeout 변경
+- circuit breaker 설정 변경
+- DB / cache 설정 변경
+```
+
+#### 12.4 AI Safety Rule
+
+```text
+Rollback이 정의되지 않은 경우
+→ AI는 해당 Action을 권장하지 않는다
+```
+
+---
+
 > 이 규약을 프로토콜에 포함하면 RAG가 훨씬 안정적으로 동작한다.
 
 이 문서는 RAG 시스템이 반드시 참조해야 하는 핵심 정책 문서이다.
