@@ -239,41 +239,6 @@ Scenario는 반드시 다음 기준으로 RAG와 연결된다:
 - tags
 ```
 
-모든 Scenario는 반드시 YAML Front Matter 포함
-
-**필수 형식:**
-
-```yaml
----
-title: Redis Timeout Scenario
-knowledge_type: scenario
-domain: redis
-failure_mode: redis-timeout
-
-services:
-  - payment-api
-  - redis
-  - postgresql
-
-related_runbooks:
-  - runbooks/redis/timeout.md
-
-related_postmortems: []
-
-related_improvements:
-  - improvements/redis-timeout-idempotency-hardening.md
-
-related_preventive_designs:
-  - preventive-designs/redis-timeout-idempotency-fallback.md
-
-tags:
-  - redis
-  - timeout
-  - latency
-  - idempotency
----
-```
-
 ### 5.1 Failure Mode Rule (필수)
 
 모든 Scenario는 하나의 명확한 failure_mode를 가져야 한다.
