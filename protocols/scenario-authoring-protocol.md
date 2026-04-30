@@ -192,7 +192,7 @@ title: Redis Timeout Scenario
 knowledge_type: scenario
 domain: redis
 failure_mode: redis-timeout
-environment: production
+environment: production   # production | staging | dev
 
 severity: SEV-2
 impact_scope: partial   # local | partial | global
