@@ -119,6 +119,31 @@ Redis timeout
 Latency 문제 ≠ Lag 문제
 ```
 
+### 4.11 Severity Rule (필수)
+
+Scenario는 장애 Severity를 정의해야 한다.
+
+기준:
+
+```
+SEV-1: 결제 실패 / 중복 결제 / 전체 장애
+SEV-2: latency 증가 / 일부 장애
+SEV-3: 부분 기능 문제
+```
+
+원칙:
+
+```
+- Scenario는 기본 Severity를 정의한다
+- 실제 Incident에서는 상황에 따라 조정 가능
+```
+
+효과:
+
+```
+AI가 대응 우선순위 판단 가능
+```
+
 ---
 
 ## 5. RAG Integration Rule
@@ -156,6 +181,66 @@ tags:
   - latency
   - idempotency
 ---
+```
+
+### 5.1 Failure Mode Rule (필수)
+
+모든 Scenario는 하나의 명확한 failure_mode를 가져야 한다.
+
+형식:
+
+<domain>-<failure-type>
+
+예:
+
+```
+redis-timeout
+db-connection-pool-exhaustion
+kafka-consumer-lag
+payment-api-high-latency
+```
+
+원칙:
+
+```
+- 하나의 Scenario는 하나의 failure_mode만 정의한다
+- 여러 장애를 섞지 않는다
+```
+
+이유:
+
+```
+RAG 연결 기준 = failure_mode
+```
+
+### 5.2 Context Rule
+
+Scenario는 다음 컨텍스트를 고려해야 한다.
+
+```
+- service (payment-api, worker 등)
+- environment (prod, staging)
+- traffic pattern (spike, steady)
+- failure scope (partial, global)
+```
+
+원칙:
+
+```
+동일 failure_mode라도
+컨텍스트에 따라 영향과 판단이 달라질 수 있다
+```
+
+이유:
+
+```
+예:
+
+Redis timeout (prod)
+→ 치명적
+
+Redis timeout (staging)
+→ 무시 가능
 ```
 
 ---
