@@ -62,6 +62,38 @@
 
 ---
 
+### 2.2 AI 입력 데이터 정의
+
+AI Agent는 Postmortem 생성 시 다음 입력을 기반으로 동작한다.
+
+### 입력 필드
+
+- `incident_id`
+- `failure_mode`
+- `service`
+- `environment` (prod / staging)
+- `alert_name`
+- `incident_time_range` (start ~ end)
+
+### 예시
+
+```json
+{
+  "incident_id": "INC-2026-05-01-001",
+  "failure_mode": "redis-timeout",
+  "service": "payment-api",
+  "environment": "production",
+  "alert_name": "RedisLatencyHigh",
+  "incident_time_range": "2026-05-01T10:00:00Z ~ 2026-05-01T10:15:00Z"
+}
+```
+
+### 원칙
+
+> AI는 반드시 명확한 incident context를 입력으로 받아야 한다.
+
+---
+
 ## 3. AI 역할 정의
 
 AI는 다음을 자동 수행한다.
@@ -371,6 +403,23 @@ Postmortem 문서는 다음에 사용된다:
 - 동일 장애 재발 시 참고
 - 잘못된 대응 방지
 ```
+
+---
+
+### 8.1 RAG 반영 시점
+
+Postmortem 문서는 다음 조건을 만족해야 RAG에 포함된다.
+
+### 포함 조건
+
+1. Human 검증 완료
+2. Root Cause 확정
+3. Action Item 정의 완료
+4. 문서 승인 상태 (`approved`)
+
+### 원칙
+
+> 검증되지 않은 Postmortem은 RAG에 포함하지 않는다.
 
 ---
 
