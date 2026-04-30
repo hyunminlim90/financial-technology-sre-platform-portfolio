@@ -195,3 +195,64 @@ related_preventive_designs:
 Runbook은 설명 문서가 아니다
 Runbook은 “판단 기준”이다
 ```
+
+---
+
+## 13. Execution Safety Rule
+
+AI Agent는 모든 Action에 대해 실행 권한을 갖지 않는다.
+
+다음 Action은 반드시 Human 승인 후 실행해야 한다:
+
+- scale-out / scale-in
+- retry 정책 변경
+- timeout 변경
+- circuit breaker 설정 변경
+- DB / Redis 설정 변경
+- 트래픽 제어 (rate limit 등)
+
+원칙:
+
+```text
+AI Recommendation ≠ Execution
+
+AI는 "권장"만 한다
+실행은 사람이 승인한다
+```
+
+---
+
+## 14. Verification Failure Rule
+
+Action 수행 후 Verification이 실패하면 다음을 수행한다.
+
+```text
+1. 동일 Action 반복 금지
+2. Rollback 수행
+3. 다음 단계 Action으로 전환
+4. 상위 Risk Action 금지
+```
+
+원칙:
+
+```text
+같은 Action을 반복하면 장애는 악화된다
+```
+
+---
+
+## 15. Time Constraint Rule
+
+각 Severity에 따라 대응 시간 기준을 정의한다.
+
+| Severity | 대응 시작 | 완화 목표 |
+|----------|-----------|----------|
+| SEV-1 | 즉시 (1분 내) | 5분 내 |
+| SEV-2 | 5분 내 | 15분 내 |
+| SEV-3 | 15분 내 | 30분 내 |
+
+원칙:
+
+```text
+지연된 대응은 장애를 확대시킨다
+```
