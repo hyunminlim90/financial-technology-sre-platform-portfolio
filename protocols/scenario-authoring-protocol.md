@@ -182,7 +182,7 @@ AI가 "지표 해석 방향"을 틀리지 않음
 
 ---
 
-### 5.0 Front Matter Required Fields (필수 확장)
+### 5 Front Matter Required Fields (필수 확장)
 
 모든 Scenario는 다음 필드를 반드시 포함해야 한다.
 
@@ -226,7 +226,18 @@ tags:
 AI가 "얼마나 급한 장애인지" + "영향 범위"를 즉시 판단
 ```
 
-## 5. RAG Integration Rule
+### RAG Integration Rule
+
+Scenario는 반드시 다음 기준으로 RAG와 연결된다:
+
+```
+- failure_mode
+- domain
+- severity
+- impact_scope
+- related_* 경로
+- tags
+```
 
 모든 Scenario는 반드시 YAML Front Matter 포함
 
