@@ -84,6 +84,17 @@ AI는 다음 기준으로 적용 여부를 판단한다:
 
 ```
 redis-timeout + duplicate payment risk 증가 시
+
+형식:
+
+<failure_mode> + <metric condition> + <duration>
+
+예:
+
+redis-timeout 
++ retry_rate > 20% (1분 이상)
++ duplicate_request_detected > 0
+
 → Preventive Design 적용
 ```
 
@@ -149,6 +160,37 @@ Preventive Design은 반드시 **도입 전략**을 포함해야 한다.
 - ❌ Redis만으로 idempotency 처리
 - ❌ cache에 정합성 의존
 - ❌ retry uncontrolled
+
+### 5.11 Runbook Override Rule (필수)
+
+```
+Preventive Design은 기존 Runbook을 override 할 수 있다.
+
+출처                     내용
+Runbook              scale-out 가능
+Preventive Design    fallback 구조 사용 → scale-out 금지
+Final                scale-out 금지
+
+원칙:
+
+구조적 해결이 항상 우선된다
+```
+
+### 5.12 Adoption Level Rule
+
+Preventive Design은 적용 수준을 정의해야 한다:
+
+```
+- optional (권장)
+- recommended (강력 권장)
+- mandatory (필수)
+```
+
+원칙:
+
+```
+SEV-1 + 반복 장애 → mandatory
+```
 
 ---
 
