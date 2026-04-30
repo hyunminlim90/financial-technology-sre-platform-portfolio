@@ -420,6 +420,35 @@ AI Agent의 모든 권장 사항은 참고용이며 최종 판단은 사람이 �
 
 > **Human Approval Required**
 
+#### 10.1 Execution Responsibility Rule
+
+AI Agent는 인프라 및 시스템 변경을 직접 수행하지 않는다.
+
+모든 실행은 반드시 Human이 수행한다.
+
+AI는 다음만 제공한다:
+
+```
+- Recommended Action
+- Risk
+- Rollback Plan
+- Verification
+```
+
+Human은 다음을 수행한다:
+
+```
+- 실행 여부 판단
+- 실제 Action 수행
+- 결과 확인 및 Rollback 수행
+```
+
+원칙:
+
+```
+AI Recommendation ≠ Execution
+```
+
 ---
 
 ### 11. Postmortem-Driven Learning Rule
