@@ -56,6 +56,20 @@ Redis timeout
 - payment_idempotency_conflict_total 증가
 ```
 
+### 2.1 Severity 판단 기준
+
+| Severity | 조건 |
+|----------|------|
+| SEV-1 | 결제 실패 / 중복 결제 발생 |
+| SEV-2 | latency 증가 + 일부 API 장애 |
+| SEV-3 | Redis 일부 기능 장애 |
+
+원칙:
+
+- SEV-1 → 즉시 대응 + fallback 강제 적용
+- SEV-2 → 원인 분석 후 단계적 대응
+- SEV-3 → 관찰 + 제한적 대응
+
 ---
 
 ## 3. 영향도
