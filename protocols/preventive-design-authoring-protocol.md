@@ -207,6 +207,8 @@ environment: production
 severity: SEV-1
 impact_scope: global
 
+adoption_level: mandatory   # optional | recommended | mandatory
+
 services:
   - payment-api
   - redis
