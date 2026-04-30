@@ -144,6 +144,27 @@ SEV-3: 부분 기능 문제
 AI가 대응 우선순위 판단 가능
 ```
 
+### 4.12 Metrics Priority Rule
+
+Scenario는 주요 판단 지표의 우선순위를 정의해야 한다.
+
+예:
+
+```
+Kafka Consumer Lag:
+
+1. kafka_consumer_lag (Lag 상태)
+2. kafka_consumer_rate (처리량)
+3. kafka_producer_rate (유입량)
+4. rebalance_latency (재배치 여부)
+```
+
+원칙:
+
+```
+AI는 우선순위 기준으로 분석해야 한다.
+```
+
 ---
 
 ## 5. RAG Integration Rule
@@ -241,6 +262,25 @@ Redis timeout (prod)
 
 Redis timeout (staging)
 → 무시 가능
+```
+
+### 5.3 Impact Scope Rule
+
+Scenario는 장애 영향 범위를 명확히 정의해야 한다.
+
+구분:
+
+```
+- local (특정 서비스)
+- partial (일부 기능)
+- global (전체 시스템)
+```
+
+원칙:
+
+```
+동일 failure_mode라도
+impact scope에 따라 대응 전략이 달라진다
 ```
 
 ---
