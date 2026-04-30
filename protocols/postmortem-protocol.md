@@ -94,6 +94,33 @@ AI Agent는 Postmortem 생성 시 다음 입력을 기반으로 동작한다.
 
 ---
 
+### 2.3 Postmortem Generation Trigger
+
+Postmortem 초안은 다음 이벤트 발생 시 생성된다.
+
+```text
+- Incident 종료 선언 (Human)
+```
+
+AI는 다음을 수행한다:
+
+```text
+1. 장애 기간 데이터 수집
+2. 대응 과정 분석 (RAG 기반)
+3. Postmortem Draft 생성
+4. 파일명 추천
+```
+
+Human은 다음을 수행한다:
+
+```text
+1. Draft 검토 및 수정
+2. Root Cause 확정
+3. 문서 승인 및 Git commit
+```
+
+---
+
 ## 3. AI 역할 정의
 
 AI는 다음을 자동 수행한다.
@@ -111,8 +138,6 @@ AI는 다음을 자동 수행한다.
 - Retry 발생 여부
 ```
 
----
-
 ### 3.2 자동 분석
 
 ```text
@@ -123,16 +148,12 @@ AI는 다음을 자동 수행한다.
 - 원인 후보 제시 (NOT final)
 ```
 
----
-
 ### 3.3 Draft 생성
 
 ```text
 - Postmortem 초안 생성
 - 모든 데이터 기반으로 작성
 ```
-
----
 
 ### 3.4 Failure Mode별 데이터 선택 규칙
 
@@ -163,6 +184,59 @@ AI는 `failure_mode`에 따라 수집할 지표를 다르게 선택해야 한다
 > 모든 데이터를 수집하지 않는다.  
 > → 장애 유형에 맞는 **핵심 지표만** 선택한다.
 
+### 3.5 Incident Response History 수집 규칙
+
+AI는 장애 기간 동안의 "대응 히스토리"를 반드시 수집해야 한다.
+
+수집 대상:
+
+```text
+- 초기 Alert 발생 시점
+- 1차 AI 대응 가이드
+- Human 실행 여부
+- 추가 Alert 발생 여부
+- 2차 / 3차 AI 대응 가이드
+- 각 단계별 시스템 상태 변화
+- 실패한 대응
+- 성공한 대응
+- 최종 해결 방법
+```
+
+원칙:
+
+```text
+단일 대응이 아니라 "전체 대응 흐름"을 기록한다
+```
+
+### 3.6 Alert Selection Rule
+
+AI는 장애 기간 동안 발생한 모든 Alert를 기록하지 않는다.
+
+다음 기준에 따라 Alert를 선택적으로 포함한다.
+
+#### 포함 대상
+
+```text
+1. Trigger Alert (장애 최초 감지)
+2. Escalation Alert (장애 확산)
+3. Decision-driving Alert (대응 방향 변경에 영향)
+```
+
+#### 제외 대상
+
+```text
+- 중복 Alert
+- 영향 없는 Alert
+- 장애와 직접 관련 없는 Alert
+```
+
+#### 원칙
+
+```text
+Alert는 “나열”이 아니라
+“장애 흐름을 설명하기 위한 도구”이다
+```
+
 ---
 
 ## 4. Human 역할 정의
@@ -181,9 +255,7 @@ AI는 `failure_mode`에 따라 수집할 지표를 다르게 선택해야 한다
 
 모든 Postmortem 문서는 아래 구조를 따른다.
 
----
-
-## 5.1 Front Matter (필수)
+### 5.1 Front Matter (필수)
 
 ### Severity 기준
 
@@ -228,9 +300,7 @@ tags:
 ---
 ```
 
----
-
-## 5.2 Incident Summary
+### 5.2 Incident Summary
 
 ```text
 - 무엇이 발생했는가
@@ -238,9 +308,7 @@ tags:
 - 사용자 영향은 무엇인가
 ```
 
----
-
-## 5.3 Impact
+### 5.3 Impact
 
 ```text
 - 영향을 받은 API
@@ -250,9 +318,7 @@ tags:
 - 재시도 증가 여부
 ```
 
----
-
-## 5.4 Timeline (AI 자동 생성 + Human 보정)
+### 5.4 Timeline (AI 자동 생성 + Human 보정)
 
 ```text
 10:01 Redis latency 증가
@@ -264,18 +330,14 @@ tags:
 10:15 정상화
 ```
 
----
-
-## 5.5 Detection
+### 5.5 Detection
 
 ```text
 - 어떤 alert로 탐지되었는가
 - detection delay (얼마나 늦게 감지했는가)
 ```
 
----
-
-## 5.6 Root Cause (Human 확정)
+### 5.6 Root Cause (Human 확정)
 
 ```text
 - 실제 원인 1개 또는 복합 원인
@@ -290,9 +352,7 @@ Redis timeout 발생 시 scale-out을 수행했으나
 retry 증가로 DB connection pool 고갈 발생
 ```
 
----
-
-## 5.7 Contributing Factors
+### 5.7 Contributing Factors
 
 ```text
 - retry 정책 과도
@@ -300,27 +360,21 @@ retry 증가로 DB connection pool 고갈 발생
 - alert 늦음
 ```
 
----
-
-## 5.8 What Went Well
+### 5.8 What Went Well
 
 ```text
 - fallback 정상 동작
 - duplicate 결제 없음
 ```
 
----
-
-## 5.9 What Went Wrong
+### 5.9 What Went Wrong
 
 ```text
 - 잘못된 대응 (scale-out)
 - 판단 지연
 ```
 
----
-
-## 5.10 대응 과정 평가
+### 5.10 대응 과정 평가
 
 ```text
 - Runbook 준수 여부
@@ -328,9 +382,7 @@ retry 증가로 DB connection pool 고갈 발생
 - 대응 시간
 ```
 
----
-
-## 5.11 Action Items (필수)
+### 5.11 Action Items (필수)
 
 ```text
 - retry 정책 수정
@@ -339,18 +391,14 @@ retry 증가로 DB connection pool 고갈 발생
 - fallback 성능 개선
 ```
 
----
-
-## 5.12 Prevention (중요)
+### 5.12 Prevention (중요)
 
 ```text
 - 재발 방지 설계
 - 개선 문서 연결
 ```
 
----
-
-## 5.13 Metrics Analysis
+### 5.13 Metrics Analysis
 
 ```text
 - latency 변화
@@ -358,13 +406,38 @@ retry 증가로 DB connection pool 고갈 발생
 - retry rate 변화
 ```
 
----
-
-## 5.14 Lessons Learned
+### 5.14 Lessons Learned
 
 ```text
 - scale-out은 항상 해결책이 아니다
 - Redis 장애는 DB로 전파된다
+```
+
+### 5.15 Incident Response History (중요)
+
+장애 대응 과정 전체를 기록한다.
+
+```text
+[1] 10:01 Alert 발생 (Redis latency)
+→ AI 가이드: scale-out 권장
+
+[2] 10:05 scale-out 수행
+→ 결과: DB connection pool saturation 발생
+
+[3] 10:06 추가 Alert 발생 (DB pool exhaustion)
+→ AI 가이드: scale-out 중단 + DB 상태 확인
+
+[4] 10:10 rollback 수행
+
+[5] 10:15 정상화
+```
+
+포함 내용:
+
+```text
+- 각 단계별 AI 권장 내용
+- Human 실제 실행 내용
+- 결과 (성공 / 실패)
 ```
 
 ---

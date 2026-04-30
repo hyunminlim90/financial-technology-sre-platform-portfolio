@@ -380,7 +380,7 @@ AI는 두 데이터를 비교하여 판단한다
 | runbooks/           | ❌     | 절대 수정 금지 (예외적 상황 제외)   |
 | improvements/       | ❌     | 기존 문서 수정 금지, 신규 문서 추가  |
 | preventive-designs/ | ❌     | 기존 문서 수정 금지, 신규 문서 추가  |
-| postmortems/        | ✔     | 장애 발생 시 지속적으로 신규 문서 추가 |
+| postmortems/        | ❌     | 장애 발생 시 지속적으로 신규 문서 추가 |
 
 ### 11.3 Postmortem Naming Rule
 
