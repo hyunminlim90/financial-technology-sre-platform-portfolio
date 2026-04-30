@@ -520,6 +520,48 @@ sum(rate(payment_idempotency_conflict_total[5m]))
 - duplicate request 급증 없음
 - idempotency conflict 급증 없음
 
+### 9.4 Decision Rule (AI 판단 기준)
+
+Redis Timeout 상황에서 AI는 다음 기준으로 Action을 선택한다.
+
+#### Rule 1. 결제 안전성 최우선
+
+> 중복 결제 위험이 존재하면  
+> → 모든 성능 최적화보다 **idempotency 보호**를 우선한다.
+
+#### Rule 2. Retry Storm 감지 시
+
+- `redis_timeout_total` 증가 + retry 증가
+  - → retry 제한 / backoff 적용 우선
+  - → scale-out 금지
+
+#### Rule 3. Redis Saturation 상태
+
+- Redis CPU / memory / connection saturation 발생 시
+  - → scale-out 금지
+  - → Redis 부하 감소 조치 우선
+
+#### Rule 4. DB Fallback 영향
+
+- DB fallback 사용 중이고 db connection pending 증가 시
+  - → scale-out 금지
+  - → DB 보호 조치 우선
+
+#### Rule 5. Scale-out 허용 조건
+
+- Redis 정상 + 일부 pod만 문제
+  - → scale-out 가능
+
+#### 최종 원칙
+
+| 우선순위 | 기준 |
+|------|------|
+| 1 | **Safety** — 중복 결제 방지 |
+| 2 | **Stability** — 시스템 보호 |
+| 3 | **Performance** — 성능 개선 |
+
+> 이 순서로 판단한다.
+
 ---
 
 ## 10. 롤백 기준
