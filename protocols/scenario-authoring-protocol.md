@@ -226,7 +226,7 @@ tags:
 AI가 "얼마나 급한 장애인지" + "영향 범위"를 즉시 판단
 ```
 
-### RAG Integration Rule
+### 5.1 RAG Integration Rule
 
 Scenario는 반드시 다음 기준으로 RAG와 연결된다:
 
@@ -239,7 +239,7 @@ Scenario는 반드시 다음 기준으로 RAG와 연결된다:
 - tags
 ```
 
-### 5.1 Failure Mode Rule (필수)
+### 5.2 Failure Mode Rule (필수)
 
 모든 Scenario는 하나의 명확한 failure_mode를 가져야 한다.
 
@@ -269,7 +269,7 @@ payment-api-high-latency
 RAG 연결 기준 = failure_mode
 ```
 
-### 5.2 Context Rule
+### 5.3 Context Rule
 
 Scenario는 다음 컨텍스트를 고려해야 한다.
 
@@ -299,7 +299,7 @@ Redis timeout (staging)
 → 무시 가능
 ```
 
-### 5.3 Impact Scope Rule
+### 5.4 Impact Scope Rule
 
 Scenario는 장애 영향 범위를 명확히 정의해야 한다.
 
