@@ -132,6 +132,39 @@ kafka-consumer-lag + consumer_rate 감소
 - 어떤 metric이 개선되는가
 - 어떤 alert로 검증하는가
 
+### 5.8 Action Structure Rule
+
+```
+Improvement 문서의 모든 변경 사항은 반드시 다음 구조를 포함해야 한다.
+
+Action
+Expected Effect
+Risk
+Rollback Plan
+Verification
+```
+
+이유:
+
+```
+Improvement도 결국 "행동"을 정의하는 문서다
+→ 실행 가능한 형태여야 한다
+```
+
+### 5.9 Rollback Mandatory Rule
+
+```
+모든 Improvement는 반드시 Rollback Plan을 포함해야 한다.
+
+Rollback이 없는 개선은 적용 금지
+```
+
+이유:
+
+```
+개선도 장애를 만들 수 있다
+```
+
 ---
 
 ## 6. Front Matter Required Fields (필수)
@@ -201,6 +234,17 @@ Improvement는 Runbook을 override 할 수 있다.
 | **Final** | **scale-out 금지** |
 
 > 더 안전한 규칙이 항상 우선된다.
+
+### 8.1 Conflict Resolution Rule
+
+```
+여러 Improvement가 충돌할 경우 다음 우선순위를 따른다:
+
+1. Safety (데이터 보호)
+2. 최신 Postmortem 기반 개선
+3. severity 높은 개선
+4. 더 restrictive한 규칙
+```
 
 ---
 
