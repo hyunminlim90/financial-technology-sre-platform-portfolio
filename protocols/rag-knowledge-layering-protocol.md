@@ -60,6 +60,68 @@ RAG는 다음 4개의 Knowledge Source로 구성된다.
 3. Postmortem 검색
 4. Improvement / Preventive Design 검색
 
+### 3.1 Secondary Knowledge Rule
+
+AI Agent는 장애 대응 판단 시 운영 판단 레이어를 우선 조회한다.
+
+### Knowledge 계층
+
+| 구분 | 경로 |
+|------|------|
+| **Primary Knowledge** | `scenarios/`, `runbooks/`, `improvements/`, `preventive-designs/`, `postmortems/` |
+| **Secondary Knowledge** | `rag/docs/` |
+
+### 조회 원칙
+
+AI Agent는 먼저 **Primary Knowledge**를 기반으로 장애 유형, 대응 기준, 제한 규칙, 과거 사례를 판단한다.
+
+`rag/docs/`는 다음 경우에만 보조로 참고한다:
+
+- 지표 의미 해석이 필요한 경우
+- 원인 후보가 여러 개이고 구분이 어려운 경우
+- 장애 메커니즘 이해가 필요한 경우
+- Primary Knowledge 간 판단이 충돌하는 경우
+- 추가 설명 또는 deep diagnosis가 필요한 경우
+
+### 우선순위 원칙
+
+`rag/docs/`는 운영 판단을 보조할 수 있지만 **Primary Knowledge를 override 할 수 없다.**
+
+```
+Primary Knowledge = 판단 기준
+rag/docs          = 이해 보조
+```
+
+### 예시
+
+```
+Redis timeout 발생
+
+Primary:
+- scenarios/redis/timeout.md
+- runbooks/redis/timeout.md
+- improvements/redis-timeout-idempotency-hardening.md
+- preventive-designs/redis-timeout-idempotency-fallback.md
+- postmortems/redis-timeout-*.md
+
+Secondary:
+- rag/docs/redis/redis-latency-internals.md
+
+최종 판단:
+Primary Knowledge를 기준으로 Action을 결정하고,
+rag/docs는 Redis latency 원리 해석에만 사용한다.
+```
+
+### Safety Rule
+
+`rag/docs/`의 일반 기술 설명이 `runbooks/`, `improvements/`, `preventive-designs/`의 안전 제약과 충돌할 경우,  
+반드시 **운영 문서의 안전 제약을 우선**한다.
+
+### 한 줄 핵심
+
+> **5개 문서 (scenarios,runbooks,improvements,preventive-designs,postmortems) = 판단 기준**  
+> **rag/docs = 기술 이해 보조**
+
 ---
 
 ## 4. 판단 로직
