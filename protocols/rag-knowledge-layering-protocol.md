@@ -6,7 +6,7 @@
 
 ## 1. Knowledge Structure
 
-RAG는 다음 4개의 Knowledge Source로 구성된다.
+RAG는 다음 5개의 Primary Knowledge Source로 구성된다.
 
 ### Base Knowledge (고정)
 
