@@ -511,6 +511,40 @@ Rollback이 정의되지 않은 경우
 → AI는 해당 Action을 권장하지 않는다
 ```
 
+#### 12.5 Verification Rule
+
+AI Agent는 각 Action에 대해 반드시 검증 방법을 함께 제공해야 한다.
+
+#### 검증 항목
+
+- 어떤 metric을 확인해야 하는가
+- 정상 상태의 기준은 무엇인가
+- 얼마나 기다려야 하는가
+
+#### Example
+
+```text
+[Verification]
+- API latency p95 < 300ms 확인
+- error rate < 1% 확인
+- 2~3분 관찰
+```
+
+#### 12.6 Action Sequencing Rule
+
+AI Agent는 여러 Action을 제시할 경우 실행 순서를 명확히 정의해야 한다.
+
+```text
+- Step 1 → Step 2 → Step 3
+- 병렬 실행 가능 여부 명시
+Example
+Step 1. External API latency 확인
+Step 2. Retry rate 확인
+Step 3. scale-out 여부 판단
+
+※ scale-out은 Step 1~2 확인 후 수행
+```
+
 ---
 
 > 이 규약을 프로토콜에 포함하면 RAG가 훨씬 안정적으로 동작한다.
