@@ -167,6 +167,58 @@ Redis 실패
 - ❌ `Kafka lag = consumer 문제`
 - ❌ `timeout = 네트워크 문제`
 
+### 5.10 Context Binding Rule
+
+rag/docs의 내용은 반드시 특정 컨텍스트에서만 해석되어야 한다.
+
+AI Agent는 다음 조건이 일치할 때만 rag/docs를 활용한다:
+
+```
+- domain 일치
+- failure_mode 연관성 존재
+- service context 일치
+- environment (prod / staging) 일치
+```
+
+원칙:
+
+```
+동일한 기술 개념이라도
+컨텍스트가 다르면 잘못된 해석이 될 수 있다
+```
+
+이유:
+
+```
+Redis latency (prod) → critical
+Redis latency (staging) → 무시 가능
+```
+
+### 5.11 Misleading Prevention Rule
+
+rag/docs의 일반적인 기술 설명은 실제 장애 상황을 정확히 반영하지 않을 수 있다.
+
+AI Agent는 다음을 반드시 확인해야 한다:
+
+```
+- 실제 metric 데이터와 일치하는가
+- Scenario 정의와 일치하는가
+- 현재 failure_mode와 연관성이 있는가
+```
+
+금지:
+
+```
+- 일반적인 기술 이론을 그대로 장애 원인으로 단정
+- rag/docs 기반으로 root cause 확정
+```
+
+원칙:
+
+```
+이론보다 실제 데이터가 항상 우선이다
+```
+
 ---
 
 ## 6. Front Matter Required Fields (필수)
