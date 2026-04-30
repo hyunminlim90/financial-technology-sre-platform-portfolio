@@ -182,7 +182,7 @@ AI가 "지표 해석 방향"을 틀리지 않음
 
 ---
 
-### 5 Front Matter Required Fields (필수 확장)
+### 5. Front Matter Required Fields (필수 확장)
 
 모든 Scenario는 다음 필드를 반드시 포함해야 한다.
 
