@@ -165,6 +165,21 @@ Rollback이 없는 개선은 적용 금지
 개선도 장애를 만들 수 있다
 ```
 
+### 5.10 Applicability Rule
+
+```
+Improvement는 반드시 "적용 여부 판단 기준"을 포함해야 한다.
+
+AI는 다음 순서로 적용 여부를 판단한다:
+
+1. failure_mode 일치 여부
+2. 적용 조건 (Condition Rule) 만족 여부
+3. severity / impact_scope 고려
+4. context (environment, traffic, scope) 일치 여부
+
+위 조건이 충족될 때만 Improvement를 적용한다.
+```
+
 ---
 
 ## 6. Front Matter Required Fields (필수)
