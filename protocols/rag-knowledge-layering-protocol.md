@@ -122,6 +122,25 @@ rag/docs는 Redis latency 원리 해석에만 사용한다.
 > **5개 문서 (scenarios,runbooks,improvements,preventive-designs,postmortems) = 판단 기준**  
 > **rag/docs = 기술 이해 보조**
 
+### 3.2 Missing Primary Knowledge Rule
+
+해당 failure_mode에 대한 Primary Knowledge가 존재하지 않을 경우:
+
+```
+AI Agent는 자동 대응을 수행하지 않는다.
+
+대신 다음을 수행한다:
+- Unknown Scenario로 분류
+- Human에게 escalation
+- 관련 로그 / metric / context 제공
+```
+
+원칙:
+
+```
+No Scenario → No Action
+```
+
 ---
 
 ## 4. 판단 로직
@@ -143,6 +162,32 @@ Improvement:
 최종 판단:
 → scale-out 금지
 → external latency 확인 우선
+```
+
+### 4.1 Confidence-Based Safety Rule
+
+AI Agent는 판단 신뢰도가 낮을 경우 보수적으로 행동해야 한다.
+
+조건:
+
+```
+- failure_mode 매칭 불확실
+- conflicting knowledge 존재
+- metric 해석 불명확
+```
+
+행동:
+
+```
+- 자동 Action 제한
+- Read-only 분석 우선 수행
+- Human escalation
+```
+
+원칙:
+
+```
+Low Confidence → No Risky Action
 ```
 
 ---
