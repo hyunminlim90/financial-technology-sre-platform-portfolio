@@ -361,6 +361,14 @@ Action 실패 시:
 | 2 | 시스템 안정성 |
 | 3 | 성능 |
 
+특히 다음 리스크를 최우선으로 방지해야 한다:
+
+```
+- duplicate payment
+- idempotency violation
+- retry amplification
+```
+
 ---
 
 ## 10. Anti-Pattern (중요)
