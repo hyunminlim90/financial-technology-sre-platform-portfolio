@@ -203,6 +203,7 @@ YES (항상)
 - retry 정책 변경
 - circuit breaker 변경
 - DB / Redis 설정 변경
+- 전체 시스템 대상으로 지속적인 추가..
 
 ---
 
@@ -241,14 +242,3 @@ Action 실패 시:
 > **No Scenario → No Action**
 
 ---
-
-## 12. 핵심 요약
-
-| Knowledge | 역할 |
-|------|------|
-| **Scenario** | 문제 정의 |
-| **Runbook** | 가능한 행동 |
-| **Improvement** | 제한 |
-| **Preventive Design** | 제거 |
-| **Postmortem** | 현실 |
-| **rag/docs** | 이해 |
