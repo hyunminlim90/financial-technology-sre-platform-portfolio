@@ -7,7 +7,7 @@
 
 ## 1. 구현 목표
 
-이 프로젝트는 단순 결제 API 구현이 아니라,  
+이 프로젝트는 결제 시스템의
 **장애를 감지하고, AI가 분석하며, Human이 실행하고, 시스템이 학습하는 SRE 운영 플랫폼**을 구현하는 것을 목표로 한다.
 
 **핵심 목표:**
@@ -63,6 +63,7 @@
 - Prometheus / Grafana Dashboard
 - Payment latency, Error rate, Redis timeout
 - DB connection pool, Kafka consumer lag
+- 전체 시스템 대상으로 지속적인 추가..
 
 **Logs:**
 - Loki
@@ -83,15 +84,6 @@
 **scenarios/:** 장애 정의, 증상, 영향 범위, propagation, detection rule
 
 **runbooks/:** 진단 절차, 대응 전략, Action / Rollback / Verification, Decision Rule
-
-### 우선순위
-
-| 순위 | 대상 |
-|------|------|
-| 1 | Redis Timeout |
-| 2 | DB Connection Pool Exhaustion |
-| 3 | Kafka Consumer Lag |
-| 4 | Payment API High Latency |
 
 ---
 
@@ -263,6 +255,7 @@ protocols/
 - Kafka consumer lag
 - External payment provider latency
 - Payment API high latency
+- 전체 시스템 대상으로 지속적인 추가..
 
 ### 검증 항목
 
