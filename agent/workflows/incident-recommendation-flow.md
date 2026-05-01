@@ -227,12 +227,19 @@ AI는 반드시 다음 구조로 출력해야 한다.
 
 ### 6.4 Recommended Action
 
+
+AI는 반드시 "순서"를 포함해야 한다.
+
 ```
+Step 1:
 Action:
 Expected Effect:
 Risk:
 Rollback Plan:
 Verification:
+
+Step 2:
+...
 ```
 
 ### 6.5 Alternative Actions
@@ -354,6 +361,29 @@ Action 실패 시:
 - duplicate payment 위험
 - root cause 불명확
 - recommendation 충돌 발생
+```
+
+---
+
+## 13. Input Contract (필수)
+
+AI Recommendation API는 다음 입력을 받는다:
+
+```
+- alert_name
+- service
+- environment
+- timestamp
+- metrics_snapshot
+- logs_sample
+- trace_id
+- deployment_info (optional)
+```
+
+원칙:
+
+```
+입력 데이터가 부족하면 판단 신뢰도 LOW로 설정한다.
 ```
 
 ---
