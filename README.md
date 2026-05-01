@@ -23,15 +23,6 @@
 
 ---
 
-## Core Principle
-
-> AI는 실행하지 않는다  
-> AI는 추천한다  
-> Human이 판단한다  
-> 시스템은 학습한다
-
----
-
 ## System Philosophy
 
 이 플랫폼은 다음 3가지 철학 위에서 동작합니다.
