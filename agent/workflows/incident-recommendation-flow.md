@@ -63,7 +63,37 @@ AI는 먼저 현재 상태를 수집한다.
 - 최근 배포 여부
 - 트래픽 변화
 
-### 4.2 Scenario Matching
+### 4.2 RAG Retrieval
+
+AI는 다음 기준으로 문서를 검색한다:
+
+```
+- failure_mode 기반 검색
+- domain 기반 필터링
+- severity / impact_scope 고려
+- related_* 경로 확장 검색
+```
+
+우선순위:
+
+```
+1. exact match (failure_mode 일치)
+2. same domain
+3. similar failure pattern
+```
+
+결과:
+
+```
+- 관련 Scenario
+- Runbook
+- Improvement
+- Preventive Design
+- Postmortem
+- rag/docs (보조)
+```
+
+### 4.3 Scenario Matching
 
 **입력:** metric 상태, alert 조건
 
@@ -74,7 +104,7 @@ AI는 먼저 현재 상태를 수집한다.
 
 **결과:** `"이 장애는 무엇인가?"`
 
-### 4.3 Runbook Candidate Selection
+### 4.4 Runbook Candidate Selection
 
 **수행:**
 - 해당 Scenario와 연결된 Runbook 검색
@@ -82,7 +112,7 @@ AI는 먼저 현재 상태를 수집한다.
 
 **결과:** `"무엇을 할 수 있는가?"`
 
-### 4.4 Improvement Filtering (핵심)
+### 4.5 Improvement Filtering (핵심)
 
 **수행:**
 - Improvement 문서 조회
@@ -99,7 +129,7 @@ retry 증가 상태
 
 **결과:** `"무엇을 하면 안 되는가?"`
 
-### 4.5 Preventive Design Evaluation
+### 4.6 Preventive Design Evaluation
 
 **수행:**
 - 구조적 해결 존재 여부 확인
@@ -108,7 +138,7 @@ retry 증가 상태
 
 **결과:** `"구조적으로 해결할 수 있는가?"`
 
-### 4.6 Postmortem Adjustment
+### 4.7 Postmortem Adjustment
 
 **수행:**
 - 과거 유사 장애 검색
@@ -117,7 +147,7 @@ retry 증가 상태
 
 **결과:** `"현실에서는 어떻게 동작했는가?"`
 
-### 4.7 rag/docs Analysis (보조)
+### 4.8 rag/docs Analysis (보조)
 
 **수행:**
 - metric 해석
@@ -126,7 +156,37 @@ retry 증가 상태
 
 > ⚠️ **중요:** `rag/docs`는 Action을 결정하지 않는다.
 
-### 4.8 Final Decision Synthesis
+### 4.9 Decision Rule
+
+AI는 다음 기준으로 Action을 선택한다:
+
+```
+- severity 기준
+- impact_scope 기준
+- metric 상태
+- retry / error 증가 여부
+- downstream 상태
+```
+
+예:
+
+```
+- retry_rate 증가 + DB latency 증가
+  → scale-out 금지
+  → fallback / rate limit 우선
+
+- CPU saturation + queue backlog 증가
+  → scale-out 고려
+```
+
+금지:
+
+```
+- 동일 metric만 보고 단일 원인 판단
+- improvement 조건 무시
+```
+
+### 4.10 Final Decision Synthesis
 
 모든 정보를 종합하여 최종 Recommendation 생성
 
@@ -190,9 +250,51 @@ Verification:
 YES (항상)
 ```
 
+### 6.8 Confidence Level (추가)
+
+AI는 자신의 판단에 대해 신뢰도를 제공해야 한다.
+
+예:
+
+```
+- HIGH: Scenario + Postmortem 일치
+- MEDIUM: Scenario만 일치
+- LOW: rag/docs 기반 추론 포함
+```
+
+목적:
+
+```
+Human이 판단 리스크를 이해하도록 한다.
+```
+
 ---
 
 ## 7. Execution Rule
+
+AI는 다음을 절대 수행하지 않는다:
+
+```
+- kubectl 실행
+- 인프라 변경
+- 설정 변경
+```
+
+AI의 역할:
+
+```
+✔ 분석
+✔ 추천
+✔ 리스크 설명
+```
+
+Human의 역할:
+
+```
+✔ 실행
+✔ 최종 판단
+✔ rollback 결정
+```
 
 > `AI Recommendation ≠ Execution`
 
@@ -240,5 +342,18 @@ Action 실패 시:
 ## 11. Failure Mode 대응 원칙
 
 > **No Scenario → No Action**
+
+---
+
+## 12. Escalation Rule
+
+다음 조건에서는 Human 즉시 개입:
+
+```
+- SEV-1
+- duplicate payment 위험
+- root cause 불명확
+- recommendation 충돌 발생
+```
 
 ---
