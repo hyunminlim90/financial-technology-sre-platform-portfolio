@@ -223,6 +223,95 @@ Incident
 
 ---
 
+## 13. Input Contract (필수)
+
+Postmortem Generation API는 다음 입력을 받아야 한다:
+
+```
+- incident_id
+- alert_name
+- service
+- environment
+- start_time
+- end_time
+- metrics_snapshot
+- logs_sample
+- trace_ids
+- executed_actions (중요)
+- recommendation_history (AI 권장 로그)
+```
+
+원칙:
+
+```
+- Action 기록이 없으면 분석 신뢰도 LOW
+- Observability 데이터 없으면 Draft 생성 금지
+```
+
+---
+
+## 14. Confidence Rule
+
+AI는 각 분석에 대해 신뢰도를 표시해야 한다.
+
+- HIGH: metrics + logs + traces + postmortem 일치
+- MEDIUM: 일부 데이터 기반
+- LOW: 추론 기반
+
+원칙:
+
+```
+LOW일 경우 Human 검증 강화 필요
+```
+
+---
+
+## 15. Reproducibility Rule (필수)
+
+Postmortem은 반드시 재현 가능해야 한다.
+
+포함해야 하는 것:
+
+```
+- 어떤 조건에서 발생했는가
+- 어떤 metric threshold였는가
+- 어떤 sequence로 발생했는가
+```
+
+금지:
+
+```
+- "추정상 발생"
+- "아마 이런 이유"
+```
+
+원칙:
+
+```
+재현 불가능한 Postmortem은 학습 가치 없음
+```
+
+---
+
+## 16. Improvement / Preventive Trigger Rule
+
+다음 조건에서 자동으로 후보 생성:
+
+```
+- 동일 failure_mode 반복 발생
+- 잘못된 Action 발견
+- SEV-1 + 구조적 문제
+```
+
+결과:
+
+```
+- Improvement 생성
+- Preventive Design 생성
+```
+
+---
+
 ## 중요한 한 줄
 
 > **Garbage Postmortem → Garbage AI 판단**
