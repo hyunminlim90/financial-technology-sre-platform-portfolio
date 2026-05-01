@@ -63,7 +63,33 @@ AI는 먼저 현재 상태를 수집한다.
 - 최근 배포 여부
 - 트래픽 변화
 
-### 4.2 RAG Retrieval
+### 4.2 Observability Query Rule (필수)
+
+AI는 모든 판단에 대해 다음 데이터를 기반으로 해야 한다:
+
+```
+- PromQL (metrics)
+- Log Query (Loki)
+- Trace Query (Jaeger)
+```
+
+각 판단은 반드시 다음을 포함해야 한다:
+
+```
+- 어떤 metric을 봤는가
+- 어떤 query로 조회했는가
+- 어떤 기준으로 이상 판단했는가
+```
+
+예:
+
+```
+p95_latency > 300ms (5분)
+→ PromQL:
+histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
+```
+
+### 4.3 RAG Retrieval
 
 AI는 다음 기준으로 문서를 검색한다:
 
@@ -93,7 +119,7 @@ AI는 다음 기준으로 문서를 검색한다:
 - rag/docs (보조)
 ```
 
-### 4.3 Scenario Matching
+### 4.4 Scenario Matching
 
 **입력:** metric 상태, alert 조건
 
@@ -104,7 +130,7 @@ AI는 다음 기준으로 문서를 검색한다:
 
 **결과:** `"이 장애는 무엇인가?"`
 
-### 4.4 Runbook Candidate Selection
+### 4.5 Runbook Candidate Selection
 
 **수행:**
 - 해당 Scenario와 연결된 Runbook 검색
@@ -112,7 +138,7 @@ AI는 다음 기준으로 문서를 검색한다:
 
 **결과:** `"무엇을 할 수 있는가?"`
 
-### 4.5 Improvement Filtering (핵심)
+### 4.6 Improvement Filtering (핵심)
 
 **수행:**
 - Improvement 문서 조회
@@ -129,7 +155,7 @@ retry 증가 상태
 
 **결과:** `"무엇을 하면 안 되는가?"`
 
-### 4.6 Preventive Design Evaluation
+### 4.7 Preventive Design Evaluation
 
 **수행:**
 - 구조적 해결 존재 여부 확인
@@ -138,7 +164,7 @@ retry 증가 상태
 
 **결과:** `"구조적으로 해결할 수 있는가?"`
 
-### 4.7 Postmortem Adjustment
+### 4.8 Postmortem Adjustment
 
 **수행:**
 - 과거 유사 장애 검색
@@ -147,7 +173,7 @@ retry 증가 상태
 
 **결과:** `"현실에서는 어떻게 동작했는가?"`
 
-### 4.8 rag/docs Analysis (보조)
+### 4.9 rag/docs Analysis (보조)
 
 **수행:**
 - metric 해석
@@ -156,7 +182,7 @@ retry 증가 상태
 
 > ⚠️ **중요:** `rag/docs`는 Action을 결정하지 않는다.
 
-### 4.9 Decision Rule
+### 4.10 Decision Rule
 
 AI는 다음 기준으로 Action을 선택한다:
 
@@ -186,7 +212,7 @@ AI는 다음 기준으로 Action을 선택한다:
 - improvement 조건 무시
 ```
 
-### 4.10 Final Decision Synthesis
+### 4.11 Final Decision Synthesis
 
 모든 정보를 종합하여 최종 Recommendation 생성
 
