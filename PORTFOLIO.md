@@ -588,7 +588,7 @@ AI Agent는 초기부터 자동 복구를 수행하지 않으며, 단계적으�
 
 ## 14. 현재 진행 상태
 
-### ✅ 완료
+### 완료
 
 - 프로젝트 전체 방향 정의
 - SRE 학습 데이터 정리
@@ -597,7 +597,7 @@ AI Agent는 초기부터 자동 복구를 수행하지 않으며, 단계적으�
 - ArgoCD / AppProject / Application 구조 작성
 - Jaeger / OpenTelemetry / Elasticsearch 구성 경험 정리
 
-### 🔄 진행 중
+### 진행 중
 
 - 결제 도메인 API 구현
 - SRE Runbook 작성
@@ -606,7 +606,7 @@ AI Agent는 초기부터 자동 복구를 수행하지 않으며, 단계적으�
 - PrometheusRule 작성
 - AI Agent MVP 설계
 
-### 📋 예정
+### 예정
 
 - 결제 API 부하 테스트
 - 장애 주입 테스트

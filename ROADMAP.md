@@ -75,6 +75,7 @@
 - ✔ DB Connection Pool Exhaustion
 - ✔ Kafka Consumer Lag
 - ✔ Payment API Latency
+- 전체 시스템 대상으로 지속적인 추가..
 
 ---
 
@@ -129,6 +130,7 @@
 - ✔ DB saturation
 - ✔ Kafka lag 증가
 - ✔ 외부 API latency 증가
+- 전체 시스템 대상으로 지속적인 추가..
 
 ---
 
