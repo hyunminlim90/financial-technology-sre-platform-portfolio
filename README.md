@@ -1,19 +1,19 @@
-# 🚀 Financial Technology SRE Platform
+# Financial Technology SRE Platform
 
 > SRE + Platform Engineering + AI Agent + RAG 기반의  
 > Human-in-the-loop 운영 지능형 장애 대응 & 학습 플랫폼
 
 ---
 
-## 🧭 Project Overview
+## Project Overview
 
-이 프로젝트는 단순 장애 대응 시스템이 아닙니다.
+이 프로젝트는 
 
-> 👉 AI + SRE + Human 협업 기반의 **"운영 지능 시스템"** 입니다.
+> AI + SRE + Human 협업 기반의 **"운영 지능 시스템"** 입니다.
 
 ---
 
-## 🎯 목표
+## 목표
 
 1. 장애를 자동으로 감지하고 분석한다
 2. AI Agent가 대응을 **"추천"** 한다 (자동 실행 ❌)
@@ -23,7 +23,7 @@
 
 ---
 
-## 🔥 Core Principle
+## Core Principle
 
 > AI는 실행하지 않는다  
 > AI는 추천한다  
@@ -32,17 +32,17 @@
 
 ---
 
-## 🧠 System Philosophy
+## System Philosophy
 
 이 플랫폼은 다음 3가지 철학 위에서 동작합니다.
 
-### 1️⃣ Safety First
+### 1. Safety First
 
 ```
 데이터 정합성 > 시스템 안정성 > 성능
 ```
 
-### 2️⃣ Human-in-the-loop
+### 2. Human-in-the-loop
 
 ```
 AI Recommendation ≠ Execution
@@ -50,14 +50,14 @@ AI Recommendation ≠ Execution
 
 > 모든 인프라 변경은 반드시 사람이 수행
 
-### 3️⃣ Learning System
+### 3. Learning System
 
 > 장애는 끝나는 것이 아니라  
 > 시스템을 더 똑똑하게 만든다
 
 ---
 
-## 🔄 End-to-End Flow
+## End-to-End Flow
 
 ```
 [Alert 발생]
@@ -85,9 +85,9 @@ Learning Knowledge 축적
 
 ---
 
-## 🧠 RAG Knowledge System (핵심 구조)
+## RAG Knowledge System (핵심 구조)
 
-### 🔴 Primary Knowledge (판단 기준)
+### Primary Knowledge (판단 기준)
 
 ```
 scenarios/             → 장애 정의
@@ -100,7 +100,7 @@ postmortems/           → 실제 경험
 - AI의 **"판단 기준"**
 - 절대 override 대상 아님
 
-### 🔵 Secondary Knowledge (보조 지식)
+### Secondary Knowledge (보조 지식)
 
 ```
 rag/docs/              → 기술 원리 / 메커니즘
@@ -110,7 +110,7 @@ rag/docs/              → 기술 원리 / 메커니즘
 - metric 해석 보조
 - 절대 Action 결정에 사용 금지
 
-### ⚖️ Knowledge Priority (중요)
+### Knowledge Priority (중요)
 
 ```
 Preventive Design
@@ -125,7 +125,7 @@ Preventive Design
 
 ---
 
-## 🤖 AI Agent 역할
+## AI Agent 역할
 
 **AI Agent는 다음만 수행합니다:**
 
@@ -135,7 +135,7 @@ Preventive Design
 - ✔ 위험도 판단
 - ✔ Postmortem Draft 생성
 
-**❌ AI가 하지 않는 것:**
+**: AI가 하지 않는 것:**
 
 - 인프라 변경
 - scale-out 실행
@@ -144,7 +144,7 @@ Preventive Design
 
 ---
 
-## 🧑‍💻 Human 역할
+## Human 역할
 
 - ✔ 대응 실행
 - ✔ AI 판단 검증
@@ -154,9 +154,9 @@ Preventive Design
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
-### 1️⃣ Application Layer
+### 1. Application Layer
 
 ```
 apps/
@@ -166,7 +166,7 @@ apps/
 └── worker/
 ```
 
-### 2️⃣ Infrastructure Layer
+### 2. Infrastructure Layer
 
 ```
 infra/
@@ -176,7 +176,7 @@ infra/
 └── gitops/
 ```
 
-### 3️⃣ Platform (SRE)
+### 3. Platform (SRE)
 
 ```
 platform/
@@ -187,7 +187,7 @@ platform/
 └── security/
 ```
 
-### 4️⃣ RAG Pipeline
+### 4. RAG Pipeline
 
 ```
 rag/
@@ -199,7 +199,7 @@ rag/
 └── pipelines/
 ```
 
-### 5️⃣ AI Agent System
+### 5. AI Agent System
 
 ```
 agent/
@@ -210,7 +210,7 @@ agent/
 
 ---
 
-## 🚨 Incident Handling Model
+## Incident Handling Model
 
 ```
 Alert
@@ -223,7 +223,7 @@ Alert
 
 ---
 
-## 🧠 Decision System (중요)
+## Decision System (중요)
 
 AI는 다음 순서로 판단합니다:
 
@@ -238,7 +238,7 @@ AI는 다음 순서로 판단합니다:
 
 ---
 
-## 📝 Postmortem Learning Loop
+## Postmortem Learning Loop
 
 ```
 Incident 종료
@@ -257,7 +257,7 @@ Incident 종료
 
 ---
 
-## 📚 Documentation System
+## Documentation System
 
 ```
 scenarios/             → 문제 정의
@@ -271,7 +271,7 @@ protocols/             → 규칙
 
 ---
 
-## 🎯 What This Platform Proves
+## What This Platform Proves
 
 이 프로젝트는 다음을 증명합니다:
 
