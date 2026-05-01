@@ -30,7 +30,7 @@
 ## 3. 전체 로드맵
 
 | Phase | 목표 |
-|------|------|------|
+|------|------|
 | Phase 1 | Core System 구축 |
 | Phase 2 | Observability 구축 |
 | Phase 3 | Scenario / Runbook 구축 |
