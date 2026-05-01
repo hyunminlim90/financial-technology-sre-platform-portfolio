@@ -223,13 +223,6 @@ Incident
 
 ---
 
-## 한 줄 핵심
-
-> Postmortem은 기록이 아니라  
-> **AI의 학습 데이터다.**
-
----
-
-## ⚠️ 가장 중요한 한 줄
+## 중요한 한 줄
 
 > **Garbage Postmortem → Garbage AI 판단**
