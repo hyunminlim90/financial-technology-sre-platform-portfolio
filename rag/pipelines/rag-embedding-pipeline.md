@@ -616,3 +616,56 @@ knowledge_type=rag-doc → action_generation=false
 >
 > 문서를 AI가 안전하게 판단할 수 있는  
 > **운영 지식 구조로 변환**하는 과정이다.
+
+---
+
+## 28. Re-index & Versioning Strategy
+
+문서 변경 시 반드시 version을 관리한다.
+
+```text
+document_version: v1, v2, v3
+chunk_version: 동일 상속
+```
+
+---
+
+## 29. Embedding Model Strategy
+
+Embedding 모델은 다음 기준으로 선택한다:
+
+1. 한국어 + 영어 혼합 지원
+2. latency < 100ms
+3. cost 효율성
+4. semantic retrieval 품질
+
+초기 선택:
+
+- OpenAI text-embedding-3-large
+또는
+- bge-m3 (self-hosted)
+
+원칙:
+
+- 모델 변경 시 전체 re-index 수행
+
+---
+
+## 30. Cold Start Strategy
+
+초기 RAG 상태에서는 다음 전략을 사용한다:
+
+1. scenarios + runbooks 최소 세트 필수 구성
+2. 최소 1개 이상 postmortem 포함 권장
+3. rag/docs는 선택
+
+Cold Start 상태 판단:
+
+```text
+vector_store document_count < N
+
+처리:
+
+AI confidence 자동 LOW
+aggressive recommendation 금지
+```
