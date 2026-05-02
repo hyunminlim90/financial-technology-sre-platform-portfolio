@@ -628,6 +628,24 @@ document_version: v1, v2, v3
 chunk_version: 동일 상속
 ```
 
+### Versioning 처리 방식
+
+문서 변경 시:
+
+1. 기존 chunk → is_active=false 처리
+2. 새로운 version chunk 생성
+3. embedding 재생성
+4. vector store upsert
+
+retrieval 시:
+
+- is_active=true만 조회
+
+원칙:
+
+overwrite 금지
+append-only + soft delete 방식
+
 ---
 
 ## 29. Embedding Model Strategy
@@ -663,9 +681,11 @@ Cold Start 상태 판단:
 
 ```text
 vector_store document_count < N
+```
 
 처리:
 
+```text
 AI confidence 자동 LOW
 aggressive recommendation 금지
 ```
