@@ -1,44 +1,37 @@
 # Incident Recommendation API
 
 > AI Agent 기반 장애 대응 권장 API  
-> (Human-in-the-loop / RAG Decision Engine Entry Point)
+> Human-in-the-loop / RAG Decision Engine Entry Point
 
 ---
 
 ## 1. 목적
 
-이 API는 장애 발생 시  
-AI Agent가 상황을 분석하고 대응 권장안을 생성하기 위한 진입점이다.
+이 API는 Alert 발생 시 AI Agent가 장애 상황을 분석하고, Human SRE가 실행 여부를 판단할 수 있도록 대응 권장안을 생성한다.
 
-> 이 API는 장애를 해결하지 않는다.  
-> Human이 판단할 수 있도록 **"추천"을 생성한다.**
-
----
-
-## 2. 핵심 원칙
-
-> AI는 실행하지 않는다  
-> AI는 추천한다  
-> **Human이 실행한다**
+> 이 API는 장애를 직접 해결하지 않는다.  
+> **`AI Recommendation ≠ Execution`**
 
 ---
 
-## 3. API Overview
-
-**Endpoint:**
+## 2. Endpoint
 
 ```
-POST /incident/analyze
+POST /api/v1/incidents/analyze
 ```
 
-**역할:**
+---
 
-1. 장애 상황 입력 받기
-2. Observability 데이터 기반 분석
-3. RAG 문서 검색
+## 3. 역할
+
+이 API는 다음을 수행한다:
+
+1. Incident Context 수신
+2. Observability 데이터 확인
+3. RAG Knowledge 검색
 4. Decision Engine 실행
-5. 대응 권장 문서 생성
-6. Human에게 반환
+5. 대응 권장안 생성
+6. Human 검토용 결과 반환
 
 ---
 
@@ -46,23 +39,37 @@ POST /incident/analyze
 
 ```json
 {
-  "incident_id": "string",
-  "alert_name": "string",
-  "service": "string",
-  "environment": "production | staging | dev",
-  "timestamp": "ISO8601",
+  "incident_id": "INC-2026-05-01-001",
+  "alert_name": "RedisLatencyHigh",
+  "service": "payment-api",
+  "environment": "production",
+  "severity_hint": "SEV-2",
+  "occurred_at": "2026-05-01T10:01:00Z",
+
+  "labels": {
+    "domain": "redis",
+    "cluster": "prod-apne2",
+    "namespace": "payments",
+    "pod": "payment-api-xxx"
+  },
 
   "metrics_snapshot": {
-    "p95_latency": 420,
-    "error_rate": 0.12,
-    "retry_rate": 0.25,
-    "cpu_usage": 0.65,
-    "db_connection_usage": 0.92
+    "p95_latency_ms": 420,
+    "error_rate": 0.031,
+    "retry_rate": 0.24,
+    "redis_timeout_count": 128,
+    "db_connection_usage": 0.91,
+    "db_connection_pending": 17,
+    "cpu_usage": 0.62
   },
 
   "logs_sample": [
-    "Redis timeout error",
-    "connection pool exhausted"
+    {
+      "timestamp": "2026-05-01T10:01:12Z",
+      "level": "ERROR",
+      "message": "Redis command timed out",
+      "trace_id": "trace-123"
+    }
   ],
 
   "trace_ids": [
@@ -72,173 +79,299 @@ POST /incident/analyze
 
   "deployment_info": {
     "recent_deploy": true,
-    "deploy_time": "ISO8601"
-  }
+    "deploy_time": "2026-05-01T09:45:00Z",
+    "version": "payment-api:1.3.7"
+  },
+
+  "operator_note": "checkout latency increased after Redis timeout alert"
 }
 ```
 
-**입력 원칙:**
+---
 
-- ✔ Observability 기반 입력 필수
-- ✔ metrics / logs / traces 최소 1개 이상 필요
-- ✔ 데이터 부족 시 confidence `LOW`
+## 5. Required Fields
+
+| Field | Required | 설명 |
+|------|------|------|
+| `incident_id` | Yes | Incident 추적 ID |
+| `alert_name` | Yes | Alert 이름 |
+| `service` | Yes | 영향 서비스 |
+| `environment` | Yes | production / staging / dev |
+| `occurred_at` | Yes | Alert 발생 시각 |
+| `metrics_snapshot` | Recommended | 판단 근거 |
+| `logs_sample` | Optional | 로그 근거 |
+| `trace_ids` | Optional | Trace 조회 기준 |
+| `deployment_info` | Optional | 배포 영향 판단 |
+| `operator_note` | Optional | 운영자 추가 설명 |
+
+**원칙:**
+
+- metrics / logs / traces 중 최소 하나 이상의 근거가 있어야 한다
+- 근거가 부족하면 `confidence_level`은 `LOW`로 설정한다
 
 ---
 
-## 5. Processing Flow (내부 동작)
-
-이 API는 다음 순서로 동작한다:
+## 6. Internal Processing Flow
 
 | 순서 | 단계 |
 |------|------|
-| 1 | Context Collection |
-| 2 | Observability Query 수행 |
-| 3 | RAG Retrieval |
-| 4 | Scenario Matching |
-| 5 | Runbook Candidate 생성 |
-| 6 | Improvement Filtering (금지 Action 제거) |
-| 7 | Preventive Design 적용 여부 판단 |
-| 8 | Postmortem 기반 보정 |
-| 9 | rag/docs 기반 해석 (보조) |
-| 10 | Decision Engine 실행 |
-| 11 | Recommendation 생성 |
+| 1 | Validate Request |
+| 2 | Normalize Incident Context |
+| 3 | Observability Query 수행 |
+| 4 | RAG Retrieval 수행 |
+| 5 | Scenario Matching |
+| 6 | Runbook Candidate Selection |
+| 7 | Improvement Filtering |
+| 8 | Preventive Design Evaluation |
+| 9 | Postmortem Adjustment |
+| 10 | rag/docs 보조 해석 |
+| 11 | Decision Synthesis |
+| 12 | Recommendation Response 생성 |
 
 ---
 
-## 6. Response Schema
+## 7. RAG Retrieval Rule
+
+**검색 기준:**
+
+1. `failure_mode` exact match
+2. `domain` match
+3. `related_*` path match
+4. `tags` match
+5. body keyword similarity
+
+**검색 대상:**
+
+| 구분 | 경로 |
+|------|------|
+| **Primary Knowledge** | `scenarios/`, `runbooks/`, `improvements/`, `preventive-designs/`, `postmortems/` |
+| **Secondary Knowledge** | `rag/docs/` |
+
+> **주의:** `rag/docs`는 기술 이해 보조이며 Action 결정에 사용하지 않는다.
+
+---
+
+## 8. Decision Priority
+
+```
+Preventive Design
+> Improvement
+> Postmortem
+> Runbook
+> Scenario
+> rag/docs
+```
+
+> 더 안전한 규칙이 항상 우선된다.
+
+---
+
+## 9. Response Schema
 
 ```json
 {
+  "incident_id": "INC-2026-05-01-001",
+  "status": "RECOMMENDATION_CREATED",
+
   "incident_summary": {
     "failure_mode": "redis-timeout",
+    "domain": "redis",
+    "service": "payment-api",
+    "environment": "production",
     "severity": "SEV-2",
     "impact_scope": "partial"
   },
 
   "most_likely_causes": [
-    "Redis latency 증가",
-    "connection pool saturation"
+    {
+      "cause": "Redis command latency 증가",
+      "confidence": "HIGH",
+      "reason": "Redis timeout count 증가와 API latency 증가가 동일 시간대에 발생"
+    },
+    {
+      "cause": "Retry amplification으로 인한 DB connection pressure",
+      "confidence": "MEDIUM",
+      "reason": "retry_rate 증가와 db_connection_pending 증가가 함께 관측됨"
+    }
   ],
 
   "evidence": {
     "metrics": [
-      "p95_latency > 300ms (5분)",
-      "retry_rate > 20%"
+      {
+        "name": "p95_latency_ms",
+        "value": 420,
+        "threshold": 300,
+        "status": "abnormal"
+      },
+      {
+        "name": "retry_rate",
+        "value": 0.24,
+        "threshold": 0.2,
+        "status": "abnormal"
+      }
     ],
     "logs": [
-      "Redis timeout error"
+      "Redis command timed out"
     ],
     "traces": [
-      "slow downstream call"
+      "trace-123",
+      "trace-456"
     ]
   },
 
   "recommended_actions": [
     {
       "step": 1,
-      "action": "Retry rate 제한 (rate limiting 적용)",
-      "expected_effect": "DB overload 방지",
-      "risk": "일부 요청 실패 증가",
-      "rollback_plan": "rate limit 해제",
-      "verification": "retry_rate 감소 확인"
+      "action": "Retry rate 제한 또는 rate limit 적용 검토",
+      "expected_effect": "DB connection pressure 완화",
+      "risk": "일부 요청 실패 또는 지연 증가 가능",
+      "rollback_plan": "rate limit 설정을 이전 값으로 복원",
+      "verification": [
+        "retry_rate < 10%",
+        "db_connection_pending == 0",
+        "error_rate < 1%"
+      ],
+      "requires_human_approval": true
     },
     {
       "step": 2,
-      "action": "Redis 상태 점검 및 fallback 활성화",
-      "expected_effect": "latency 감소",
-      "risk": "cache miss 증가",
-      "rollback_plan": "fallback 비활성화",
-      "verification": "p95 latency 감소"
+      "action": "Redis timeout 구간에서 fallback 경로 활성화 여부 확인",
+      "expected_effect": "결제 요청 지연 완화",
+      "risk": "cache miss 증가 및 DB 부하 증가 가능",
+      "rollback_plan": "fallback 설정을 이전 상태로 복원",
+      "verification": [
+        "p95_latency_ms < 300",
+        "redis_timeout_count 감소",
+        "duplicate_payment_count == 0"
+      ],
+      "requires_human_approval": true
     }
   ],
 
   "alternative_actions": [
-    "scale-out",
-    "connection pool 증가"
+    {
+      "action": "payment-api scale-out",
+      "reason_not_selected": "retry 증가와 DB connection pressure가 있어 scale-out 시 DB 부하가 악화될 수 있음"
+    }
   ],
 
   "forbidden_actions": [
-    "retry 증가 상태에서 scale-out",
-    "thread pool 확장"
+    {
+      "action": "retry 증가 상태에서 scale-out",
+      "reason": "Improvement 문서에서 금지된 패턴"
+    },
+    {
+      "action": "rag/docs 기반 단독 Action 결정",
+      "reason": "rag/docs는 기술 이해 보조 문서"
+    }
   ],
 
   "confidence_level": "HIGH",
 
-  "human_approval_required": true
+  "human_approval_required": true,
+
+  "referenced_knowledge": {
+    "scenarios": ["scenarios/redis/timeout.md"],
+    "runbooks": ["runbooks/redis/timeout.md"],
+    "improvements": ["improvements/redis-timeout-idempotency-hardening.md"],
+    "preventive_designs": ["preventive-designs/redis-timeout-idempotency-fallback.md"],
+    "postmortems": [],
+    "rag_docs": ["rag/docs/redis/latency-internals.md"]
+  }
 }
 ```
 
 ---
 
-## 7. Response 필드 설명
+## 10. Response Field Rules
 
-### 7.1 Incident Summary
+### 10.1 most_likely_causes
 
-- `failure_mode`
-- `severity`
-- `impact_scope`
+- ✔ Root Cause **후보**만 제시한다
+- ❌ Root Cause 확정 금지
+- 최종 Root Cause는 Postmortem에서 Human이 확정한다
 
-### 7.2 Most Likely Causes
+### 10.2 recommended_actions
 
-- ✔ Root Cause **후보**
-- ❌ 확정 금지
+모든 Action은 반드시 다음을 포함해야 한다:
 
-### 7.3 Evidence
+- Action
+- Expected Effect
+- Risk
+- Rollback Plan
+- Verification
+- Human Approval Required
 
-- ✔ metrics 근거
-- ✔ logs 근거
-- ✔ traces 근거
+### 10.3 forbidden_actions
 
-> Observability 기반 필수
+Improvement / Preventive Design에 의해 금지된 Action을 반드시 명시한다.
 
-### 7.4 Recommended Actions
+### 10.4 referenced_knowledge
 
-- ✔ 반드시 Step 순서 포함
-- ✔ Rollback 포함
-- ✔ Verification 포함
+AI가 어떤 문서를 근거로 판단했는지 반드시 반환한다.
 
-### 7.5 Forbidden Actions
+---
 
-- ✔ Improvement 기반 금지 항목
-- ✔ Safety 핵심
+## 11. Confidence Level
 
-### 7.6 Confidence Level
-
-| 수준 | 조건 |
+| Level | 기준 |
 |------|------|
-| `HIGH` | Scenario + Postmortem 일치 |
-| `MEDIUM` | Scenario 기반 |
-| `LOW` | rag/docs 추론 포함 |
+| `HIGH` | Scenario + Runbook + Improvement 또는 Postmortem이 명확히 일치 |
+| `MEDIUM` | Scenario / Runbook은 일치하지만 Learning Knowledge 부족 |
+| `LOW` | Primary Knowledge 부족, metric 불충분, rag/docs 의존도 높음 |
 
-### 7.7 Human Approval
+> **원칙:** `LOW` confidence → No Risky Action
 
+---
+
+## 12. Error Response
+
+### 12.1 No Scenario Match
+
+```json
+{
+  "status": "NO_RECOMMENDATION",
+  "error_code": "NO_SCENARIO_MATCH",
+  "message": "No Scenario → No Action",
+  "human_escalation_required": true
+}
 ```
-항상 true
+
+### 12.2 Insufficient Evidence
+
+```json
+{
+  "status": "NO_RECOMMENDATION",
+  "error_code": "INSUFFICIENT_EVIDENCE",
+  "message": "metrics/logs/traces evidence is insufficient",
+  "human_escalation_required": true
+}
+```
+
+### 12.3 Conflicting Knowledge
+
+```json
+{
+  "status": "REQUIRES_HUMAN_REVIEW",
+  "error_code": "CONFLICTING_KNOWLEDGE",
+  "message": "Multiple knowledge sources provide conflicting recommendations",
+  "human_escalation_required": true
+}
 ```
 
 ---
 
-## 8. Decision Rule
+## 13. Safety Rules
 
-AI는 다음 기준으로 Action을 선택한다:
-
-- severity
-- impact_scope
-- retry 증가 여부
-- downstream 상태
-- 데이터 정합성 리스크
-
----
-
-## 9. Safety Rule (최우선)
-
-| 우선순위 | 기준 |
+| 규칙 | |
 |------|------|
-| 1 | 데이터 보호 (결제) |
-| 2 | 시스템 안정성 |
-| 3 | 성능 |
+| No Scenario | → No Action |
+| Low Confidence | → No Risky Action |
+| Rollback 없는 Action | → 추천 금지 |
+| rag/docs 기반 Action 결정 | → 금지 |
+| AI Recommendation | ≠ Execution |
 
-**특히 방지해야 하는 것:**
+**FinTech 최우선 보호 대상:**
 
 - duplicate payment
 - idempotency violation
@@ -246,42 +379,80 @@ AI는 다음 기준으로 Action을 선택한다:
 
 ---
 
-## 10. Execution Rule
+## 14. Execution Boundary
 
-> **AI는 절대 실행하지 않는다.**
+> **AI Agent는 절대 다음을 수행하지 않는다.**
 
 - ❌ kubectl 실행
-- ❌ scale-out 실행
-- ❌ config 변경
+- ❌ scale-out / scale-in 실행
 - ❌ DB 변경
+- ❌ Redis 설정 변경
+- ❌ traffic routing 변경
+- ❌ GitOps commit / sync
+
+> AI는 추천만 생성한다.  
+> Human은 실행 여부를 판단하고 실제 Action을 수행한다.
 
 ---
 
-## 11. Error Handling
+## 15. Observability Query Requirement
 
-### 11.1 입력 부족
+AI는 가능한 경우 판단 근거에 Query를 포함해야 한다.
 
-```json
-{
-  "error": "INSUFFICIENT_DATA",
-  "message": "metrics/logs/traces 부족"
-}
+**p95 latency 확인:**
+
+```promql
+histogram_quantile(
+  0.95,
+  rate(http_server_requests_seconds_bucket{service="payment-api"}[5m])
+)
 ```
 
-### 11.2 Scenario 미매칭
+**error rate 확인:**
 
-```json
-{
-  "error": "NO_SCENARIO_MATCH",
-  "message": "No Scenario → No Action"
-}
+```promql
+sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m]))
+/
+sum(rate(http_server_requests_seconds_count[5m]))
+```
+
+**DB pending 확인:**
+
+```promql
+r2dbc_pool_pending_connections{service="payment-api"}
 ```
 
 ---
 
-## 12. Anti-Pattern
+## 16. Idempotency Requirement
 
-- ❌ 단일 metric 기반 판단
-- ❌ `rag/docs` 기반 Action 결정
-- ❌ 무조건 scale-out
-- ❌ Root Cause 확정
+결제 시스템에서는 모든 권장안이 다음을 침해하지 않아야 한다:
+
+- idempotency key 보장
+- duplicate payment 방지
+- 결제 상태 정합성
+
+> **성능 개선보다 결제 정합성이 우선한다.**
+
+---
+
+## 17. Example Use Case
+
+**상황:**
+
+- Redis timeout 증가
+- payment-api latency 증가
+- retry_rate 증가
+- DB connection pending 증가
+
+**AI 판단:**
+
+> scale-out은 처리량을 늘릴 수 있지만,  
+> retry 증가와 DB pending이 이미 발생 중이므로 DB 부하를 악화시킬 수 있다.
+
+**권장:**
+
+1. retry 제한
+2. fallback 상태 확인
+3. DB pending 감소 확인
+4. 이후 필요 시 scale-out 재평가
