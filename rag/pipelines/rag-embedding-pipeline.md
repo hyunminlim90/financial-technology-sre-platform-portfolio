@@ -689,3 +689,20 @@ vector_store document_count < N
 AI confidence 자동 LOW
 aggressive recommendation 금지
 ```
+
+---
+
+## 31. Retrieval Debugging (선택)
+
+retrieval 결과는 다음 정보를 포함할 수 있다:
+
+- similarity score
+- metadata match score
+- boost score
+- final ranking score
+
+목적:
+
+- 잘못된 retrieval 분석
+- scoring 튜닝
+- relevance 개선
