@@ -578,7 +578,7 @@ knowledge_type=rag-doc → action_generation=false
 
 ## 25. Vector Store 선택
 
-초기 포트폴리오 단계 추천:
+포트폴리오 단계 추천:
 
 | 단계 | 방식 |
 |---|---|
@@ -586,12 +586,14 @@ knowledge_type=rag-doc → action_generation=false
 | 2단계 | PostgreSQL pgvector |
 | 3단계 | OpenSearch / Qdrant |
 
-**추천: 초기에는 `pgvector`가 가장 적합**
+**추천: 실무에는 `Qdrant`가 가장 적합**
 
 이유:
-- PostgreSQL 이미 사용
-- 운영 복잡도 낮음
-- metadata filter 용이
+
+- Vector Native 성능: 벡터 검색 전용 엔진으로서 대규모 데이터셋에서도 극히 낮은 지연 시간(Latency) 보장
+- 고도화된 필터링: 벡터 유사도와 JSON 메타데이터(가맹점, 금액 등)를 결합한 복합 쿼리에 최적화
+- Rust 기반 안정성: 고성능 Rust 언어 활용으로 자원 효율성 극대화 및 실시간 운영 안정성 확보
+- 수평적 확장성: 분산 클러스터링 지원으로 대규모 결제 트래픽 증가에 유연한 대응 가능
 
 ---
 
