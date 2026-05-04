@@ -1,0 +1,43 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  shutdown: graceful
+
+management:
+  server:
+    port: ${MANAGEMENT_SERVER_PORT:${server.port}}
+
+observability:
+  prometheus:
+    base-url: ${PROMETHEUS_BASE_URL:http://prometheus.monitoring.svc.cluster.local:9090}
+  loki:
+    base-url: ${LOKI_BASE_URL:http://loki.monitoring.svc.cluster.local:3100}
+  jaeger:
+    base-url: ${JAEGER_BASE_URL:http://jaeger-query.observability.svc.cluster.local:16686}
+
+agent:
+  embedding:
+    provider: ${AGENT_EMBEDDING_PROVIDER:stub}
+    base-url: ${AGENT_EMBEDDING_BASE_URL:http://localhost:11434}
+    api-key: ${AGENT_EMBEDDING_API_KEY:}
+    model: ${AGENT_EMBEDDING_MODEL:stub-384}
+    dimensions: ${AGENT_EMBEDDING_DIMENSIONS:384}
+  explanation:
+    provider: ${AGENT_EXPLANATION_PROVIDER:stub}
+    base-url: ${AGENT_EXPLANATION_BASE_URL:https://api.openai.com/v1}
+    api-key: ${AGENT_EXPLANATION_API_KEY:${OPENAI_API_KEY:}}
+    model: ${AGENT_EXPLANATION_MODEL:gpt-4o-mini}
+  knowledge:
+    search:
+      client: ${AGENT_KNOWLEDGE_SEARCH_CLIENT:vector}
+    vector:
+      adapter: ${AGENT_KNOWLEDGE_VECTOR_ADAPTER:qdrant}
+    qdrant:
+      base-url: ${QDRANT_BASE_URL:http://qdrant.qdrant.svc.cluster.local:6333}
+      collection: ${QDRANT_COLLECTION:sre-knowledge}
+      api-key: ${QDRANT_API_KEY:}
+      limit: ${QDRANT_SEARCH_LIMIT:10}
+      score-threshold: ${QDRANT_SCORE_THRESHOLD:0.7}

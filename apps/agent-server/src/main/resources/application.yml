@@ -1,15 +1,41 @@
 spring:
   application:
     name: agent-server
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
 
 server:
   port: 8080
+  shutdown: graceful
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        readiness:
+          include: readinessState,ping
+        liveness:
+          include: livenessState,ping
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} level=%-5level app=${spring.application.name} pid=${PID:-} thread=%thread logger=%logger{36} trace=%X{traceId:-} span=%X{spanId:-} msg=\"%replace(%msg){'\"','\\\\\"'}\"%notEmpty{ exception=\"%replace(%ex{full}){'\\n','\\\\n'}\"}%n"
 
 observability:
   prometheus:

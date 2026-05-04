@@ -1,0 +1,14 @@
+.gradle
+.gradle-home
+build
+out
+bin
+.settings
+.classpath
+.project
+docs
+node_modules
+*.iml
+*.log
+.DS_Store
+coverage
