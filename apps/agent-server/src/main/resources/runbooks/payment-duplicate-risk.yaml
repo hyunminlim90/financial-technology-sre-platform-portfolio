@@ -1,0 +1,44 @@
+id: payment-duplicate-risk
+scenario: PAYMENT_DUPLICATE_ATTEMPT
+title: 중복 결제 위험 대응 Runbook
+description: 중복 결제 시도 또는 idempotency 이상 징후 발생 시 가용성보다 정합성 보호를 우선한다.
+
+requiredEvidence:
+  - PAYMENT_DUPLICATE_ATTEMPT
+
+branches:
+  - id: duplicate-payment-risk
+    when:
+      all:
+        - PAYMENT_DUPLICATE_ATTEMPT
+    actions:
+      - type: APPLY_RATE_LIMIT
+        targetLayer: EDGE
+        targetService: payment-api
+        riskLevel: MEDIUM
+        blastRadius: SERVICE
+        description: 중복 결제 위험이 감지되었으므로 요청 유입을 제한하고 idempotency 방어 계층을 보호한다.
+        preconditions:
+          - PAYMENT_DUPLICATE_ATTEMPT
+        forbiddenIf: []
+        approval:
+          required: true
+        rollback:
+          required: true
+          plan: 중복 결제 시도율이 안정화되면 rate limit을 기존 값으로 복구한다.
+        verification:
+          required: true
+          checks:
+            - PAYMENT_DUPLICATE_ATTEMPT 감소
+            - PAYMENT_STATE_TRANSITION_ERROR 발생 없음
+            - ERROR_RATE_HIGH 완화
+        paymentSafety:
+          idempotencySafe: true
+          stateTransitionSafe: true
+          duplicateExecutionRisk: LOW
+
+forbiddenActions:
+  - DISABLE_IDEMPOTENCY
+  - BYPASS_IDEMPOTENCY_CHECK
+  - SKIP_DUPLICATE_CHECK
+  - FORCE_PAYMENT_STATE_CHANGE

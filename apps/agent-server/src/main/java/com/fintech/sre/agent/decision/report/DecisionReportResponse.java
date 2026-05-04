@@ -1,0 +1,39 @@
+package com.fintech.sre.agent.decision.report;
+
+import java.time.Instant;
+import java.util.List;
+
+import com.fintech.sre.agent.evidence.Evidence;
+import com.fintech.sre.agent.knowledge.layering.KnowledgeLayeringIssue;
+
+public record DecisionReportResponse(
+		String id,
+		String incidentId,
+		String scenarioId,
+		String runbookId,
+		DecisionReportStatus status,
+		List<Evidence> evidenceSignals,
+		List<DecisionReportAction> actions,
+		List<KnowledgeLayeringIssue> knowledgeLayeringIssues,
+		List<String> humanReviewRequirements,
+		String markdown,
+		Instant createdAt,
+		Instant updatedAt
+) {
+	public static DecisionReportResponse from(DecisionReport report) {
+		return new DecisionReportResponse(
+				report.id(),
+				report.incidentId(),
+				report.scenarioId(),
+				report.runbookId(),
+				report.status(),
+				report.evidenceSignals(),
+				report.actions(),
+				report.knowledgeLayeringIssues(),
+				report.humanReviewRequirements(),
+				report.markdown(),
+				report.createdAt(),
+				report.updatedAt()
+		);
+	}
+}

@@ -1,0 +1,113 @@
+id: kafka-consumer-lag
+scenario: KAFKA_CONSUMER_LAG_HIGH
+title: Kafka Consumer Lag 대응 Runbook
+description: Kafka consumer lag 증가 시 DB saturation, rebalance storm, retry storm을 확인한 뒤 안전한 조치만 추천한다.
+
+requiredEvidence:
+  - KAFKA_CONSUMER_LAG_HIGH
+
+branches:
+  - id: kafka-lag-with-db-saturation
+    when:
+      all:
+        - KAFKA_CONSUMER_LAG_HIGH
+        - DB_POOL_PENDING_HIGH
+    actions:
+      - type: APPLY_RATE_LIMIT
+        targetLayer: EDGE
+        targetService: payment-api
+        riskLevel: MEDIUM
+        blastRadius: SERVICE
+        description: DB saturation 상태이므로 consumer scale-out 대신 rate limit으로 downstream pressure를 낮춘다.
+        preconditions:
+          - KAFKA_CONSUMER_LAG_HIGH
+          - DB_POOL_PENDING_HIGH
+        forbiddenIf: []
+        approval:
+          required: true
+        rollback:
+          required: true
+          plan: Rate limit 설정을 이전 값으로 되돌린다.
+        verification:
+          required: true
+          checks:
+            - DB_POOL_PENDING_HIGH 감소
+            - P99_LATENCY_HIGH 완화
+            - KAFKA_CONSUMER_LAG_HIGH 증가세 둔화
+        paymentSafety:
+          idempotencySafe: true
+          stateTransitionSafe: true
+          duplicateExecutionRisk: LOW
+
+  - id: kafka-lag-with-rebalance-storm
+    when:
+      all:
+        - KAFKA_CONSUMER_LAG_HIGH
+        - KAFKA_REBALANCE_STORM
+    actions:
+      - type: PAUSE_ROLLOUT
+        targetLayer: KUBERNETES
+        targetService: payment-worker
+        riskLevel: MEDIUM
+        blastRadius: SERVICE
+        description: Rebalance storm 상태에서는 scale-out이 오히려 악화될 수 있으므로 rollout을 멈추고 consumer 안정화를 우선한다.
+        preconditions:
+          - KAFKA_CONSUMER_LAG_HIGH
+          - KAFKA_REBALANCE_STORM
+        forbiddenIf: []
+        approval:
+          required: true
+        rollback:
+          required: true
+          plan: 중단한 rollout 상태를 확인 후 이전 안정 버전으로 복구한다.
+        verification:
+          required: true
+          checks:
+            - KAFKA_REBALANCE_STORM 해소
+            - POD_RESTART_HIGH 감소
+            - consumer group stable 상태 확인
+        paymentSafety:
+          idempotencySafe: true
+          stateTransitionSafe: true
+          duplicateExecutionRisk: LOW
+
+  - id: kafka-lag-safe-scaleout
+    when:
+      all:
+        - KAFKA_CONSUMER_LAG_HIGH
+      none:
+        - DB_POOL_PENDING_HIGH
+        - DB_LOCK_WAIT_HIGH
+        - KAFKA_REBALANCE_STORM
+        - RETRY_STORM
+        - KAFKA_DLQ_RATE_HIGH
+    actions:
+      - type: SCALE_OUT_WORKER
+        targetLayer: QUEUE
+        targetService: payment-worker
+        riskLevel: HIGH
+        blastRadius: SERVICE
+        description: DB saturation, rebalance storm, retry storm이 없고 consumer lag만 높으므로 제한적으로 worker scale-out을 추천한다.
+        preconditions:
+          - KAFKA_CONSUMER_LAG_HIGH
+        forbiddenIf:
+          - DB_POOL_PENDING_HIGH
+          - DB_LOCK_WAIT_HIGH
+          - KAFKA_REBALANCE_STORM
+          - RETRY_STORM
+          - KAFKA_DLQ_RATE_HIGH
+        approval:
+          required: true
+        rollback:
+          required: true
+          plan: replica 수를 이전 값으로 되돌린다.
+        verification:
+          required: true
+          checks:
+            - KAFKA_CONSUMER_LAG_HIGH 감소
+            - DB_POOL_PENDING_HIGH 발생 없음
+            - PAYMENT_APPROVAL_DELAY_HIGH 완화
+        paymentSafety:
+          idempotencySafe: true
+          stateTransitionSafe: true
+          duplicateExecutionRisk: MEDIUM

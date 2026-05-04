@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: agent-server
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+observability:
+  prometheus:
+    base-url: http://prometheus.monitoring.svc.cluster.local:9090
+  loki:
+    base-url: http://loki.monitoring.svc.cluster.local:3100
+  jaeger:
+    base-url: http://jaeger-query.observability.svc.cluster.local:16686
+
+agent:
+  embedding:
+    provider: stub
+    base-url: http://localhost:11434
+    api-key:
+    model: stub-384
+    dimensions: 384
+  explanation:
+    provider: stub
+    base-url: https://api.openai.com/v1
+    api-key: ${OPENAI_API_KEY:}
+    model: gpt-4o-mini
+  knowledge:
+    search:
+      client: vector
+    vector:
+      adapter: qdrant
+    qdrant:
+      base-url: ${QDRANT_BASE_URL:http://qdrant.qdrant.svc.cluster.local:6333}
+      collection: ${QDRANT_COLLECTION:sre-knowledge}
+      api-key: ${QDRANT_API_KEY:}
+      limit: ${QDRANT_SEARCH_LIMIT:10}
+      score-threshold: ${QDRANT_SCORE_THRESHOLD:0.7}
+  observability:
+    prometheus-base-url: http://localhost:9090
+    loki-base-url: http://localhost:3100
+    jaeger-base-url: http://localhost:16686
+  rag:
+    top-k: 5
+    knowledge-index: sre-knowledge
+  llm:
+    model: gpt-5.4-mini
+    temperature: 0.2
