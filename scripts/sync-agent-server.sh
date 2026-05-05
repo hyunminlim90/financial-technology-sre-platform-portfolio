@@ -16,3 +16,5 @@ rsync -av --delete \
   --exclude ".project" \
   --exclude ".settings" \
   --exclude ".gradle-home"
+
+rm -rf "$DST/.gradle" "$DST/.gradle-home" "$DST/build"
