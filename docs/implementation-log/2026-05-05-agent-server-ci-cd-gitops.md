@@ -58,11 +58,6 @@ bootstrap/apps/agent-server.yaml
 
 ## 4. agent-server 소스 반영
 
-**Codex 작업 디렉토리:**
-```
-/Users/hyunminlim/Documents/New project/apps/agent-server
-```
-
 **portfolio 반영 위치:**
 ```
 fin-tech-sre-platform-portfolio/apps/agent-server
