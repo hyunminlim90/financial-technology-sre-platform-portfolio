@@ -189,6 +189,7 @@ curl http://localhost:5000/v2/fin-tech-sre/agent-server/tags/list
 
 **Registry UI:**
 ```
+https://ft-sre-registry.opentofu.click/
 http://172.30.1.105:5001
 ```
 
