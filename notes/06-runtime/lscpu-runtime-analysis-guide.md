@@ -77,8 +77,10 @@ Kubernetes에서:
 여기서 CPU는 일반적으로:
 
 ```text
-Host의 vCPU 1개
-(논리 CPU / Hyper-thread 1개)
+Host Linux가 인식하는
+논리 CPU(Logical CPU) 1개
+= vCPU 1개
+= Hyper-thread 1개
 ```
 
 에 해당하는 연산 능력을 의미합니다.
