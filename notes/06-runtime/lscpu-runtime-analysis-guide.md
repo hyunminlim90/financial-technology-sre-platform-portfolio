@@ -24,7 +24,7 @@
 Kubernetes에서 CPU limit를 과도하게 제한하면 Linux CFS(CPU Completely Fair Scheduler)가 Container의 CPU 사용 시간을 </br>
 강제로 제한할 수 있습니다.
 
-</br>
+</br></br>
 
 이 경우
 
