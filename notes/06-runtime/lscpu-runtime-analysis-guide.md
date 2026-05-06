@@ -13,6 +13,55 @@
 - `lscpu` 결과를 보고 어떤 항목이 중요한지 모르겠는 분
 - SRE 관점에서 CPU 자원을 어떻게 설계하고 모니터링해야 하는지 궁금한 분
 - Kubernetes 환경에서 CPU Throttling 장애를 겪어본 분
+
+<details>
+<summary><b>1. CPU Throttling의 메커니즘</b></summary>
+
+Kubernetes 환경에서 **CPU Throttling**은 애플리케이션이 더 많은 계산 자원을 필요로 함에도 불구하고 설정된 `limit` 값에 의해 강제로 연산 속도가 제한되는 현상을 의미합니다.
+
+*   **CFS(Completely Fair Scheduler) Quota**: Kubernetes는 CPU limits 설정 시 CFS 메커니즘을 사용합니다.
+*   **작동 방식**: CPU 사용량이 설정된 한도(Limit)에 도달하면, 해당 프로세스는 다음 주기가 올 때까지 CPU를 사용할 수 없도록 일시 정지됩니다.
+*   **결과**: 전체 CPU 사용률이 100%에 도달하지 않더라도, 특정 짧은 순간(Period)에 한도를 초과하면 즉각적으로 연산이 중단됩니다.
+
+</details>
+
+<details>
+<summary><b>2. SRE 관점에서의 장애 의미 (Golden Signals)</b></summary>
+
+CPU Throttling은 서비스 품질에 직접적인 타격을 주며, 시스템 지표와 다음과 같이 연결됩니다.
+
+*   **Latency(지연 시간) 급증**: 프로세스가 강제로 멈췄다 가기를 반복하여 응답 속도가 비정상적으로 느려집니다. 이는 가이드에서 강조한 **SLA 준수**를 불가능하게 만드는 핵심 요인입니다.
+*   **Event Loop Blocking (WebFlux 특성)**: Spring WebFlux와 같은 비동기 모델에서는 CPU Throttling이 발생할 경우 Event Loop 자체가 지연을 겪게 되어 모든 요청에 대한 **Latency Spike**와 **Connection Timeout**을 유발합니다.
+*   **Saturation(포화도) 오판**: `lscpu` 가이드에서 언급했듯이 vCPU는 스레드 단위로 할당됩니다. 물리 코어를 공유하는 구조에서 Throttling이 걸리면 실제 물리 자원이 남아있음에도 애플리케이션은 포화 상태로 인식되어 성능이 저하됩니다.
+
+</details>
+
+<details>
+<summary><b>3. 주요 위험 요소 및 병목 포인트</b></summary>
+
+기존 인프라 분석 가이드를 기반으로 본 Throttling의 위험성입니다.
+
+| 분석 항목 | Throttling 발생 시 영향 |
+| :--- | :--- |
+| **Context Switching** | Throttling으로 인해 중단된 작업을 다시 시작할 때 불필요한 컨텍스트 스위칭 오버헤드가 발생합니다. |
+| **I/O Wait (Disk)** | Storage 가이드의 `await` 지표와 연결됩니다. CPU가 제때 연산을 못 하면 I/O 요청 처리 큐(`avgqu-sz`)가 쌓여 전체 시스템 병목으로 번집니다. |
+| **JVM GC 영향** | GC(Garbage Collection) 스레드가 Throttling에 걸리면 **STW(Stop-The-World)** 시간이 길어져 서비스 전체가 중단된 것처럼 보일 수 있습니다. |
+
+</details>
+
+<details>
+<summary><b>4. SRE 실무 대응 및 예방 (60% 운영 철학)</b></summary>
+
+사용자의 **"2x Work, 60% Load"** 철학을 적용한 예방책입니다.
+
+*   **안전 마진 확보**: 평균 CPU 사용률을 **60% 이하**로 유지하여 일시적인 트래픽 버스트 시에도 `limit` 임계치에 걸리지 않도록 여유 공간을 설계합니다.
+*   **Observability 활용**: 단순히 CPU 사용량(Usage)만 보는 것이 아니라, `container_cpu_cfs_throttled_periods_total` 메트릭을 모니터링하여 실제 제한 횟수를 추적해야 합니다.
+*   **하드웨어 가속(Flags) 활용**: `AES`, `AVX2` 등 가이드에서 언급된 하드웨어 가속 기능을 적극 활용하여 연산 효율을 높임으로써 Throttling 발생 가능성을 간접적으로 낮춥니다.
+
+---
+**요약**: CPU Throttling은 "애플리케이션이 충분히 빠를 수 있음에도 인프라 설정이 그 발목을 잡고 있는 상태"이며, 이는 서비스 가용성과 Latency의 치명적인 저하로 직결됩니다.
+</details>
+
 - WebFlux / Netty 기반 서비스에서 Latency 원인을 찾고 있는 분
 - "CPU 사용률은 낮은데 왜 느리지?" 라는 상황을 경험한 분
 
