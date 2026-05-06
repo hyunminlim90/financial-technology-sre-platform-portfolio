@@ -58,8 +58,8 @@ resources:
 Container는:
 
 ```text
-100ms 동안
-50ms 분량의 CPU 실행 권한(Quota)
+100ms Period 안에서
+50ms 분량의 CPU 연산 예산(Quota)
 ```
 
 을 부여받습니다.
