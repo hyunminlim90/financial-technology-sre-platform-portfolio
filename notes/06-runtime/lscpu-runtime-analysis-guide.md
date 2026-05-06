@@ -34,12 +34,10 @@ Container의 CPU 사용량을 일정한 "Quota(예산)" 기준으로 관리합�
 
 Linux CFS는 일반적으로:
 
-```text
-100ms (cpu.cfs_period_us = 100000)
-```
-
 ```bash
 cat /sys/fs/cgroup/cpu/cpu.cfs_period_us
+
+100ms (cpu.cfs_period_us = 100000)
 ```
 
 단위로 CPU 사용량을 계산합니다.
