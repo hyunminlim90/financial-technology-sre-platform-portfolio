@@ -20,7 +20,7 @@
 
 
 <details>
-    <summary>📌 Kubernetes CPU Throttling 장애란?</summary>
+    <summary>Kubernetes CPU Throttling 장애란?</summary>
 
 <br/>
 
