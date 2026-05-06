@@ -413,7 +413,7 @@ full avg10=0.00 avg60=0.00 avg300=0.00 total=0
 # full : 모든 작업이 CPU를 기다린 시간 비율 (%) 
 # avg10/avg60/avg300 : 10초/60초/300초 평균
 
-# full 값이 증가한다는 것은 "전체 작업이 동시에 멈춘 순간" 이 존재했다는 의미입니다.
+# full 값이 증가한다는 것은 "모든 Runnable Task가 CPU를 기다린 시간" 이 존재했다는 의미입니다.
 ```
 
 | 지표 | 의미 | 기준 |
@@ -580,7 +580,7 @@ CPU Saturation이 발생하면 그 영향이 일반 모델보다 훨씬 광범�
 > WebFlux 환경에서는 **CPU 평균 사용률보다 순간 Spike가 더 중요합니다.**  
 > P99, P999 Latency를 꼭 함께 모니터링하세요.
 
-##### Blocking 호출과 Event Loop 지연
+#### Blocking 호출과 Event Loop 지연
 
 Event Loop 내부에서
 
@@ -607,9 +607,7 @@ Blocking I/O
 * CPU Usage는 낮게 보일 수 있음
 * 하지만 Runtime Latency는 급증 가능
 
-```text
-CPU Idle ≠ 서비스 정상
-```
+> CPU Idle ≠ 서비스 정상
 
 일 수 있습니다.
 
