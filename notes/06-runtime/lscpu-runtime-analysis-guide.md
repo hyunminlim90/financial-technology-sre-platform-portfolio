@@ -15,15 +15,18 @@
 - `Kubernetes 환경에서 CPU Throttling 장애`를 겪어본 분
 - WebFlux / Netty 기반 서비스에서 Latency 원인을 찾고 있는 분
 - "CPU 사용률은 낮은데 왜 느리지?" 라는 상황을 경험한 분
+
 </br>
+
 <details>
     <summary>Kubernetes CPU Throttling 이란?</summary>
 </br>
-Kubernetes에서 CPU limit를 과도하게 제한하면
-Linux CFS(CPU Completely Fair Scheduler)가
-Container의 CPU 사용 시간을 강제로 제한할 수 있습니다.
+Kubernetes에서 CPU limit를 과도하게 제한하면 Linux CFS(CPU Completely Fair Scheduler)가 Container의 CPU 사용 시간을 </br>
+강제로 제한할 수 있습니다.
 
-이 경우:
+</br>
+
+이 경우
 
 ```text
 CPU Throttling
