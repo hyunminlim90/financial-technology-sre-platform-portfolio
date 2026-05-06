@@ -129,6 +129,423 @@ Linux CFS 기준으로 일반적인 100ms 주기에서:
 
 에 더 가깝습니다.
 
+## Hyper-Thread (Intel) / SMT (AMD) 와 Software Thread 차이
+
+핵심은:
+
+| 구분 | 의미 |
+|---|---|
+| Hyper-thread / SMT | CPU 하드웨어의 논리 실행 슬롯 |
+| Software Thread | JVM / OS / Application의 실행 흐름 |
+
+즉:
+
+```text id="f8o3m1"
+Hyper-thread
+=
+CPU 하드웨어 실행 단위
+````
+
+이고,
+
+```text id="n4v7q2"
+Software Thread
+=
+프로그램 실행 흐름
+```
+
+입니다.
+
+---
+
+## 1. Hyper-thread / SMT (하드웨어)
+
+### HT/SMT 지원 CPU
+
+HT(Hyper-Threading) 또는 SMT(Simultaneous Multithreading)가 활성화된 경우:
+
+```text
+물리 Core 1개
+├── Hyper-thread 0
+└── Hyper-thread 1
+```
+
+구조로 동작합니다.
+
+즉:
+
+```text
+물리 Core 1개 안에
+논리 실행 슬롯(Logical CPU) 2개 존재
+```
+
+하는 형태입니다.
+
+Linux는 이를:
+
+```text
+Logical CPU 2개
+```
+
+로 인식합니다.
+
+예:
+
+```bash
+lscpu
+```
+
+출력:
+
+```text
+CPU(s): 16
+Thread(s) per core: 2
+Core(s) per socket: 8
+```
+
+이면:
+
+```text
+물리 Core 8개
++
+Hyper-thread 16개(Logical CPU 16개)
+```
+
+구조입니다.
+
+---
+
+### HT/SMT 미지원 CPU
+
+반면 HT/SMT 미지원 또는 비활성화 환경에서는:
+
+```text
+물리 Core 1개
+└── Logical CPU 1개
+```
+
+로 동작합니다.
+
+즉:
+
+```text
+물리 Core
+=
+Logical CPU
+```
+
+가 됩니다.
+
+예:
+
+```bash
+Thread(s) per core: 1
+```
+
+이면:
+
+```text
+HT/SMT 비활성화
+```
+
+상태입니다.
+
+---
+
+## 2. Software Thread (소프트웨어)
+
+반면 Software Thread는:
+
+* Java Thread
+* Netty Event Loop Thread
+* Kafka Consumer Thread
+* GC Thread
+* Worker Thread
+
+같은:
+
+```text
+프로그램 실행 흐름
+```
+
+입니다.
+
+예:
+
+```java
+new Thread(...)
+```
+
+또는:
+
+```text
+Netty Event Loop Thread
+```
+
+등.
+
+이들은 CPU 내부 구조가 아니라:
+
+```text
+OS / JVM / Application 계층
+```
+
+의 개념입니다.
+
+---
+
+## Software Thread는 어디서 실행되나?
+
+Software Thread는 결국:
+
+```text
+Linux Scheduler(CFS)
+```
+
+에 의해:
+
+```text
+Logical CPU(Hyper-thread)
+```
+
+위에서 실행됩니다.
+
+즉 구조는:
+
+```text
+Software Thread
+↓
+Linux Scheduler(CFS)
+↓
+Logical CPU(Hyper-thread)
+↓
+Physical Core
+```
+
+입니다.
+
+---
+
+## 중요한 점 — 1:1 고정이 아님
+
+많이 헷갈리는 부분인데:
+
+```text
+Software Thread 1개
+=
+Hyper-thread 1개에 영구 고정
+```
+
+되는 것은 아닙니다.
+
+Linux Scheduler가:
+
+* Time Slice
+* Priority
+* Runnable Queue
+* CPU Load
+
+등을 기준으로:
+
+```text
+실행 위치를 계속 변경(Context Switch)
+```
+
+합니다.
+
+즉:
+
+```text
+Software Thread는
+Logical CPU 위에서
+빠르게 교체 실행
+```
+
+됩니다.
+
+---
+
+## 동시에 Running 가능한 수
+
+여기서 중요한 개념:
+
+| 개념                | 의미                   |
+| ----------------- | -------------------- |
+| Software Thread 수 | 생성 가능한 실행 흐름 수       |
+| Logical CPU 수     | 동시에 Running 가능한 슬롯 수 |
+
+예:
+
+```text
+Logical CPU 8개
+```
+
+이면:
+
+```text
+동시에 Running 가능한 Thread ≈ 8개
+```
+
+입니다.
+
+하지만:
+
+```text
+Software Thread 100개 생성
+```
+
+은 가능합니다.
+
+다만:
+
+```text
+Scheduler(CFS)가
+빠르게 교체 실행(Context Switch)
+```
+
+합니다.
+
+---
+
+## Runnable Queue와 CPU Saturation
+
+예:
+
+```text
+Logical CPU 1개
+Software Thread 100개
+```
+
+이면:
+
+```text
+1개 Running
+99개 Runnable(실행 대기)
+```
+
+상태가 될 수 있습니다.
+
+이 경우:
+
+* Runnable Queue 증가
+* Context Switch 증가
+* CPU Cache Miss 증가
+* Scheduler Overhead 증가
+* CPU Saturation
+
+등이 발생할 수 있습니다.
+
+---
+
+## 왜 WebFlux/Event Loop가 중요한가?
+
+전통적인 Thread-per-request 모델은:
+
+```text
+요청 수 증가
+→ Software Thread 증가
+→ Runnable Queue 증가
+→ Context Switch 증가
+```
+
+가 발생할 수 있습니다.
+
+반면:
+
+* Spring WebFlux
+* Netty
+* Reactive Runtime
+
+등은:
+
+```text
+적은 수의 Software Thread
+```
+
+로:
+
+```text
+Logical CPU(Hyper-thread)
+```
+
+를 효율적으로 사용하려는 구조입니다.
+
+즉:
+
+```text
+적은 Thread
++
+낮은 Context Switch
++
+높은 Cache 효율
+```
+
+을 목표로 합니다.
+
+---
+
+## Kubernetes CPU Limit와의 관계
+
+예:
+
+```yaml
+resources:
+  limits:
+    cpu: "1000m"
+```
+
+이면,
+
+일반적으로:
+
+```text
+Logical CPU(Hyper-thread) 1개
+분량의 CPU 실행 예산
+```
+
+을 의미합니다.
+
+하지만 Container 내부에서는:
+
+* Netty Thread
+* Kafka Thread
+* GC Thread
+* Worker Thread
+
+등 여러 Software Thread가:
+
+```text
+동일한 CPU Quota Pool
+```
+
+을 공유합니다.
+
+즉:
+
+```text
+GC가 CPU Quota를 많이 사용하면
+Event Loop가 Throttle
+```
+
+될 수도 있습니다.
+
+---
+
+## 한 줄 요약
+
+```text
+Hyper-thread / Logical CPU
+=
+CPU 하드웨어 실행 슬롯
+
+Software Thread
+=
+그 슬롯 위에서 실행되는
+프로그램 실행 흐름
+```
+
+입니다.
+
 ---
 
 ## 여기서 가장 중요한 핵심
