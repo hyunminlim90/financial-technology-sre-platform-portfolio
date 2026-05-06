@@ -12,10 +12,10 @@
 - VM을 생성할 때 vCPU를 얼마나 할당해야 할지 기준이 없는 분
 - `lscpu` 결과를 보고 어떤 항목이 중요한지 모르겠는 분
 - SRE 관점에서 CPU 자원을 어떻게 설계하고 모니터링해야 하는지 궁금한 분
-- <code style="color:#ff6b6b;">Kubernetes 환경에서 CPU Throttling 장애</code>를 겪어본 분
+- `Kubernetes 환경에서 CPU Throttling 장애`를 겪어본 분
 - WebFlux / Netty 기반 서비스에서 Latency 원인을 찾고 있는 분
 - "CPU 사용률은 낮은데 왜 느리지?" 라는 상황을 경험한 분
-
+</br>
 <details>
     <summary>Kubernetes CPU Throttling 이란?</summary>
 
