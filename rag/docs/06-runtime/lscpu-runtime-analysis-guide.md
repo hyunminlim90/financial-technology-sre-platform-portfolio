@@ -18,7 +18,6 @@
 
 </br>
 
-
 <details>
     <summary>Kubernetes CPU Throttling 장애란?</summary>
 
@@ -141,60 +140,175 @@ Throttling 발생 가능
 
 </br>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 <details>
-  <summary>Hyper-Thread (Intel) / SMT (AMD) 와 Software Thread 관계</summary>
+  <summary>1. Physical Core — CPU 내부의 실제 연산 하드웨어</summary>
 
 <br/>
 
-핵심은:
+## Physical Core 란
 
-| 구분 | 의미 |
-|---|---|
-| Hyper-thread / SMT | CPU 하드웨어의 논리 실행 단위 |
-| Logical CPU | Linux Kernel이 인식하는 CPU 실행 단위 |
-| vCPU | VM / Kubernetes에서 사용하는 CPU 단위 |
-| Software Thread | JVM / OS / Application의 실행 흐름 |
+Physical Core는 CPU 칩 내부에 존재하는 **실제 연산 하드웨어**입니다.
 
-일반적인 HT/SMT 활성화 환경에서는:
+단순한 논리 개념이 아니라, CPU 칩 안에 실제로 존재하는 물리 회로입니다.
+
+쉽게 말하면:
 
 ```text
-Logical CPU ≒ vCPU ≒ Hyper-thread
-````
-
-처럼 동작합니다.
+물리 Core 8개 CPU
+= CPU 칩 안에 실제로 연산 가능한 두뇌 8개 존재
+```
 
 ---
 
-## HT/SMT 지원 CPU
+## Physical Core 내부 구성
 
-HT(Hyper-Threading) 또는 SMT(Simultaneous Multithreading)가 활성화된 경우:
+Physical Core 내부에는 실제로 다음이 존재합니다:
+
+| 구성 요소 | 역할 |
+|---|---|
+| **ALU** (Arithmetic Logic Unit) | 정수 연산 |
+| **FPU** (Floating Point Unit) | 부동소수점 연산 |
+| **Load/Store Unit** | 메모리 접근 |
+| **Branch Predictor** | 분기 처리 |
+| **L1 / L2 Cache** | 고속 메모리 캐시 |
+| **Pipeline** | 명령어 실행 파이프라인 |
+| **Register** | 연산 임시 저장 |
+
+즉 Physical Core는:
 
 ```text
-물리 Core 1개
-├── Hyper-thread 0
-└── Hyper-thread 1
+CPU 명령어를 실제 실행하는 하드웨어 회로
 ```
 
-구조로 동작합니다.
+입니다.
+
+---
+
+## Multi-core 란
+
+Multi-core는 **Physical Core 자체가 증가**하는 것입니다.
+
+```text
+Physical Core 4개 = 동시에 실제 연산 가능한 하드웨어 4개
+```
+
+예:
+
+```text
+4 Core CPU
+→ 동시에 실제 연산 가능한 물리 코어 4개 존재
+```
+
+---
+
+## Physical Core vs Logical CPU — 핵심 구분
+
+| 개념 | 의미 |
+|---|---|
+| **Physical Core** | 실제 연산 하드웨어 (ALU, Cache 등 포함) |
+| **Logical CPU** | OS/Linux Kernel이 인식하는 CPU 실행 단위 |
+
+> **중요:** Physical Core = Hardware Thread 1개 라고 표현하면 오해가 생깁니다.  
+> Physical Core와 Hyper-thread(Logical CPU)는 서로 다른 계층의 개념입니다.
+
+---
+
+## HT/SMT 비활성화 시 구조
+
+HT/SMT가 비활성화된 경우:
+
+```text
+Physical Core 1개
+→ Logical CPU 1개
+```
 
 즉:
 
 ```text
-물리 Core 1개 안에
-Logical CPU 2개 존재
+Physical Core = Logical CPU
 ```
 
-하는 형태입니다.
+가 됩니다.
 
-Linux는 이를:
+```bash
+# lscpu 출력 예
+Thread(s) per core: 1
+```
+
+---
+
+## Multi-core + HT OFF 구조
 
 ```text
-Logical CPU 2개
+Physical Core 4개
+HT OFF
+→ Logical CPU 4개
 ```
 
-로 인식합니다.
+| 항목 | 증가 대상 |
+|---|---|
+| **Multi-core** | Physical Core 증가 |
+| **HT/SMT** | Logical CPU 증가 |
 
-예:
+</details>
+
+<details>
+  <summary>2. HT/SMT 와 Logical CPU — 물리 코어 효율을 높이는 하드웨어 기술</summary>
+
+<br/>
+
+## HT/SMT 란
+
+HT(Hyper-Threading, Intel) / SMT(Simultaneous Multithreading, AMD)는:
+
+```text
+물리 Core 1개를 Logical CPU 2개처럼 보이게 하는 기술
+```
+
+입니다.
+
+중요한 점:
+
+```text
+새로운 Physical Core가 추가되는 것이 아닙니다.
+```
+
+HT/SMT는 Physical Core 내부 자원을 논리적으로 분할해서 동시에 더 효율적으로 사용하려는 기술입니다.
+
+---
+
+## HT/SMT 활성화 구조
+
+```text
+Physical Core 1개
+├── Hyper-thread 0  (Logical CPU 0)
+└── Hyper-thread 1  (Logical CPU 1)
+```
+
+즉:
+
+```text
+물리 Core 1개 안에 Logical CPU 2개 존재
+```
+
+Linux는 이를 Logical CPU 2개로 인식합니다.
+
+---
+
+## HT/SMT 활성화 예시
 
 ```bash
 lscpu
@@ -203,133 +317,162 @@ lscpu
 출력:
 
 ```text
-CPU(s): 16
-Thread(s) per core: 2
-Core(s) per socket: 8
+CPU(s):              16
+Thread(s) per core:  2
+Core(s) per socket:  8
+Socket(s):           1
 ```
 
-이면:
-
-```text
-물리 Core 8개
-+
-Logical CPU 16개
-```
-
-구조입니다.
+→ 물리 Core 8개 + Logical CPU 16개 구조
 
 ---
 
-## HT/SMT 미지원 CPU
+## HT OFF vs HT ON 비교
 
-반면 HT/SMT 미지원 또는 비활성화 환경에서는:
+**HT OFF:**
 
 ```text
-물리 Core 1개
+Physical Core 1개
 └── Logical CPU 1개
 ```
 
-로 동작합니다.
-
-즉:
+**HT ON:**
 
 ```text
-물리 Core
-=
-Logical CPU
+Physical Core 1개
+├── Hyper-thread 0
+└── Hyper-thread 1
 ```
-
-가 됩니다.
-
-예:
-
-```bash
-Thread(s) per core: 1
-```
-
-이면:
-
-```text
-HT/SMT 비활성화
-```
-
-상태입니다.
 
 ---
 
-## Software Thread
-
-반면 Software Thread는:
-
-* Java Thread
-* Netty Event Loop Thread
-* Kafka Consumer Thread
-* GC Thread
-* Worker Thread
-
-같은:
+## Multi-core + HT ON 구조
 
 ```text
-프로그램 실행 흐름
+Physical Core 4개
+HT ON
+→ Logical CPU 8개
 ```
 
-입니다.
-
-예:
-
-```java
-new Thread(...)
-```
-
-또는:
+상세 구조:
 
 ```text
-Netty Event Loop Thread
+Core 0
+├── HT 0  (Logical CPU 0)
+└── HT 1  (Logical CPU 1)
+
+Core 1
+├── HT 0  (Logical CPU 2)
+└── HT 1  (Logical CPU 3)
+
+Core 2
+├── HT 0  (Logical CPU 4)
+└── HT 1  (Logical CPU 5)
+
+Core 3
+├── HT 0  (Logical CPU 6)
+└── HT 1  (Logical CPU 7)
 ```
-
-등.
-
-이들은 CPU 내부 구조가 아니라:
-
-```text
-OS / JVM / Application 계층
-```
-
-의 개념입니다.
 
 ---
 
-## Software Thread는 어디서 실행되나?
+## HT ON = 성능 2배가 아닌 이유
 
-Software Thread는 결국:
+HT/SMT는 Physical Core 내부 자원(ALU, Cache, Execution Unit 등)을 **공유**합니다.
 
-```text
-Linux Scheduler(CFS)
-```
-
-에 의해:
+따라서:
 
 ```text
-Logical CPU(Hyper-thread)
+HT ON = 성능 2배 (X)
+HT ON = 특정 워크로드에서 처리량 향상 (O)
 ```
 
-위에서 실행됩니다.
+실제로는 워크로드 특성에 따라 성능 향상 폭이 다릅니다.
 
-즉 구조는:
+---
+
+## 개념 정리
+
+| 개념 | 계층 | 의미 |
+|---|---|---|
+| **Physical Core** | 하드웨어 | 실제 연산 하드웨어 |
+| **Hyper-thread / SMT** | 하드웨어 | Logical CPU 논리 실행 단위 |
+| **Logical CPU** | OS 인식 | Linux Kernel이 인식하는 CPU |
+| **Multi-core** | 하드웨어 | Physical Core 증가 |
+| **HT/SMT** | 하드웨어 기술 | Logical CPU 증가 |
+
+</details>
+
+<details>
+  <summary>3. Software Thread 와 Linux Scheduler(CFS) — OS / JVM / Application 실행 흐름</summary>
+
+<br/>
+
+## Software Thread 란
+
+Software Thread는 **프로그램 실행 흐름**입니다.
+
+CPU 내부 구조가 아니라 OS / JVM / Application 계층의 개념입니다.
+
+대표적인 Software Thread:
+
+| 종류 | 예시 |
+|---|---|
+| **Java Thread** | `new Thread(...)` |
+| **Netty Event Loop Thread** | Netty I/O 처리 흐름 |
+| **Kafka Consumer Thread** | Kafka 메시지 소비 흐름 |
+| **GC Thread** | JVM Garbage Collector 흐름 |
+| **Worker Thread** | Thread Pool 내 처리 흐름 |
+| **POSIX Thread (pthread)** | Linux 기반 스레드 |
+| **Go Routine 스케줄 대상** | Go Runtime 실행 흐름 |
+
+이들은 전부 **Software 계층 실행 흐름**입니다.
+
+---
+
+## Hyper-thread vs Software Thread 핵심 구분
+
+`Thread`라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생길 수 있습니다.
+
+| 종류 | 실제 의미 | 계층 |
+|---|---|---|
+| **Hyper-thread** | CPU 하드웨어 논리 실행 단위 | 하드웨어 |
+| **Software Thread** | 프로그램 실행 흐름 | OS / JVM / Application |
+
+---
+
+## Linux 에서의 Thread
+
+Linux Kernel은 실제로 Thread와 Process를 꽤 비슷하게 취급합니다.
+
+내부적으로는 `task_struct` 기반입니다.
+
+즉 Scheduler(CFS)는:
 
 ```text
-Software Thread
-↓
-Linux Scheduler(CFS)
-↓
-Logical CPU(Hyper-thread)
-↓
-Physical Core
+Software 실행 단위(task)
 ```
 
-입니다.
+를 관리합니다.
 
-예를 들어:
+---
+
+## Software Thread 실행 계층 구조
+
+Software Thread는 결국 Linux Scheduler(CFS)에 의해 Logical CPU 위에서 실행됩니다.
+
+```text
+Application
+└── Java Thread
+    └── Linux Thread(Task)
+        └── Scheduler(CFS)
+            └── Logical CPU(Hyper-thread)
+                └── Physical Core
+```
+
+---
+
+## Logical CPU 1개 위의 Software Thread 구조
 
 ```text
 Hyper-thread(Logical CPU) 1개
@@ -341,52 +484,56 @@ Hyper-thread(Logical CPU) 1개
      └── Worker Thread
 ```
 
-처럼 여러 Software Thread가
-동일한 Logical CPU 위에서 실행될 수 있습니다.
+여러 Software Thread가 동일한 Logical CPU 위에서 실행될 수 있습니다.
+
+---
+
+## Linux Scheduler(CFS) 역할
+
+Linux Scheduler(CFS, Completely Fair Scheduler)는:
+
+```text
+Software Thread들을 Logical CPU 위에 배치하고,
+CPU Time을 분배/계산한다
+```
+
+즉:
+
+- 어떤 Thread를 실행할지 결정
+- CPU Time 분배
+- Running 상태 전환 관리
+- Runnable Queue 기반 스케줄링
 
 ---
 
 ## Running / Runnable / Context Switch
 
-중요한 점은:
+| 상태 | 의미 |
+|---|---|
+| **Running** | 현재 Logical CPU 위에서 실행 중 |
+| **Runnable** | 실행 대기 중 (CPU 할당 기다리는 상태) |
+| **Blocked** | I/O 대기 등으로 대기 중 |
+
+**핵심:**
 
 ```text
 Hyper-thread(Logical CPU) 1개
-=
-동시에 Running 가능한 Thread 1개
+= 동시에 Running 가능한 Thread 1개
 ```
 
-라는 점입니다.
-
-다만 Runnable 상태의 Software Thread는
-훨씬 많이 존재할 수 있습니다.
+Runnable 상태의 Software Thread는 훨씬 많이 존재할 수 있습니다.
 
 예:
 
 ```text
 Logical CPU 1개
 Software Thread 100개
+
+→ 1개 Running
+→ 99개 Runnable (실행 대기)
 ```
 
-이면:
-
-```text
-1개 Running
-99개 Runnable(실행 대기)
-```
-
-상태가 될 수 있습니다.
-
-Linux Scheduler(CFS)는
-Runnable Queue 기반으로:
-
-* 어떤 Thread를 실행할지 결정
-* CPU Time 분배
-* Running 상태 전환
-
-등을 수행합니다.
-
-그리고 실행 대상이 변경되면:
+Linux Scheduler(CFS)는 Runnable Queue 기반으로 실행 대상이 변경될 때:
 
 ```text
 Context Switch
@@ -400,41 +547,134 @@ Context Switch
 
 Runnable Thread가 과도하게 증가하면:
 
-* Runnable Queue 증가
-* Context Switch 증가
-* CPU Cache Miss 증가
-* Scheduler Overhead 증가
-* CPU Saturation
+- Runnable Queue 증가
+- Context Switch 증가
+- CPU Cache Miss 증가
+- Scheduler Overhead 증가
+- CPU Saturation 발생
 
-등이 발생할 수 있습니다.
+특히 다음 구조에서 이러한 현상이 심해집니다:
 
-특히:
-
-* Thread-per-request
-* Blocking I/O
-* 과도한 Thread Pool
-
-구조에서는 이러한 현상이 심해질 수 있습니다.
+- Thread-per-request 구조
+- Blocking I/O 사용
+- 과도한 Thread Pool 설정
 
 ---
 
-## WebFlux / Netty 와의 관계
+## 멀티코어 / 멀티스레드 / HT 개념 최종 정리
 
-Spring WebFlux / Netty는:
+| 개념 | 계층 | 의미 |
+|---|---|---|
+| **Physical Core** | 하드웨어 | 실제 물리 연산 하드웨어 |
+| **HT/SMT** | 하드웨어 기술 | 물리 코어 효율을 높이는 논리적 병렬 처리 |
+| **Logical CPU** | OS 인식 | Linux Kernel이 인식하는 CPU 실행 단위 |
+| **Multi-core** | 하드웨어 구조 | 물리적인 병렬 처리 |
+| **Multi-thread** | 소프트웨어 구조 | 소프트웨어 실행 흐름의 병렬 처리 |
+| **Software Thread** | OS / JVM / App | 프로그램 실행 흐름 |
+
+</details>
+
+<details>
+  <summary>4. WebFlux / Netty Event Loop 와 CPU 효율 — Software Thread 수와 Logical CPU 관계</summary>
+
+<br/>
+
+## Thread-per-request vs Event Loop
+
+전통적인 Blocking 구조:
+
+```text
+Thread-per-request
+→ 요청마다 Thread 1개 할당
+→ I/O 대기 중에도 Thread 점유
+→ Thread 수 증가 → Context Switch 증가
+→ CPU Saturation 위험
+```
+
+Spring WebFlux / Netty 구조:
 
 ```text
 적은 수의 Software Thread
+→ Logical CPU(Hyper-thread)를 효율적으로 사용
+→ Thread 수 감소
+→ Context Switch 감소
+→ CPU Cache 효율 증가
+→ 높은 처리량 유지
 ```
 
-로:
+---
+
+## Netty Event Loop Thread 구조
+
+Netty는 기본적으로:
 
 ```text
-Logical CPU(Hyper-thread)
+Event Loop Thread 수 = Logical CPU 수 × 2
 ```
 
-를 효율적으로 사용하려는 구조입니다.
+로 설정됩니다.
 
-즉:
+구조:
+
+```text
+Logical CPU 8개
+→ Event Loop Thread 16개
+```
+
+각 Event Loop Thread는:
+
+```text
+1개의 Event Loop Thread
+└── 다수의 Channel(Connection) 처리
+    → Non-blocking I/O
+    → Callback 기반
+```
+
+---
+
+## Event Loop Block 문제
+
+Event Loop Thread에서 Blocking 작업이 발생하면:
+
+```text
+Event Loop Block
+→ 해당 Thread가 담당하는 모든 Channel 처리 지연
+→ Latency 급증
+→ Timeout 증가
+```
+
+따라서 WebFlux / Netty 환경에서는:
+
+```text
+Event Loop Thread 내에서 Blocking 작업 금지
+```
+
+가 원칙입니다.
+
+Blocking 작업이 필요한 경우:
+
+```text
+Schedulers.boundedElastic()
+→ 별도 Blocking Worker Thread Pool로 위임
+```
+
+---
+
+## CPU 관점 성능 지표
+
+Runtime Latency에 직접 영향을 주는 CPU 관련 지표:
+
+| 지표 | 의미 | 위험 신호 |
+|---|---|---|
+| **CPU Saturation** | Runnable Queue 증가 | `vmstat r` 컬럼 지속 증가 |
+| **CPU Throttling** | cgroup CPU Quota 초과 | `container_cpu_cfs_throttled_seconds_total` 증가 |
+| **Context Switch** | Thread 전환 빈도 | `vmstat cs` 컬럼 급증 |
+| **Event Loop Block** | Event Loop Thread 점유 | Latency 급증, Thread Dump 확인 |
+| **Runnable Queue** | 실행 대기 Thread 수 | `vmstat r` 또는 `top` 확인 |
+
+---
+
+## WebFlux 환경 핵심 원칙
 
 ```text
 Thread 수 감소
@@ -443,66 +683,368 @@ Thread 수 감소
 → 높은 처리량 유지
 ```
 
-를 목표로 합니다.
-
 따라서:
 
-* CPU Saturation
-* CPU Throttling
-* Event Loop Block
-* Runnable Queue 증가
-
-등은 Runtime Latency에 직접적인 영향을 줄 수 있습니다.
+- CPU Saturation 발생 시 → Thread Pool 크기, Blocking 여부 확인
+- CPU Throttling 발생 시 → Kubernetes CPU Limit 확인
+- Event Loop Block 발생 시 → Thread Dump, Blocking 코드 확인
+- Runnable Queue 증가 시 → Thread 수, Blocking I/O 확인
 
 </details>
 
 <details>
-  <summary>멀티코어(Multi-core)와 멀티스레드(Multi-thread) 개념</summary>
+  <summary>5. Kubernetes CPU Quota 와 Logical CPU — cgroup 기반 CPU 제어</summary>
 
-</br>
+<br/>
 
-멀티코어(Multi-core)와 멀티스레드(Multi-thread)는 서로 다른 계층의 개념입니다.
+## Kubernetes CPU 단위
 
-| 구분 | 의미 |
+Kubernetes는 일반적으로 **Logical CPU(vCPU)** 기준으로 동작합니다.
+
+```yaml
+resources:
+  requests:
+    cpu: "500m"
+  limits:
+    cpu: "2000m"
+```
+
+| 단위 | 의미 |
 |---|---|
-| **멀티코어 (Multi-core)** | CPU 칩 내부에 물리적인 연산 코어(Core)가 여러 개 존재 |
-| **멀티스레드 (Multi-thread)** | 여러 실행 흐름(Thread)을 동시에 처리하려는 소프트웨어 구조 |
+| `1000m` (1 core) | Logical CPU(vCPU) 1개 분량 Quota |
+| `2000m` (2 core) | Logical CPU(vCPU) 2개 분량 Quota |
+| `500m` | Logical CPU(vCPU) 0.5개 분량 Quota |
 
 ---
 
-## 멀티코어
+## cgroup CPU Throttling
 
-예를 들어 `4 Core CPU`는 동시에 실제 연산 가능한 **물리 코어 4개**를 의미합니다.
-
----
-
-## 멀티스레드
-
-반면 `Java Thread 100개`는 프로그램 내부 **실행 흐름 100개**를 의미합니다.
-
-이 Thread들은 Linux Scheduler(CFS)에 의해 Logical CPU(Hyper-thread) 위에서 빠르게 교체 실행(Context Switch)됩니다.
-
----
-
-## HT/SMT (Hyper-threading)
-
-HT/SMT는 **물리 Core 1개를 Logical CPU 2개처럼 보이게 하는 기술**입니다.
+CPU Limit을 초과하면 cgroup이 CPU 사용을 제한합니다.
 
 ```text
-물리 Core 4개 + HT ON
-        ↓
-Logical CPU 8개처럼 동작
+CPU Limit 초과
+→ cgroup CPU Throttling
+→ Pod/Container CPU 사용 제한
+→ Latency 증가
+→ Timeout 위험
+```
+
+확인 지표:
+
+```text
+container_cpu_cfs_throttled_seconds_total
+container_cpu_cfs_periods_total
+```
+
+Throttling 비율:
+
+```text
+throttled_seconds / periods × 100 = Throttling %
 ```
 
 ---
 
-## 정리
+## CPU Requests vs Limits 실무 전략
 
-| 개념 | 설명 |
+| 항목 | 역할 | 실무 고려사항 |
+|---|---|---|
+| **CPU Requests** | Scheduling 기준 (Node 배치 결정) | 실제 평균 사용량 기준으로 설정 |
+| **CPU Limits** | cgroup Throttling 기준 | 너무 낮으면 Throttling 위험 |
+
+> FinTech / 결제 시스템에서는 CPU Throttling이 결제 Latency 증가로 직결될 수 있습니다.
+
+---
+
+## Kubernetes CPU Manager (static policy)
+
+일부 환경에서는 CPU Pinning이 필요합니다.
+
+```yaml
+# kubelet 설정
+cpuManagerPolicy: static
+```
+
+CPU Pinning / CPU Affinity 사용 환경:
+
+- DPDK
+- HFT (High Frequency Trading)
+- RT System (Real-time)
+- Kubernetes CPU Manager (static policy)
+
+이 경우:
+
+```text
+특정 Logical CPU를 특정 Pod/Thread에 고정
+→ Context Switch 최소화
+→ Cache Locality 향상
+```
+
+---
+
+## Kubernetes 관점 계층 구조
+
+```text
+Kubernetes Pod
+└── Container
+    └── cgroup CPU Quota
+        └── Logical CPU(vCPU)
+            └── Linux Scheduler(CFS)
+                └── Software Thread
+                    └── Physical Core
+```
+
+</details>
+
+<details>
+  <summary>6. Cloud(vCPU) 와 최신 CPU 구조 — AWS EC2 / Hybrid Core / NUMA</summary>
+
+<br/>
+
+## AWS EC2 vCPU
+
+Cloud에서는 `vCPU` 표현을 사용합니다.
+
+**AWS 기준 일반적으로:**
+
+```text
+vCPU 1개 ≈ Hyper-thread(Logical CPU) 1개
+```
+
+즉:
+
+```text
+2 vCPU 인스턴스 = Logical CPU 2개
+```
+
+를 의미합니다.
+
+---
+
+## AWS Nitro Hypervisor 추상화
+
+AWS에서는 실제 물리 구조를 Nitro Hypervisor가 추상화합니다.
+
+```text
+사용자가 실제 어느 Physical Core 쓰는지 알 수 없음
+```
+
+Cloud에서는:
+
+```text
+vCPU 단위 계약
+```
+
+이 중요합니다.
+
+---
+
+## Hyper-thread / Logical CPU / vCPU 관계
+
+일반적인 HT/SMT 활성화 환경에서는:
+
+```text
+Logical CPU ≒ vCPU ≒ Hyper-thread
+```
+
+처럼 동작합니다.
+
+| 구분 | 의미 |
 |---|---|
-| **멀티코어** | 물리적인 병렬 처리 |
-| **멀티스레드** | 소프트웨어 실행 흐름의 병렬 처리 |
-| **HT/SMT** | 물리 코어 효율을 높이기 위한 논리적 병렬 처리 |
+| **Hyper-thread / SMT** | CPU 하드웨어의 논리 실행 단위 |
+| **Logical CPU** | Linux Kernel이 인식하는 CPU 실행 단위 |
+| **vCPU** | VM / Kubernetes에서 사용하는 CPU 단위 |
+| **Software Thread** | JVM / OS / Application의 실행 흐름 |
+
+---
+
+## 최신 CPU — P-core / E-core Hybrid 구조
+
+Intel Core i9-13900K 같은 최신 Intel CPU는 **Hybrid Architecture**를 사용합니다.
+
+| 코어 종류 | 특징 |
+|---|---|
+| **P-Core** (Performance Core) | HT 지원 → P-Core 1개 = Logical CPU 2개 |
+| **E-Core** (Efficiency Core) | HT 미지원 → E-Core 1개 = Logical CPU 1개 |
+
+**Intel Core i9-13900K 예시:**
+
+```text
+P-Core 8개 × HT2  = Logical CPU 16개
+E-Core 16개 × HT1 = Logical CPU 16개
+                  ↓
+총 Logical CPU 32개
+```
+
+> 최신 CPU에서는 **모든 Core가 동일하지 않습니다.**
+
+---
+
+## NUMA (Non-Uniform Memory Access)
+
+서버급 환경에서는 NUMA 구조도 중요합니다.
+
+```text
+CPU Socket 2개
+→ NUMA Node 2개 가능
+```
+
+각 CPU가:
+- 자체 Memory Controller 보유
+- 자체 Local RAM 접근 보유
+
+즉:
+
+```text
+Logical CPU 증가
++ 메모리 접근 topology 복잡화 발생
+```
+
+NUMA 구조:
+
+```text
+NUMA Node 0
+└── CPU Socket 0
+    ├── Physical Core 0~N
+    └── Local Memory
+
+NUMA Node 1
+└── CPU Socket 1
+    ├── Physical Core 0~N
+    └── Local Memory
+```
+
+Cross-NUMA 접근(Remote Memory)은 Local 접근보다 지연이 발생합니다.
+
+---
+
+## CPU 구조 기술 전체 정리
+
+| 기술 | 증가/변화 대상 | 특징 |
+|---|---|---|
+| **Multi-core** | Physical Core 증가 | 실제 연산 하드웨어 증가 |
+| **HT/SMT** | Logical CPU 증가 | Physical Core 효율 향상 |
+| **Hybrid(P/E Core)** | Core 종류 분리 | 성능/효율 Core 혼합 |
+| **NUMA** | CPU/Memory topology 분리 | 소켓 간 메모리 접근 비용 |
+| **Hypervisor(vCPU)** | Logical CPU 가상화 | Cloud 추상화 |
+| **CPU Pinning** | 특정 Logical CPU 고정 | Context Switch 최소화 |
+
+</details>
+
+<details>
+  <summary>7. 전체 계층 구조 정리 — Physical Core 부터 Runtime 까지</summary>
+
+<br/>
+
+## 전체 계층 구조
+
+```text
+Application (Java / Netty / Kafka)
+└── Software Thread (Java Thread / Event Loop / Worker)
+    └── Linux Thread (task_struct)
+        └── Linux Scheduler (CFS)
+            ├── Runnable Queue 관리
+            ├── CPU Time 분배
+            └── Context Switch
+                └── Logical CPU (Hyper-thread / vCPU)
+                    └── Physical Core
+                        ├── ALU / FPU
+                        ├── Pipeline
+                        ├── L1 / L2 Cache
+                        └── Register
+```
+
+---
+
+## Kubernetes 포함 전체 구조
+
+```text
+Kubernetes Pod
+└── Container
+    └── cgroup CPU Quota (Requests / Limits)
+        └── vCPU (Logical CPU)
+            └── Linux Scheduler (CFS)
+                └── Software Thread
+                    └── Logical CPU (Hyper-thread)
+                        └── Physical Core
+```
+
+---
+
+## Cloud 포함 전체 구조
+
+```text
+AWS EC2 Instance
+└── Nitro Hypervisor
+    └── vCPU (≒ Logical CPU ≒ Hyper-thread)
+        └── Physical Core (Nitro 추상화)
+```
+
+---
+
+## 계층별 문제 진단 가이드
+
+| 계층 | 문제 현상 | 확인 방법 |
+|---|---|---|
+| **Physical Core** | 물리 CPU 부족 | `lscpu`, 인스턴스 스펙 확인 |
+| **Logical CPU / HT** | Logical CPU 수 부족 | `lscpu` Thread(s) per core 확인 |
+| **Linux Scheduler** | Context Switch 급증, Runnable Queue 증가 | `vmstat`, `pidstat` |
+| **Software Thread** | Thread 수 과다, Blocking I/O | Thread Dump, `jstack` |
+| **Kubernetes cgroup** | CPU Throttling | `container_cpu_cfs_throttled_seconds_total` |
+| **Event Loop** | Event Loop Block | Thread Dump, Latency 급증 |
+| **vCPU / Cloud** | vCPU 할당 부족 | 인스턴스 타입 확인, CloudWatch |
+
+---
+
+## SRE 실무 판단 흐름
+
+```text
+Latency 증가 / Timeout 발생
+        ↓
+CPU 관련 여부 확인
+        ↓
+┌──────────────────────────────────────┐
+│ CPU Throttling?                      │
+│ → Kubernetes CPU Limit 확인          │
+│ → container_cpu_cfs_throttled 지표   │
+└──────────────────────────────────────┘
+        ↓
+┌──────────────────────────────────────┐
+│ Runnable Queue 증가?                 │
+│ → vmstat r 컬럼 확인                 │
+│ → Thread 수, Blocking I/O 확인       │
+└──────────────────────────────────────┘
+        ↓
+┌──────────────────────────────────────┐
+│ Event Loop Block?                    │
+│ → Thread Dump 확인                   │
+│ → Blocking 코드 위치 확인            │
+└──────────────────────────────────────┘
+        ↓
+┌──────────────────────────────────────┐
+│ Context Switch 급증?                 │
+│ → Thread Pool 크기 확인              │
+│ → Thread-per-request 구조 여부       │
+└──────────────────────────────────────┘
+```
+
+---
+
+## 계층별 개념 최종 정리
+
+| 개념 | 계층 | 의미 |
+|---|---|---|
+| **Physical Core** | 하드웨어 | 실제 물리 연산 하드웨어 (ALU, Cache 등) |
+| **HT/SMT** | 하드웨어 기술 | 물리 코어 효율을 높이는 논리적 병렬 처리 |
+| **Logical CPU** | OS 인식 | Linux Kernel이 인식하는 CPU 실행 단위 |
+| **Multi-core** | 하드웨어 구조 | 물리적인 병렬 처리 |
+| **Multi-thread** | 소프트웨어 구조 | 소프트웨어 실행 흐름의 병렬 처리 |
+| **Software Thread** | OS / JVM / App | 프로그램 실행 흐름 |
+| **Linux Scheduler(CFS)** | OS | Software Thread → Logical CPU 배치 및 CPU Time 분배 |
+| **vCPU** | Cloud / VM | Logical CPU의 가상화 단위 |
+| **CPU Throttling** | Kubernetes | cgroup CPU Quota 초과 시 CPU 사용 제한 |
+| **Context Switch** | OS | Logical CPU 위 실행 Thread 교체 |
+| **Event Loop Block** | Runtime | Event Loop Thread 점유로 인한 처리 지연 |
+| **NUMA** | 서버 하드웨어 | CPU Socket 간 메모리 접근 topology |
 
 </details>
 
