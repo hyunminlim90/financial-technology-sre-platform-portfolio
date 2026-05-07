@@ -140,7 +140,7 @@ Throttling 발생 가능
 </br>
 
 <details>
-    <summary>Hyper-Thread (Intel) / SMT (AMD) 와 Software Thread 차이</summary>
+  <summary>Hyper-Thread (Intel) / SMT (AMD) 와 Software Thread 관계</summary>
 
 <br/>
 
@@ -148,32 +148,22 @@ Throttling 발생 가능
 
 | 구분 | 의미 |
 |---|---|
-| Hyper-thread / SMT | CPU 하드웨어의 논리 실행 슬롯 |
+| Hyper-thread / SMT | CPU 하드웨어의 논리 실행 단위 |
+| Logical CPU | Linux Kernel이 인식하는 CPU 실행 단위 |
+| vCPU | VM / Kubernetes에서 사용하는 CPU 단위 |
 | Software Thread | JVM / OS / Application의 실행 흐름 |
 
-즉:
+일반적인 HT/SMT 활성화 환경에서는:
 
-```text id="f8o3m1"
-Hyper-thread
-=
-CPU 하드웨어 실행 단위
+```text
+Logical CPU ≒ vCPU ≒ Hyper-thread
 ````
 
-이고,
-
-```text id="n4v7q2"
-Software Thread
-=
-프로그램 실행 흐름
-```
-
-입니다.
+처럼 동작합니다.
 
 ---
 
-## 1. Hyper-thread / SMT (하드웨어)
-
-### HT/SMT 지원 CPU
+## HT/SMT 지원 CPU
 
 HT(Hyper-Threading) 또는 SMT(Simultaneous Multithreading)가 활성화된 경우:
 
@@ -189,7 +179,7 @@ HT(Hyper-Threading) 또는 SMT(Simultaneous Multithreading)가 활성화된 경�
 
 ```text
 물리 Core 1개 안에
-논리 실행 슬롯(Logical CPU) 2개 존재
+Logical CPU 2개 존재
 ```
 
 하는 형태입니다.
@@ -221,14 +211,14 @@ Core(s) per socket: 8
 ```text
 물리 Core 8개
 +
-Hyper-thread 16개(Logical CPU 16개)
+Logical CPU 16개
 ```
 
 구조입니다.
 
 ---
 
-### HT/SMT 미지원 CPU
+## HT/SMT 미지원 CPU
 
 반면 HT/SMT 미지원 또는 비활성화 환경에서는:
 
@@ -265,7 +255,7 @@ HT/SMT 비활성화
 
 ---
 
-## 2. Software Thread (소프트웨어)
+## Software Thread
 
 반면 Software Thread는:
 
@@ -336,6 +326,131 @@ Physical Core
 ```
 
 입니다.
+
+예를 들어:
+
+```text
+Hyper-thread(Logical CPU) 1개
+└── Scheduler(CFS)
+     ├── Java Thread
+     ├── Netty Thread
+     ├── Kafka Thread
+     ├── GC Thread
+     └── Worker Thread
+```
+
+처럼 여러 Software Thread가
+동일한 Logical CPU 위에서 실행될 수 있습니다.
+
+---
+
+## Running / Runnable / Context Switch
+
+중요한 점은:
+
+```text
+Hyper-thread(Logical CPU) 1개
+=
+동시에 Running 가능한 Thread 1개
+```
+
+라는 점입니다.
+
+다만 Runnable 상태의 Software Thread는
+훨씬 많이 존재할 수 있습니다.
+
+예:
+
+```text
+Logical CPU 1개
+Software Thread 100개
+```
+
+이면:
+
+```text
+1개 Running
+99개 Runnable(실행 대기)
+```
+
+상태가 될 수 있습니다.
+
+Linux Scheduler(CFS)는
+Runnable Queue 기반으로:
+
+* 어떤 Thread를 실행할지 결정
+* CPU Time 분배
+* Running 상태 전환
+
+등을 수행합니다.
+
+그리고 실행 대상이 변경되면:
+
+```text
+Context Switch
+```
+
+가 발생할 수 있습니다.
+
+---
+
+## CPU Saturation 과 Scheduler Overhead
+
+Runnable Thread가 과도하게 증가하면:
+
+* Runnable Queue 증가
+* Context Switch 증가
+* CPU Cache Miss 증가
+* Scheduler Overhead 증가
+* CPU Saturation
+
+등이 발생할 수 있습니다.
+
+특히:
+
+* Thread-per-request
+* Blocking I/O
+* 과도한 Thread Pool
+
+구조에서는 이러한 현상이 심해질 수 있습니다.
+
+---
+
+## WebFlux / Netty 와의 관계
+
+Spring WebFlux / Netty는:
+
+```text
+적은 수의 Software Thread
+```
+
+로:
+
+```text
+Logical CPU(Hyper-thread)
+```
+
+를 효율적으로 사용하려는 구조입니다.
+
+즉:
+
+```text
+Thread 수 감소
+→ Context Switch 감소
+→ CPU Cache 효율 증가
+→ 높은 처리량 유지
+```
+
+를 목표로 합니다.
+
+따라서:
+
+* CPU Saturation
+* CPU Throttling
+* Event Loop Block
+* Runnable Queue 증가
+
+등은 Runtime Latency에 직접적인 영향을 줄 수 있습니다.
 
 </details>
 
