@@ -160,6 +160,8 @@ Logical CPU 1개
 
 ```text
 동일한 CPU Quota Pool
+
+CPU Quota Pool: Container 내부 Software Thread들이 함께 공유하는 CPU 실행 예산(CPU Time Resource)
 ```
 
 을 공유합니다.
