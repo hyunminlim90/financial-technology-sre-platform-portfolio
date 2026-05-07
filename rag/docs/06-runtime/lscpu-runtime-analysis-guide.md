@@ -26,7 +26,7 @@
 
 ## Kubernetes CPU Throttling 장애의 본질
 
-Kubernetes에서 CPU limit를 설정하면  
+Kubernetes에서 CPU **limit**를 설정하면  
 Linux Kernel의 CFS(Completely Fair Scheduler)가
 Container의 CPU 사용량을 일정한 "Quota(예산)" 기준으로 관리합니다.
 
