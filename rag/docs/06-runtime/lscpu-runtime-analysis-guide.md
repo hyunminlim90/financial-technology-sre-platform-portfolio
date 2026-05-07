@@ -151,10 +151,10 @@ Logical CPU 1개
 
 하지만 Container 내부에서는:
 
-* Netty Thread
-* Kafka Thread
+* Netty Event Loop Thread
+* Kafka Consumer Thread
 * GC Thread
-* Worker Thread
+* Application Worker Thread (내부 작업 처리용)
 
 등 여러 Software Thread가:
 
