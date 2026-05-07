@@ -86,6 +86,8 @@ Host Linux가 인식하는
 
 에 해당하는 연산 능력을 의미합니다.
 
+왜 Logical CPU 기준으로 설명하는가:
+
 ```text
 Linux Scheduler(CFS)는 
 Logical CPU 단위로 Thread를 스케줄링하고
