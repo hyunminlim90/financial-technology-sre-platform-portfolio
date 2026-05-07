@@ -196,7 +196,7 @@ CPU Throttling
 
 ```text
 CPU가 실제로 유휴(Idle) 상태여도
-Container는 CPU 실행 권한이 없어서 멈출 수 있음
+Container는 CPU Quota(연산 예산)이 없어서 멈출 수 있음
 ```
 
 입니다.
