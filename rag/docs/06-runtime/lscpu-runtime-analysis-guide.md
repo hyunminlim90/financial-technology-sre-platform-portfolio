@@ -238,7 +238,7 @@ CPU Throttling
 짧은 CPU Stall에도 민감합니다.
 
 <details>
-  <summary>CPU Stall</summary>
+  <summary>CPU Stall이란?</summary>
 
 ```
 CPU가 명령어를 계속 실행하지 못하고,
@@ -254,17 +254,17 @@ CPU가 명령어를 계속 실행하지 못하고,
 
 대표적인 원인:
 
-| 원인 | 설명 |
-|---|---|
-| **Data Dependency** | 이전 연산 결과를 기다림 |
-| **Cache Miss** | RAM 데이터 대기 |
-| **Branch Misprediction** | 잘못 예측한 분기 처리 복구 |
-| **Memory Latency** | 메모리 접근 지연 |
-| **I/O Wait** | 디스크/네트워크 대기 |
-| **Lock Contention** | Mutex/Spinlock 경쟁 |
-| **CPU Throttling** | CFS Quota 제한 |
-| **Context Switch** | Scheduler 전환 비용 |
-| **NUMA Remote Access** | 원격 메모리 접근 지연 |
+| 원인                       | 설명                                                        |
+| ------------------------ | --------------------------------------------------------- |
+| **Data Dependency**      | 이전 명령어의 연산 결과가 아직 준비되지 않아 다음 연산이 대기하는 상태                  |
+| **Cache Miss**           | 필요한 데이터가 CPU Cache(L1/L2/L3)에 없어 RAM에서 데이터를 가져오느라 지연되는 상태 |
+| **Branch Misprediction** | CPU의 분기 예측이 실패하여 잘못 실행한 명령어를 폐기하고 다시 실행하는 상태              |
+| **Memory Latency**       | 메모리 접근 자체가 느려 CPU가 데이터를 기다리는 상태                           |
+| **I/O Wait**             | 디스크·네트워크·파일 시스템 응답을 기다리며 CPU 작업 진행이 지연되는 상태               |
+| **Lock Contention**      | 여러 Thread가 동일 Lock(Mutex/Spinlock)을 경쟁하면서 대기하는 상태         |
+| **CPU Throttling**       | Linux CFS Quota 제한으로 Container 실행이 일시적으로 제한되는 상태          |
+| **Context Switch**       | Scheduler가 실행 Thread를 교체하면서 발생하는 CPU 전환 비용                |
+| **NUMA Remote Access**   | 다른 NUMA Node의 메모리에 접근하면서 메모리 지연이 증가하는 상태                  |
 
 즉:
 
