@@ -129,7 +129,10 @@ Linux CFS 기준으로 일반적인 100ms 주기에서:
 
 에 더 가깝습니다.
 
-## Hyper-Thread (Intel) / SMT (AMD) 와 Software Thread 차이
+<details>
+    <summary>Hyper-Thread (Intel) / SMT (AMD) 와 Software Thread 차이</summary>
+
+<br/>
 
 핵심은:
 
@@ -323,6 +326,8 @@ Physical Core
 ```
 
 입니다.
+
+</details>
 
 ---
 
