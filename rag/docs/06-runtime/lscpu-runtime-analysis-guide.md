@@ -143,7 +143,7 @@ resources:
 일반적으로:
 
 ```text
-Logical CPU(Hyper-thread) 1개
+Logical CPU 1개
 분량의 CPU 실행 예산
 ```
 
