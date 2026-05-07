@@ -124,9 +124,9 @@ CPU 연산 처리 속도가 빠르거나,
 
 Quota를 더 빠르게 소진하여
 Throttling이 발생할 수 있습니다.
+```
 
 Throttling: Linux CFS가 다음 Period까지 Container 실행을 일시적으로 제한할 수 있습니다.
-```
 
 ---
 
