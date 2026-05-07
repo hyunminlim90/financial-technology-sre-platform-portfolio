@@ -130,16 +130,12 @@ CPU 점유량(CPU Time Resource)
 즉:
 
 ```text
-CPU 성능이 좋아도
-Quota를 빨리 소진하면
-Throttling 발생 가능
+CPU 연산 처리 속도가 빠르거나,
+병렬 실행량이 높을수록
 
+Quota를 더 빠르게 소진하여
+Throttling이 발생할 수 있습니다.
 ```
-합니다.
-
-</br>
-
----
 
 예를 들어:
 
