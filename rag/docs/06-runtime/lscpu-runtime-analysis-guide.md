@@ -130,45 +130,6 @@ Throttling: Linux CFS가 다음 Period까지 Container 실행을 일시적으로
 
 ---
 
-## 중요한 점 — 1:1 고정이 아님
-
-많이 헷갈리는 부분인데:
-
-```text
-Software Thread 1개
-=
-Hyper-thread 1개에 영구 고정
-```
-
-되는 것은 아닙니다.
-
-Linux Scheduler가:
-
-* Time Slice
-* Priority
-* Runnable Queue
-* CPU Load
-
-등을 기준으로:
-
-```text
-실행 위치를 계속 변경(Context Switch)
-```
-
-합니다.
-
-즉:
-
-```text
-Software Thread는
-Logical CPU 위에서
-빠르게 교체 실행
-```
-
-됩니다.
-
----
-
 ## 동시에 Running 가능한 수
 
 여기서 중요한 개념:
