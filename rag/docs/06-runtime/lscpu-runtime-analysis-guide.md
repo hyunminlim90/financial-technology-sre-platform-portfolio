@@ -64,17 +64,18 @@ Container는:
 
 을 부여받습니다.
 
-#### CPU 단위 (m) 의미
+#### CPU 단위 (m) 와 Quota 의미
 
 Kubernetes에서:
 
 ```text
 1000m = 1 CPU
+500m = 0.5 CPU
 ````
 
 를 의미합니다.
 
-여기서 CPU는 일반적으로:
+여기서 1 CPU는 일반적으로:
 
 ```text
 Host Linux가 인식하는
@@ -94,6 +95,39 @@ Host Linux가 인식하는
 | 100m  | 0.1 vCPU |
 
 입니다.
+
+중요한 점은:
+
+```text
+50ms 동안 CPU를 사용 가능
+이라는 의미보다는,
+
+CPU 점유량(CPU Time Resource)
+에 가까운 개념입니다.
+```
+
+멀티 스레드 / 멀티 코어 환경에서
+이 Quota가 실제 흐르는 시간보다 훨씬 빠르게 소모될 수 있습니다.
+
+예:
+
+```text
+코어 2개가 동시에 실행되면
+실제 시간 25ms 만에
+50ms Quota 소진 가능
+```
+
+합니다.
+
+즉:
+
+```text
+CPU 성능이 좋아도
+Quota를 빨리 소진하면
+Throttling 발생 가능
+
+```
+합니다.
 
 </br>
 
@@ -294,6 +328,56 @@ Physical Core
 ```
 
 입니다.
+
+</details>
+
+<details>
+  <summary>멀티코어(Multi-core)와 멀티스레드(Multi-thread) 개념</summary>
+
+</br>
+
+멀티코어(Multi-core)와 멀티스레드(Multi-thread)는 서로 다른 계층의 개념입니다.
+
+| 구분 | 의미 |
+|---|---|
+| **멀티코어 (Multi-core)** | CPU 칩 내부에 물리적인 연산 코어(Core)가 여러 개 존재 |
+| **멀티스레드 (Multi-thread)** | 여러 실행 흐름(Thread)을 동시에 처리하려는 소프트웨어 구조 |
+
+---
+
+## 멀티코어
+
+예를 들어 `4 Core CPU`는 동시에 실제 연산 가능한 **물리 코어 4개**를 의미합니다.
+
+---
+
+## 멀티스레드
+
+반면 `Java Thread 100개`는 프로그램 내부 **실행 흐름 100개**를 의미합니다.
+
+이 Thread들은 Linux Scheduler(CFS)에 의해 Logical CPU(Hyper-thread) 위에서 빠르게 교체 실행(Context Switch)됩니다.
+
+---
+
+## HT/SMT (Hyper-threading)
+
+HT/SMT는 **물리 Core 1개를 Logical CPU 2개처럼 보이게 하는 기술**입니다.
+
+```text
+물리 Core 4개 + HT ON
+        ↓
+Logical CPU 8개처럼 동작
+```
+
+---
+
+## 정리
+
+| 개념 | 설명 |
+|---|---|
+| **멀티코어** | 물리적인 병렬 처리 |
+| **멀티스레드** | 소프트웨어 실행 흐름의 병렬 처리 |
+| **HT/SMT** | 물리 코어 효율을 높이기 위한 논리적 병렬 처리 |
 
 </details>
 
