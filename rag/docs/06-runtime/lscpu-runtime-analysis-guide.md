@@ -765,8 +765,6 @@ CPU 실행 예산(Quota)을
 
 </details>
 
-</br>
-
 ---
 
 ## 먼저 이해해야 하는 CPU 계층 구조
@@ -1665,8 +1663,6 @@ CPU 관련 여부 확인
 | **NUMA** | 서버 하드웨어 | CPU Socket 간 메모리 접근 topology |
 
 </details>
-
-</br>
 
 ---
 
