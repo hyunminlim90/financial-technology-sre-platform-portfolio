@@ -82,6 +82,10 @@ Host Linux가 인식하는
 논리 CPU(Logical CPU) 1개
 = vCPU 1개
 = Hyper-thread 1개
+
+Linux Scheduler(CFS)는 Logical CPU 단위로 Thread를 스케줄링하고
+CPU Time을 계산하기 때문에,
+일반적으로 Logical CPU(vCPU) 기준으로 이해하는 것이 가장 정확합니다.
 ```
 
 에 해당하는 연산 능력을 의미합니다.
