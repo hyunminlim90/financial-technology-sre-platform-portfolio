@@ -121,7 +121,6 @@ CPU 점유량(CPU Time Resource)
 예:
 
 ```text
-Logical CPU 2개가 동시에 실행되면
 실제 시간 25ms 만에
 50ms Quota 소진 가능
 ```
