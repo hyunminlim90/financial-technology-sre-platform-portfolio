@@ -211,8 +211,6 @@ CPU 부족
 
 입니다.
 
----
-
 ## 장애의 연쇄 반응 (Chain Reaction)
 
 짧은 CPU 중단도 Runtime 전체에 영향을 줄 수 있습니다.
@@ -229,18 +227,30 @@ CPU Throttling
 
 특히:
 
-* Event Loop 기반 Runtime
-* 적은 Thread 기반 구조
+* Event Loop 기반 Runtime (적은 Thread 기반 구조)
 * Latency-sensitive 시스템
 
 에서는 영향이 훨씬 큽니다.
-
----
 
 ## 특히 위험한 Runtime 구조
 
 다음과 같은 시스템은
 짧은 CPU Stall에도 민감합니다.
+
+<details>
+  <summary>CPU Stall</summary>
+
+```
+CPU가 명령어를 계속 실행하지 못하고,
+
+데이터 준비 지연, 메모리 접근(Cache Miss), 분기 처리(Branch Prediction 실패) 등을 기다리면서
+실제 연산이 일시적으로 멈추거나 지연되는 상태
+
+이 경우 CPU 사용률은 높게 보일 수 있지만,
+실제 처리량(Throughput)과 응답 속도(Latency)는 크게 저하될 수 있습니다.
+```
+
+</details>
 
 | Runtime           | 영향                 |
 | ----------------- | ------------------ |
