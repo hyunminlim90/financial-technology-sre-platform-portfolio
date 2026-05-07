@@ -195,7 +195,7 @@ CPU Throttling
 중요한 점은:
 
 ```text
-CPU가 실제로 놀고(Idle) 있어도
+CPU가 실제로 유휴(Idle) 상태여도
 Container는 CPU 실행 권한이 없어서 멈출 수 있음
 ```
 
