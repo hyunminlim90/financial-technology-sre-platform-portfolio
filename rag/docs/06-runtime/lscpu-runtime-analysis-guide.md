@@ -19,7 +19,7 @@
 </br>
 
 <details>
-    <summary>Kubernetes CPU Throttling 장애란?</summary>
+  <summary>Kubernetes CPU Throttling 장애란?</summary>
 
 <br/>
 
@@ -140,18 +140,636 @@ Throttling 발생 가능
 
 </br>
 
+---
 
+예를 들어:
 
+```yaml
+limits:
+  cpu: "500m"
+```
 
+이면,
 
+Linux CFS 기준으로 일반적인 100ms 주기에서:
 
+```text
+100ms 동안
+50ms 분량의 CPU 연산 예산(Quota)
+```
 
+을 부여받게 됩니다.
 
+즉:
 
+```text
+"50ms 동안 실행"
+```
 
+이 아니라,
 
+```text
+"50ms 분량의 CPU 연산 권한"
+```
 
+에 더 가깝습니다.
 
+---
+
+## 중요한 점 — 1:1 고정이 아님
+
+많이 헷갈리는 부분인데:
+
+```text
+Software Thread 1개
+=
+Hyper-thread 1개에 영구 고정
+```
+
+되는 것은 아닙니다.
+
+Linux Scheduler가:
+
+* Time Slice
+* Priority
+* Runnable Queue
+* CPU Load
+
+등을 기준으로:
+
+```text
+실행 위치를 계속 변경(Context Switch)
+```
+
+합니다.
+
+즉:
+
+```text
+Software Thread는
+Logical CPU 위에서
+빠르게 교체 실행
+```
+
+됩니다.
+
+---
+
+## 동시에 Running 가능한 수
+
+여기서 중요한 개념:
+
+| 개념                | 의미                   |
+| ----------------- | -------------------- |
+| Software Thread 수 | 생성 가능한 실행 흐름 수       |
+| Logical CPU 수     | 동시에 Running 가능한 슬롯 수 |
+
+예:
+
+```text
+Logical CPU 8개
+```
+
+이면:
+
+```text
+동시에 Running 가능한 Thread ≈ 8개
+```
+
+입니다.
+
+하지만:
+
+```text
+Software Thread 100개 생성
+```
+
+은 가능합니다.
+
+다만:
+
+```text
+Scheduler(CFS)가
+빠르게 교체 실행(Context Switch)
+```
+
+합니다.
+
+---
+
+## Runnable Queue와 CPU Saturation
+
+예:
+
+```text
+Logical CPU 1개
+Software Thread 100개
+```
+
+이면:
+
+```text
+1개 Running
+99개 Runnable(실행 대기)
+```
+
+상태가 될 수 있습니다.
+
+이 경우:
+
+* Runnable Queue 증가
+* Context Switch 증가
+* CPU Cache Miss 증가
+* Scheduler Overhead 증가
+* CPU Saturation
+
+등이 발생할 수 있습니다.
+
+---
+
+## 왜 WebFlux/Event Loop가 중요한가?
+
+전통적인 Thread-per-request 모델은:
+
+```text
+요청 수 증가
+→ Software Thread 증가
+→ Runnable Queue 증가
+→ Context Switch 증가
+```
+
+가 발생할 수 있습니다.
+
+반면:
+
+* Spring WebFlux
+* Netty
+* Reactive Runtime
+
+등은:
+
+```text
+적은 수의 Software Thread
+```
+
+로:
+
+```text
+Logical CPU(Hyper-thread)
+```
+
+를 효율적으로 사용하려는 구조입니다.
+
+즉:
+
+```text
+적은 Thread
++
+낮은 Context Switch
++
+높은 Cache 효율
+```
+
+을 목표로 합니다.
+
+---
+
+## Kubernetes CPU Limit와의 관계
+
+예:
+
+```yaml
+resources:
+  limits:
+    cpu: "1000m"
+```
+
+이면,
+
+일반적으로:
+
+```text
+Logical CPU(Hyper-thread) 1개
+분량의 CPU 실행 예산
+```
+
+을 의미합니다.
+
+하지만 Container 내부에서는:
+
+* Netty Thread
+* Kafka Thread
+* GC Thread
+* Worker Thread
+
+등 여러 Software Thread가:
+
+```text
+동일한 CPU Quota Pool
+```
+
+을 공유합니다.
+
+즉:
+
+```text
+GC가 CPU Quota를 많이 사용하면
+Event Loop가 Throttle
+```
+
+될 수도 있습니다.
+
+---
+
+## 한 줄 요약
+
+```text
+Hyper-thread / Logical CPU
+=
+CPU 하드웨어 실행 슬롯
+
+Software Thread
+=
+그 슬롯 위에서 실행되는
+프로그램 실행 흐름
+```
+
+입니다.
+
+---
+
+## 여기서 가장 중요한 핵심
+
+많이 헷갈리는 부분인데:
+
+```text
+"50ms 동안만 실행 가능"
+```
+
+이라는 의미가 아닙니다.
+
+정확히는:
+
+```text
+"50ms 분량의 CPU 연산 예산"
+```
+
+을 의미합니다.
+
+즉:
+
+* CPU가 매우 빠르면
+* 멀티 스레드로 Burst 실행하면
+* Event Loop가 순간적으로 높은 연산을 수행하면
+
+```text
+100ms 주기가 끝나기도 전에
+50ms 분량의 CPU 예산을
+순식간에 모두 사용
+```
+
+할 수 있습니다.
+
+---
+
+## 그러면 무슨 일이 발생하나?
+
+Linux CFS는:
+
+```text
+"이번 주기의 CPU 예산을 모두 사용했으므로
+다음 주기까지 실행 금지"
+```
+
+상태로 Container를 잠시 멈춥니다.
+
+이것이:
+
+```text
+CPU Throttling
+```
+
+입니다.
+
+중요한 점은:
+
+```text
+CPU가 실제로 놀고(Idle) 있어도
+Container는 CPU 실행 권한이 없어서 멈출 수 있음
+```
+
+입니다.
+
+즉:
+
+```text
+CPU 부족
+≠
+반드시 CPU Throttling
+```
+
+입니다.
+
+---
+
+## 장애의 연쇄 반응 (Chain Reaction)
+
+짧은 CPU 중단도 Runtime 전체에 영향을 줄 수 있습니다.
+
+```text
+CPU Throttling
+→ Event Loop 지연
+→ Request Queue 증가
+→ Timeout 증가
+→ Retry 증가
+→ Kafka Lag 증가
+→ Latency Spike
+```
+
+특히:
+
+* Event Loop 기반 Runtime
+* 적은 Thread 기반 구조
+* Latency-sensitive 시스템
+
+에서는 영향이 훨씬 큽니다.
+
+---
+
+## 특히 위험한 Runtime 구조
+
+다음과 같은 시스템은
+짧은 CPU Stall에도 민감합니다.
+
+| Runtime           | 영향                 |
+| ----------------- | ------------------ |
+| Spring WebFlux    | Event Loop 지연      |
+| Netty             | Connection 처리 지연   |
+| Kafka Consumer    | Consumer Lag 증가    |
+| JVM               | GC 지연 / STW 증가     |
+| Redis Client      | Connection Timeout |
+| Reactive Pipeline | Backpressure 증가    |
+
+이들은:
+
+```text
+적은 수의 Thread
++
+빠른 Event Loop 처리
+```
+
+를 기반으로 동작하기 때문입니다.
+
+---
+
+## CPU Usage는 낮은데 왜 느린가?
+
+CPU Throttling의 가장 위험한 특징은:
+
+```text
+CPU Usage는 낮게 보일 수 있음
+```
+
+에도,
+
+```text
+Runtime Latency는 급격히 증가
+```
+
+할 수 있다는 점입니다.
+
+즉:
+
+```text
+CPU Idle ≠ 서비스 정상
+```
+
+일 수 있습니다.
+
+실제로는:
+
+* Runnable Queue 증가
+* Event Loop Stall
+* Context Switch 증가
+* Scheduler Delay
+* Request Queue 증가
+
+가 동시에 발생할 수 있습니다.
+
+---
+
+## Kubernetes는 무엇을 하는가?
+
+중요한 점은:
+
+```text
+Kubernetes 자체가 CPU를 제한하는 것이 아님
+```
+
+입니다.
+
+실제 Enforcement(강제 제한)는:
+
+```text
+Host Linux Kernel
++
+cgroup
++
+CFS Scheduler
+```
+
+가 수행합니다.
+
+즉 흐름은:
+
+```text
+Kubernetes
+→ kubelet
+→ containerd / CRI
+→ cgroup 설정 생성
+→ Linux Kernel CFS Enforcement
+```
+
+입니다.
+
+---
+
+## 실제 Linux 제어 파일
+
+### cgroup v1
+
+```bash
+cpu.cfs_period_us
+cpu.cfs_quota_us
+```
+
+### cgroup v2
+
+```bash
+cpu.max
+```
+
+실제 경로 예시:
+
+```bash
+/sys/fs/cgroup/
+/sys/fs/cgroup/kubepods.slice/
+```
+
+---
+
+## CFS Period / Quota 조정 가능 여부
+
+조정 가능합니다.
+
+예:
+
+```bash
+cpu.cfs_period_us
+```
+
+기본값:
+
+```text
+100000 = 100ms
+```
+
+예:
+
+```bash
+echo 200000 > cpu.cfs_period_us
+```
+
+이면:
+
+```text
+Period = 200ms
+```
+
+가 됩니다.
+
+즉:
+
+```text
+더 긴 CPU Burst 허용
+```
+
+효과가 발생할 수 있습니다.
+
+---
+
+## 하지만 왜 실무에서는 잘 안 바꾸나?
+
+실무에서는 보통:
+
+```text
+Period 변경
+```
+
+보다,
+
+```text
+CPU limit 자체 완화
+```
+
+를 더 선호합니다.
+
+왜냐면:
+
+* kubelet 전체 영향
+* Fairness 변화
+* Noisy Neighbor 위험
+* 특정 Container CPU 독점 가능성
+
+이 생길 수 있기 때문입니다.
+
+---
+
+## SRE 관점 핵심
+
+특히:
+
+* Spring WebFlux
+* Netty
+* Kafka
+* Reactive Runtime
+
+환경에서는:
+
+```text
+짧은 CPU Stall
+=
+전체 Latency Spike
+```
+
+로 이어질 수 있습니다.
+
+따라서 중요한 것은:
+
+* 너무 타이트한 CPU limit 지양
+* 충분한 Request 보장
+* Burst 여유 확보
+* P99 / P999 Latency 관측
+* Event Loop Stall 모니터링
+* CPU Throttling Metric 관측
+
+입니다.
+
+---
+
+## 대표적인 모니터링 지표
+
+### CPU Throttling 시간
+
+```promql
+container_cpu_cfs_throttled_seconds_total
+```
+
+### CPU Throttling 발생 횟수
+
+```promql
+container_cpu_cfs_throttled_periods_total
+```
+
+### CPU 사용률
+
+```promql
+container_cpu_usage_seconds_total
+```
+
+---
+
+## 실무에서 자주 발생하는 오해
+
+| 오해                | 실제                  |
+| ----------------- | ------------------- |
+| CPU Usage 낮음 = 정상 | Latency Spike 가능    |
+| CPU Idle = 여유 있음  | Throttling 가능       |
+| Container가 CPU 제한 | 실제론 Host Kernel CFS |
+| limit은 안전장치       | 너무 타이트하면 장애 유발 가능   |
+
+---
+
+## 한 줄 요약
+
+```text
+Kubernetes CPU Throttling은
+CPU 부족 자체보다,
+
+"짧은 주기 안에서
+CPU 실행 예산(Quota)을
+너무 빠르게 소진"
+
+해서 발생하는 Runtime Latency 문제에 가깝습니다.
+```
+
+</details>
+
+</br>
+
+---
+
+## 먼저 이해해야 하는 CPU 계층 구조
 
 <details>
   <summary>1. Physical Core — CPU 내부의 실제 연산 하드웨어</summary>
@@ -1045,633 +1663,6 @@ CPU 관련 여부 확인
 | **Context Switch** | OS | Logical CPU 위 실행 Thread 교체 |
 | **Event Loop Block** | Runtime | Event Loop Thread 점유로 인한 처리 지연 |
 | **NUMA** | 서버 하드웨어 | CPU Socket 간 메모리 접근 topology |
-
-</details>
-
-</br>
-
----
-
-예를 들어:
-
-```yaml
-limits:
-  cpu: "500m"
-```
-
-이면,
-
-Linux CFS 기준으로 일반적인 100ms 주기에서:
-
-```text
-100ms 동안
-50ms 분량의 CPU 연산 예산(Quota)
-```
-
-을 부여받게 됩니다.
-
-즉:
-
-```text
-"50ms 동안 실행"
-```
-
-이 아니라,
-
-```text
-"50ms 분량의 CPU 연산 권한"
-```
-
-에 더 가깝습니다.
-
----
-
-## 중요한 점 — 1:1 고정이 아님
-
-많이 헷갈리는 부분인데:
-
-```text
-Software Thread 1개
-=
-Hyper-thread 1개에 영구 고정
-```
-
-되는 것은 아닙니다.
-
-Linux Scheduler가:
-
-* Time Slice
-* Priority
-* Runnable Queue
-* CPU Load
-
-등을 기준으로:
-
-```text
-실행 위치를 계속 변경(Context Switch)
-```
-
-합니다.
-
-즉:
-
-```text
-Software Thread는
-Logical CPU 위에서
-빠르게 교체 실행
-```
-
-됩니다.
-
----
-
-## 동시에 Running 가능한 수
-
-여기서 중요한 개념:
-
-| 개념                | 의미                   |
-| ----------------- | -------------------- |
-| Software Thread 수 | 생성 가능한 실행 흐름 수       |
-| Logical CPU 수     | 동시에 Running 가능한 슬롯 수 |
-
-예:
-
-```text
-Logical CPU 8개
-```
-
-이면:
-
-```text
-동시에 Running 가능한 Thread ≈ 8개
-```
-
-입니다.
-
-하지만:
-
-```text
-Software Thread 100개 생성
-```
-
-은 가능합니다.
-
-다만:
-
-```text
-Scheduler(CFS)가
-빠르게 교체 실행(Context Switch)
-```
-
-합니다.
-
----
-
-## Runnable Queue와 CPU Saturation
-
-예:
-
-```text
-Logical CPU 1개
-Software Thread 100개
-```
-
-이면:
-
-```text
-1개 Running
-99개 Runnable(실행 대기)
-```
-
-상태가 될 수 있습니다.
-
-이 경우:
-
-* Runnable Queue 증가
-* Context Switch 증가
-* CPU Cache Miss 증가
-* Scheduler Overhead 증가
-* CPU Saturation
-
-등이 발생할 수 있습니다.
-
----
-
-## 왜 WebFlux/Event Loop가 중요한가?
-
-전통적인 Thread-per-request 모델은:
-
-```text
-요청 수 증가
-→ Software Thread 증가
-→ Runnable Queue 증가
-→ Context Switch 증가
-```
-
-가 발생할 수 있습니다.
-
-반면:
-
-* Spring WebFlux
-* Netty
-* Reactive Runtime
-
-등은:
-
-```text
-적은 수의 Software Thread
-```
-
-로:
-
-```text
-Logical CPU(Hyper-thread)
-```
-
-를 효율적으로 사용하려는 구조입니다.
-
-즉:
-
-```text
-적은 Thread
-+
-낮은 Context Switch
-+
-높은 Cache 효율
-```
-
-을 목표로 합니다.
-
----
-
-## Kubernetes CPU Limit와의 관계
-
-예:
-
-```yaml
-resources:
-  limits:
-    cpu: "1000m"
-```
-
-이면,
-
-일반적으로:
-
-```text
-Logical CPU(Hyper-thread) 1개
-분량의 CPU 실행 예산
-```
-
-을 의미합니다.
-
-하지만 Container 내부에서는:
-
-* Netty Thread
-* Kafka Thread
-* GC Thread
-* Worker Thread
-
-등 여러 Software Thread가:
-
-```text
-동일한 CPU Quota Pool
-```
-
-을 공유합니다.
-
-즉:
-
-```text
-GC가 CPU Quota를 많이 사용하면
-Event Loop가 Throttle
-```
-
-될 수도 있습니다.
-
----
-
-## 한 줄 요약
-
-```text
-Hyper-thread / Logical CPU
-=
-CPU 하드웨어 실행 슬롯
-
-Software Thread
-=
-그 슬롯 위에서 실행되는
-프로그램 실행 흐름
-```
-
-입니다.
-
----
-
-## 여기서 가장 중요한 핵심
-
-많이 헷갈리는 부분인데:
-
-```text
-"50ms 동안만 실행 가능"
-```
-
-이라는 의미가 아닙니다.
-
-정확히는:
-
-```text
-"50ms 분량의 CPU 연산 예산"
-```
-
-을 의미합니다.
-
-즉:
-
-* CPU가 매우 빠르면
-* 멀티 스레드로 Burst 실행하면
-* Event Loop가 순간적으로 높은 연산을 수행하면
-
-```text
-100ms 주기가 끝나기도 전에
-50ms 분량의 CPU 예산을
-순식간에 모두 사용
-```
-
-할 수 있습니다.
-
----
-
-## 그러면 무슨 일이 발생하나?
-
-Linux CFS는:
-
-```text
-"이번 주기의 CPU 예산을 모두 사용했으므로
-다음 주기까지 실행 금지"
-```
-
-상태로 Container를 잠시 멈춥니다.
-
-이것이:
-
-```text
-CPU Throttling
-```
-
-입니다.
-
-중요한 점은:
-
-```text
-CPU가 실제로 놀고(Idle) 있어도
-Container는 CPU 실행 권한이 없어서 멈출 수 있음
-```
-
-입니다.
-
-즉:
-
-```text
-CPU 부족
-≠
-반드시 CPU Throttling
-```
-
-입니다.
-
----
-
-## 장애의 연쇄 반응 (Chain Reaction)
-
-짧은 CPU 중단도 Runtime 전체에 영향을 줄 수 있습니다.
-
-```text
-CPU Throttling
-→ Event Loop 지연
-→ Request Queue 증가
-→ Timeout 증가
-→ Retry 증가
-→ Kafka Lag 증가
-→ Latency Spike
-```
-
-특히:
-
-* Event Loop 기반 Runtime
-* 적은 Thread 기반 구조
-* Latency-sensitive 시스템
-
-에서는 영향이 훨씬 큽니다.
-
----
-
-## 특히 위험한 Runtime 구조
-
-다음과 같은 시스템은
-짧은 CPU Stall에도 민감합니다.
-
-| Runtime           | 영향                 |
-| ----------------- | ------------------ |
-| Spring WebFlux    | Event Loop 지연      |
-| Netty             | Connection 처리 지연   |
-| Kafka Consumer    | Consumer Lag 증가    |
-| JVM               | GC 지연 / STW 증가     |
-| Redis Client      | Connection Timeout |
-| Reactive Pipeline | Backpressure 증가    |
-
-이들은:
-
-```text
-적은 수의 Thread
-+
-빠른 Event Loop 처리
-```
-
-를 기반으로 동작하기 때문입니다.
-
----
-
-## CPU Usage는 낮은데 왜 느린가?
-
-CPU Throttling의 가장 위험한 특징은:
-
-```text
-CPU Usage는 낮게 보일 수 있음
-```
-
-에도,
-
-```text
-Runtime Latency는 급격히 증가
-```
-
-할 수 있다는 점입니다.
-
-즉:
-
-```text
-CPU Idle ≠ 서비스 정상
-```
-
-일 수 있습니다.
-
-실제로는:
-
-* Runnable Queue 증가
-* Event Loop Stall
-* Context Switch 증가
-* Scheduler Delay
-* Request Queue 증가
-
-가 동시에 발생할 수 있습니다.
-
----
-
-## Kubernetes는 무엇을 하는가?
-
-중요한 점은:
-
-```text
-Kubernetes 자체가 CPU를 제한하는 것이 아님
-```
-
-입니다.
-
-실제 Enforcement(강제 제한)는:
-
-```text
-Host Linux Kernel
-+
-cgroup
-+
-CFS Scheduler
-```
-
-가 수행합니다.
-
-즉 흐름은:
-
-```text
-Kubernetes
-→ kubelet
-→ containerd / CRI
-→ cgroup 설정 생성
-→ Linux Kernel CFS Enforcement
-```
-
-입니다.
-
----
-
-## 실제 Linux 제어 파일
-
-### cgroup v1
-
-```bash
-cpu.cfs_period_us
-cpu.cfs_quota_us
-```
-
-### cgroup v2
-
-```bash
-cpu.max
-```
-
-실제 경로 예시:
-
-```bash
-/sys/fs/cgroup/
-/sys/fs/cgroup/kubepods.slice/
-```
-
----
-
-## CFS Period / Quota 조정 가능 여부
-
-조정 가능합니다.
-
-예:
-
-```bash
-cpu.cfs_period_us
-```
-
-기본값:
-
-```text
-100000 = 100ms
-```
-
-예:
-
-```bash
-echo 200000 > cpu.cfs_period_us
-```
-
-이면:
-
-```text
-Period = 200ms
-```
-
-가 됩니다.
-
-즉:
-
-```text
-더 긴 CPU Burst 허용
-```
-
-효과가 발생할 수 있습니다.
-
----
-
-## 하지만 왜 실무에서는 잘 안 바꾸나?
-
-실무에서는 보통:
-
-```text
-Period 변경
-```
-
-보다,
-
-```text
-CPU limit 자체 완화
-```
-
-를 더 선호합니다.
-
-왜냐면:
-
-* kubelet 전체 영향
-* Fairness 변화
-* Noisy Neighbor 위험
-* 특정 Container CPU 독점 가능성
-
-이 생길 수 있기 때문입니다.
-
----
-
-## SRE 관점 핵심
-
-특히:
-
-* Spring WebFlux
-* Netty
-* Kafka
-* Reactive Runtime
-
-환경에서는:
-
-```text
-짧은 CPU Stall
-=
-전체 Latency Spike
-```
-
-로 이어질 수 있습니다.
-
-따라서 중요한 것은:
-
-* 너무 타이트한 CPU limit 지양
-* 충분한 Request 보장
-* Burst 여유 확보
-* P99 / P999 Latency 관측
-* Event Loop Stall 모니터링
-* CPU Throttling Metric 관측
-
-입니다.
-
----
-
-## 대표적인 모니터링 지표
-
-### CPU Throttling 시간
-
-```promql
-container_cpu_cfs_throttled_seconds_total
-```
-
-### CPU Throttling 발생 횟수
-
-```promql
-container_cpu_cfs_throttled_periods_total
-```
-
-### CPU 사용률
-
-```promql
-container_cpu_usage_seconds_total
-```
-
----
-
-## 실무에서 자주 발생하는 오해
-
-| 오해                | 실제                  |
-| ----------------- | ------------------- |
-| CPU Usage 낮음 = 정상 | Latency Spike 가능    |
-| CPU Idle = 여유 있음  | Throttling 가능       |
-| Container가 CPU 제한 | 실제론 Host Kernel CFS |
-| limit은 안전장치       | 너무 타이트하면 장애 유발 가능   |
-
----
-
-## 한 줄 요약
-
-```text
-Kubernetes CPU Throttling은
-CPU 부족 자체보다,
-
-"짧은 주기 안에서
-CPU 실행 예산(Quota)을
-너무 빠르게 소진"
-
-해서 발생하는 Runtime Latency 문제에 가깝습니다.
-```
 
 </details>
 
