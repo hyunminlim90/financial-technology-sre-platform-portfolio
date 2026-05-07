@@ -95,39 +95,7 @@ Host Linux가 인식하는
 
 입니다.
 
----
-
-예를 들어:
-
-```yaml
-limits:
-  cpu: "500m"
-```
-
-이면,
-
-Linux CFS 기준으로 일반적인 100ms 주기에서:
-
-```text
-100ms 동안
-50ms 분량의 CPU 연산 예산(Quota)
-```
-
-을 부여받게 됩니다.
-
-즉:
-
-```text
-"50ms 동안 실행"
-```
-
-이 아니라,
-
-```text
-"50ms 분량의 CPU 연산 권한"
-```
-
-에 더 가깝습니다.
+</br>
 
 <details>
     <summary>Hyper-Thread (Intel) / SMT (AMD) 와 Software Thread 차이</summary>
@@ -328,6 +296,42 @@ Physical Core
 입니다.
 
 </details>
+
+</br>
+
+---
+
+예를 들어:
+
+```yaml
+limits:
+  cpu: "500m"
+```
+
+이면,
+
+Linux CFS 기준으로 일반적인 100ms 주기에서:
+
+```text
+100ms 동안
+50ms 분량의 CPU 연산 예산(Quota)
+```
+
+을 부여받게 됩니다.
+
+즉:
+
+```text
+"50ms 동안 실행"
+```
+
+이 아니라,
+
+```text
+"50ms 분량의 CPU 연산 권한"
+```
+
+에 더 가깝습니다.
 
 ---
 
