@@ -81,7 +81,7 @@ Kubernetes에서:
 Host Linux가 인식하는
 논리 CPU(Logical CPU) 1개
 = vCPU 1개
-= Hyper-thread 1개
+= Hyper-thread(CPU 하드웨어의 논리 실행 단위) 1개
 ```
 
 ```text
