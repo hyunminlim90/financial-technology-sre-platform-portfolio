@@ -175,25 +175,6 @@ Event Loop가 Throttle
 
 될 수도 있습니다.
 
----
-
-## 한 줄 요약
-
-```text
-Hyper-thread / Logical CPU
-=
-CPU 하드웨어 실행 슬롯
-
-Software Thread
-=
-그 슬롯 위에서 실행되는
-프로그램 실행 흐름
-```
-
-입니다.
-
----
-
 ## 여기서 가장 중요한 핵심
 
 많이 헷갈리는 부분인데:
