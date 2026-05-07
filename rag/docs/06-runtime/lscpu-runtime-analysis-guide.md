@@ -125,40 +125,8 @@ CPU 연산 처리 속도가 빠르거나,
 Quota를 더 빠르게 소진하여
 Throttling이 발생할 수 있습니다.
 
-(Throttling: Linux CFS가 다음 Period까지 Container 실행을 일시적으로 제한할 수 있습니다.)
+Throttling: Linux CFS가 다음 Period까지 Container 실행을 일시적으로 제한할 수 있습니다.
 ```
-
-예를 들어:
-
-```yaml
-limits:
-  cpu: "500m"
-```
-
-이면,
-
-Linux CFS 기준으로 일반적인 100ms 주기에서:
-
-```text
-100ms 동안
-50ms 분량의 CPU 연산 예산(Quota)
-```
-
-을 부여받게 됩니다.
-
-즉:
-
-```text
-"50ms 동안 실행"
-```
-
-이 아니라,
-
-```text
-"50ms 분량의 CPU 연산 권한"
-```
-
-에 더 가깝습니다.
 
 ---
 
