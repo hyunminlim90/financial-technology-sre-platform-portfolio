@@ -98,8 +98,7 @@ CPU Time을 계산하기 때문에,
 중요한 점은:
 
 ```text
-50ms 동안 CPU 사용 가능
-이라는 의미보다는,
+50ms 분량의 CPU 연산 예산(Quota)은
 
 CPU 점유량(CPU Time Resource)
 에 가까운 개념입니다.
