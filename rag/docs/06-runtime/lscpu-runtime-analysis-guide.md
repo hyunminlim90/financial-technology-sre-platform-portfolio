@@ -243,12 +243,36 @@ CPU Throttling
 ```
 CPU가 명령어를 계속 실행하지 못하고,
 
-데이터 준비 지연, 메모리 접근(Cache Miss), 분기 처리(Branch Prediction 실패) 등을 기다리면서
-실제 연산이 일시적으로 멈추거나 지연되는 상태
+데이터 준비 지연,
+메모리 접근(Cache Miss),
+분기 처리(Branch Prediction 실패) 등을
 
-이 경우 CPU 사용률은 높게 보일 수 있지만,
-실제 처리량(Throughput)과 응답 속도(Latency)는 크게 저하될 수 있습니다.
+기다리면서
+
+실제 연산이 일시적으로 멈추거나 지연되는 상태
 ```
+
+대표적인 원인:
+
+| 원인 | 설명 |
+|---|---|
+| **Data Dependency** | 이전 연산 결과를 기다림 |
+| **Cache Miss** | RAM 데이터 대기 |
+| **Branch Misprediction** | 잘못 예측한 분기 처리 복구 |
+| **Memory Latency** | 메모리 접근 지연 |
+| **I/O Wait** | 디스크/네트워크 대기 |
+| **Lock Contention** | Mutex/Spinlock 경쟁 |
+| **CPU Throttling** | CFS Quota 제한 |
+| **Context Switch** | Scheduler 전환 비용 |
+| **NUMA Remote Access** | 원격 메모리 접근 지연 |
+
+즉:
+
+```
+연산 진행이 중간에 계속 끊기는 상태
+```
+
+에 가깝습니다.
 
 </details>
 
