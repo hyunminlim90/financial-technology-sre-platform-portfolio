@@ -84,6 +84,8 @@ Host Linux가 인식하는
 = Hyper-thread(CPU 하드웨어의 논리 실행 단위) 1개
 ```
 
+에 해당하는 연산 능력을 의미합니다.
+
 ```text
 Linux Scheduler(CFS)는 
 Logical CPU 단위로 Thread를 스케줄링하고
@@ -91,8 +93,6 @@ CPU Time을 계산하기 때문에,
 
 일반적으로 Logical CPU(vCPU) 기준으로 이해하는 것이 가장 정확합니다.
 ```
-
-에 해당하는 연산 능력을 의미합니다.
 
 즉:
 
