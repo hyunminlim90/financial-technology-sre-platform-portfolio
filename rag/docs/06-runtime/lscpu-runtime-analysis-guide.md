@@ -338,7 +338,7 @@ Lock을 사용합니다.
 
 | 계층 (Layer) | 공유 자원 예시 | 설명 |
 |---|---|---|
-| Application | JVM Heap 객체 | 여러 Software Thread가 동일 Java 객체의 상태값을 읽고 수정하는 구조 |
+| Application | JVM Heap 영역 내의 객체 | 여러 Software Thread가 동일 Java 객체의 상태값을 읽고 수정하는 구조 |
 | Application | Task/Work Queue | Thread Pool 내부에서 여러 Worker Thread가 작업(Task/Event)을 공유하고 처리하는 Queue 구조 |
 | Runtime / I/O | Network Buffer | Netty/Event Loop 등이 네트워크 패킷 데이터를 읽고 쓰기 위해 공유하는 메모리 Buffer |
 | Runtime / Reactive | Event Loop Queue | Event Loop Thread가 비동기 이벤트·Callback·Task를 처리하기 위해 사용하는 Queue 구조 |
