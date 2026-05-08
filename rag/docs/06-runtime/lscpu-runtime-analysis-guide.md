@@ -358,6 +358,14 @@ Lock을 사용합니다.
 
 Lock(Mutex/Spinlock)은 단순한 CPU 동기화 기술이 아니라 **비즈니스 데이터 무결성(Data Integrity)을 보호하기 위한 수단**입니다.
 
+특히 아래와 같은 Business Domain 상태는 동시에 여러 요청(Request)이 접근할 수 있기 때문에 동시성 제어가 매우 중요합니다:
+
+- Session
+- Payment
+- Order
+- Balance
+- Inventory
+
 <details>
   <summary>CPU 동기화 기술(Thread Synchronization)이란?</summary>
 
@@ -472,14 +480,6 @@ No Inconsistent State
 ---
 
 </details>
-
-특히 아래와 같은 Business Domain 상태는 동시에 여러 요청(Request)이 접근할 수 있기 때문에 동시성 제어가 매우 중요합니다:
-
-- Session
-- Payment
-- Order
-- Balance
-- Inventory
 
 ## 대표적인 예시
 
