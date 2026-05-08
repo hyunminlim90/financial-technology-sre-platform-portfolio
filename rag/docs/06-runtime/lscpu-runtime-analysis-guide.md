@@ -373,7 +373,7 @@ Lock(Mutex/Spinlock)은 단순한 `CPU 동기화 기술`이 아니라 **비즈�
 
 <br/>
 
-**여러 Software Thread 또는 CPU Core가 동일한 공유 메모리(shared memory)에 접근할 때, 데이터 무결성(Data Integrity)을 유지하기 위해 실행 순서와 접근을 제어하는 메커니즘**입니다.
+**여러 CPU Core 또는 Software Thread가 동일한 공유 메모리(shared memory)에 접근할 때, 데이터 무결성(Data Integrity)을 유지하기 위해 실행 순서와 접근을 제어하는 메커니즘**입니다.
 
 즉:
 
