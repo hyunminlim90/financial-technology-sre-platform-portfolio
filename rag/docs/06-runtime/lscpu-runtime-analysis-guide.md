@@ -3046,7 +3046,7 @@ B 저장  → 6   ← 최종값이 7이 아니라 6
 
 공유 메모리에 여러 CPU Core가 접근하면 다음 두 가지 문제가 발생합니다.
 
-### 4-1. [가시성 문제 (Visibility)](#thread-cpu-ram-flow)
+### 4-1. [가시성 문제 (Visibility)](../20-deep-dive/thread-cpu-memory-flow.md)
 
 ```text
 Thread A가 값을 변경했지만
