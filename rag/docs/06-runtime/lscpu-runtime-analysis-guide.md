@@ -2973,11 +2973,9 @@ Software Thread가 코드를 실행
 
 </details>
 
-<a id="shared-memory"></a>
-
 <details>
   <summary>공유 메모리(Shared Memory)와 동기화 정리</summary>
-
+<a id="shared-memory"></a>
 <br/>
 
 공유 메모리(Shared Memory)는 **여러 개의 프로세스(Process)나 스레드(Software Thread)가 공유해서 읽고 쓸 수 있는 공용 메모리 공간**을 의미합니다.
