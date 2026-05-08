@@ -10,7 +10,7 @@
 - VM을 생성할 때 vCPU를 얼마나 할당해야 할지 기준이 없는 분
 - `lscpu` 결과를 보고 어떤 항목이 중요한지 모르겠는 분
 - SRE 관점에서 CPU 자원을 어떻게 설계하고 모니터링해야 하는지 궁금한 분
-- `Kubernetes 환경에서 CPU Throttling 장애`를 겪어본 분
+- [Kubernetes 환경에서 CPU Throttling 장애](#k8s-cpu-throttling-incident)를 겪어본 분
 - WebFlux / Netty 기반 서비스에서 Latency 원인을 찾고 있는 분
 - "CPU 사용률은 낮은데 왜 느리지?" 라는 상황을 경험한 분
 
@@ -232,8 +232,7 @@ CPU Throttling
 
 ## 특히 위험한 Runtime 구조
 
-다음과 같은 시스템은
-짧은 CPU Stall에도 민감합니다.
+다음과 같은 시스템은 짧은 [CPU Stall](#cpu-stall)에도 민감합니다.
 
 <details>
   <summary>CPU Stall이란?</summary>
@@ -260,7 +259,7 @@ CPU가 명령어를 계속 실행하지 못하고,
 | **Cache Miss**           | 필요한 데이터가 CPU Cache(L1/L2/L3)에 없어 RAM에서 데이터를 가져오느라 지연되는 상태 |
 | **Branch Misprediction** | CPU의 분기 예측이 실패하여 잘못 실행한 명령어를 폐기하고 다시 실행하는 상태              |
 | **Memory Latency**       | 메모리 접근 자체가 느려 CPU가 데이터를 기다리는 상태                           |
-| **I/O Wait**             | 디스크·네트워크·파일 시스템 응답을 기다리며 CPU 작업 진행이 지연되는 상태               |
+| [**I/O Wait**](#io-task)             | 디스크·네트워크·파일 시스템 응답을 기다리며 CPU 작업 진행이 지연되는 상태               |
 | **Lock Contention**      | 여러 Software Thread가 동일 Lock(Mutex/Spinlock)을 경쟁하면서 대기하는 상태         |
 | **CPU Throttling**       | Linux CFS Quota 제한으로 Container 실행이 일시적으로 제한되는 상태          |
 | **Context Switch**       | Scheduler가 실행 Thread를 교체하면서 발생하는 CPU 전환 비용                |
