@@ -259,7 +259,7 @@ CPU가 명령어를 계속 실행하지 못하고,
 | **Cache Miss**           | 필요한 데이터가 CPU Cache(L1/L2/L3)에 없어 RAM에서 데이터를 가져오느라 지연되는 상태 |
 | **Branch Misprediction** | CPU의 분기 예측이 실패하여 잘못 실행한 명령어를 폐기하고 다시 실행하는 상태              |
 | **Memory Latency**       | 메모리 접근 자체가 느려 CPU가 데이터를 기다리는 상태                           |
-| [**I/O Wait**](#io-task)             | 디스크·네트워크·파일 시스템 응답을 기다리며 CPU 작업 진행이 지연되는 상태               |
+| [**I/O Wait**](../20-deep-dive/io-operations.md)             | 디스크·네트워크·파일 시스템 응답을 기다리며 CPU 작업 진행이 지연되는 상태               |
 | [**Lock Contention**](#lock-contention)      | 여러 Software Thread가 동일 Lock(Mutex/Spinlock)을 경쟁하면서 대기하는 상태         |
 | **CPU Throttling**       | Linux CFS Quota 제한으로 Container 실행이 일시적으로 제한되는 상태          |
 | **Context Switch**       | Scheduler가 실행 Thread를 교체하면서 발생하는 CPU 전환 비용                |
@@ -2759,72 +2759,5 @@ rate(container_cpu_cfs_throttled_periods_total[5m])
 - `Platform > WebFlux > Event Loop 성능 튜닝 가이드`
 - `Platform > JVM > GC Tuning과 NUMA Locality`
 - `Platform > Kafka > Consumer Thread 최적화`
-
----
-
-# Appendix — Deep Dive
-
-이 섹션은 본문 흐름을 방해하지 않는 심화 설명 모음입니다.
-
-</br>
-
-## I/O 작업이란?
-
-<a id="io-task"></a>
-
-<details>
-  <summary>설명</summary>
-
-</br>
-
-**CPU 외부 자원(디스크·네트워크·DB·파일 시스템 등)과 데이터를 주고받거나 응답을 기다리는 작업**을 의미합니다.
-
-## 핵심 정의
-
-CPU가 직접 계산하지 않고, **외부 장치 / 외부 자원과의 데이터 입출력**을 수행하는 작업입니다.
-
-"외부 연산"이 아니라 **외부 자원과의 데이터 입출력**이 핵심입니다.
-
-## I/O 여부 판단 기준
-
-| 작업 | I/O 여부 | 이유 |
-|---|---|---|
-| DB Query 응답 대기 | I/O | 외부 DB 자원과 통신 |
-| HTTP API 호출 | I/O | 네트워크를 통한 외부 자원 접근 |
-| Kafka Broker 통신 | I/O | 네트워크를 통한 외부 자원 접근 |
-| 파일 읽기 | I/O | 디스크 자원과 데이터 입출력 |
-| Redis 요청 | I/O | 네트워크를 통한 외부 자원 접근 |
-| AES 암호화 | I/O 아님 | CPU 연산 |
-| JSON 직렬화 | I/O 아님 | CPU 연산 |
-| GC | I/O 아님 | JVM 내부 CPU 연산 |
-| AI 모델 추론 계산 | I/O 아님 | CPU / GPU 연산 |
-| 데이터 압축 | I/O 아님 | CPU 연산 |
-| 이미지 처리 | I/O 아님 | CPU 연산 |
-
-## 주의사항
-
-외부 시스템과 관련 있어 보여도, **실제 CPU 계산 중심 작업은 I/O가 아닐 수 있습니다.**
-
-예:
-- 압축 / 암호화 / AI 추론 / 이미지 처리 → CPU Bound 연산
-
---- 
-
-</details>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----
 
 *이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
