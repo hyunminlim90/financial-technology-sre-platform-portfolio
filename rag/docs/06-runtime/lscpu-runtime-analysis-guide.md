@@ -385,7 +385,7 @@ Lock(Mutex/Spinlock)은 단순한 `CPU 동기화 기술`이 아니라 **비즈�
 </br>
 
 <details>
-  <summary>계층별 공유 메모리(Shared Memory)와 동기화 정리</summary>
+  <summary>공유 메모리(Shared Memory)와 동기화 정리</summary>
 
 <br/>
 
