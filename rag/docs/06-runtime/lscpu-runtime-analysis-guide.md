@@ -307,7 +307,9 @@ CPU가 직접 계산하지 않고, **외부 장치 / 외부 자원과의 데이�
 <details>
   <summary>Lock Contention(락 경합) 이란?</summary>
 
-```text
+</br>
+
+```
 여러 Software Thread가
 동일한 공유 자원(shared resource)에 접근하기 위해
 동일 Lock(Mutex/Spinlock)을 경쟁하면서
