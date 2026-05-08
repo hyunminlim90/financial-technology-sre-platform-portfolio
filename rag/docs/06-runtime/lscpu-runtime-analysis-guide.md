@@ -339,7 +339,7 @@ Lock을 사용합니다.
 | 공유 자원 예시 | 설명 |
 |---|---|
 | JVM Heap 객체 | 여러 Software Thread가 동시에 값을 읽고 수정할 수 있는 Java 객체 |
-| Queue | 여러 Producer / Consumer Thread가 작업·이벤트를 순서대로 전달하기 위해 사용하는 공유 자료구조 |
+| Queue | 여러 Producer / Consumer Thread가 데이터·작업·메시지 등을 공유하고 전달하기 위해 사용하는 자료구조 |
 | Buffer | 여러 Thread가 데이터를 임시 저장하고 공유하기 위한 메모리 영역 |
 | DB Connection Pool | 여러 요청 Thread가 동일 DB Connection 자원을 함께 사용하는 구조 |
 | Kafka Partition 상태 | Consumer의 메시지 처리 위치(Offset), Commit 상태, Buffer 등을 여러 Thread가 함께 관리 |
