@@ -3,7 +3,7 @@
 **분류** : Infrastructure > Compute > CPU Analysis  
 **작성자** : SRE Team  
 **최종 수정** : 2026-05-06  
-**대상 환경** : Intel i9-13900 / Microsoft Hyper-V / vm-01, vm-02
+**대상 환경** : Intel i9-13900 / Microsoft Hyper-V
 
 ## 이 문서를 읽어야 하는 사람
 
@@ -13,6 +13,8 @@
 - [Kubernetes 환경에서 CPU Throttling 장애](../20-deep-dive/kubernetes-cpu-throttling.md)를 겪어본 분
 - WebFlux / Netty 기반 서비스에서 Latency 원인을 찾고 있는 분
 - "CPU 사용률은 낮은데 왜 느리지?" 라는 상황을 경험한 분
+
+</br>
 
 ## 먼저 이해해야 하는 CPU 계층 구조
 
