@@ -331,21 +331,21 @@ Application / Runtime / OS 계층에서는 데이터 무결성(Data Integrity)�
 동일한 공유 자원(shared resource)
 ```
 
-을 동시에 여러 Thread가 수정하지 못하도록
+을 동시에 여러 Software Thread가 수정하지 못하도록
 Lock을 사용합니다.
 
 예를 들어 다음과 같은 자원들이 존재할 수 있습니다.
 
-| 공유 자원 예시                 | 설명                                |
-| ------------------------ | --------------------------------- |
-| JVM Heap 객체              | 여러 Thread가 동시에 접근하는 Java 객체       |
-| Queue / Buffer           | Producer/Consumer가 함께 사용하는 메모리 버퍼 |
-| DB Connection Pool       | 여러 요청이 공유하는 Connection 자원         |
-| Kafka Partition 상태       | Offset / Commit / Buffer 관리       |
-| Cache(Map/ConcurrentMap) | 여러 Thread가 동시에 읽기/쓰기              |
-| File Handle              | 동일 파일 접근                          |
-| 로그 버퍼(Log Buffer)        | 여러 Thread가 동시에 로그 기록              |
-| Session / Payment 상태     | 동일 사용자/결제 데이터                     |
+| 공유 자원 예시 | 설명 |
+|---|---|
+| JVM Heap 객체 | 여러 Thread가 동시에 값을 읽고 수정할 수 있는 Java 객체 |
+| Queue / Buffer | Producer/Consumer Thread가 데이터를 함께 넣고 꺼내는 공유 메모리 버퍼 |
+| DB Connection Pool | 여러 요청 Thread가 동일 DB Connection 자원을 함께 사용하는 구조 |
+| Kafka Partition 상태 | Consumer의 메시지 처리 위치(Offset), Commit 상태, Buffer 등을 여러 Thread가 함께 관리 |
+| Cache(Map/ConcurrentMap) | 여러 Thread가 동일 Cache 데이터를 동시에 읽거나 수정하는 구조 |
+| File Handle | 여러 Thread가 동일 파일에 동시에 접근하거나 기록하는 상태 |
+| 로그 버퍼(Log Buffer) | 여러 Thread가 동시에 로그 데이터를 기록하는 메모리 버퍼 |
+| Session / Payment 상태 | 여러 요청이 동일 사용자/결제 상태 데이터를 동시에 변경할 수 있는 구조 |
 
 즉:
 
