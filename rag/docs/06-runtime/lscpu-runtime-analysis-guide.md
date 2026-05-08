@@ -1751,4 +1751,6 @@ rate(container_cpu_cfs_throttled_periods_total[5m])
 - `Platform > JVM > GC Tuning과 NUMA Locality`
 - `Platform > Kafka > Consumer Thread 최적화`
 
+</br>
+
 *이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
