@@ -978,7 +978,7 @@ Thread(s) per core : 2
 → 2 × 12 × 2 = 48 vCPU
 ```
 
----
+</br>
 
 ## 2. 용어 사전
 
@@ -999,7 +999,7 @@ Thread(s) per core : 2
 | PSI | Pressure Stall Information | CPU·Memory·I/O 자원 압박 정도를 나타내는 Linux 커널 지표 |
 | CPU Affinity | CPU Pinning | 특정 프로세스를 특정 CPU 코어에 고정하는 설정 |
 
----
+</br>
 
 ## 3. lscpu 항목별 해석
 
@@ -1038,7 +1038,7 @@ L1 → L2 → L3 → RAM  → Disk
 > 캐시 미스가 잦으면 RAM 접근이 늘고 응답 속도가 크게 나빠집니다.  
 > Context Switch가 증가하면 CPU Cache가 오염(Cache Pollution)되어 Cache Miss율이 함께 올라갑니다.
 
----
+</br>
 
 ## 4. vCPU 할당과 스레드의 관계
 
@@ -1081,7 +1081,7 @@ CPU 집약적인 작업이 동시에 몰리면 **실질 성능은 물리 코어 
 > 일반적으로 **15~30% 수준의 처리량 향상**을 기대할 수 있습니다.  
 > 단, I/O Bound 워크로드에서 효과가 크고 CPU Bound에서는 제한적입니다.
 
----
+</br>
 
 ## 5. vm-01 vs vm-02 비교
 
@@ -1094,7 +1094,7 @@ CPU 집약적인 작업이 동시에 몰리면 **실질 성능은 물리 코어 
 | L3 캐시 | 36MB | 36MB (동일) |
 | 가상화 플랫폼 | Hyper-V | Hyper-V (동일) |
 
----
+</br>
 
 ## 6. CPU Bound vs I/O Bound
 
@@ -1127,7 +1127,7 @@ CPU 집약적인 작업이 동시에 몰리면 **실질 성능은 물리 코어 
 I/O 대기 중 유휴 상태가 된 스레드 자리를 다른 스레드가 활용할 수 있기 때문입니다.  
 반면 CPU 집약적 작업은 두 스레드가 같은 물리 코어를 두고 경쟁하게 되어 효과가 제한적입니다.
 
----
+</br>
 
 ## 7. SRE 관점 분석
 
@@ -1655,7 +1655,7 @@ java -XX:+UseNUMA -XX:+UseParallelGC -jar app.jar
 | `IBRS/IBPB` | 스펙터/멜트다운 보안 패치 | 보안 강화. 소량의 성능 오버헤드 존재 (측정 권장) |
 | `VAES` | 벡터 AES 가속 | AVX-512 기반 암호화 처리 가속 (대용량 암호화) |
 
----
+</br>
 
 ## 8. 빠른 참조 공식
 
