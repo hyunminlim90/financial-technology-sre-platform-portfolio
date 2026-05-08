@@ -3167,6 +3167,8 @@ Lock / CAS / Atomic Operation
 
 </details>
 
+###### · · ·
+
 ### I/O 작업이란?
 
 <a id="io-task"></a>
@@ -3210,6 +3212,8 @@ CPU가 직접 계산하지 않고, **외부 장치 / 외부 자원과의 데이�
 --- 
 
 </details>
+
+###### · · ·
 
 ### CPU 동기화에서 "실행 순서" 제어의 의미
 
@@ -3421,6 +3425,8 @@ CPU 동기화에서 **"실행 순서를 제어한다"** 는 의미는 단순히 
 
 </details>
 
+###### · · ·
+
 ### CPU 동기화 기술(Thread Synchronization)이란?
 
 <a id="cpu-synchronization"></a>
@@ -3540,7 +3546,7 @@ No Inconsistent State
 
 </details>
 
-
+###### · · ·
 
 
 
