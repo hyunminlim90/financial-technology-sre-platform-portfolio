@@ -2770,7 +2770,7 @@ rate(container_cpu_cfs_throttled_periods_total[5m])
 
 <a id="thread-cpu-ram-flow"></a>
 
-## Java Thread → CPU Core → RAM 까지의 전체 처리 흐름과 동작 구조
+### Java Thread → CPU Core → RAM 까지의 전체 처리 흐름과 동작 구조
 
 <details>
   <summary>설명</summary>
@@ -2979,7 +2979,7 @@ Software Thread가 코드를 실행
 
 <a id="shared-memory"></a>
 
-## 공유 메모리(Shared Memory)와 동기화 정리
+### 공유 메모리(Shared Memory)와 동기화 정리
 
 <details>
   <summary>설명</summary>
@@ -3165,7 +3165,7 @@ Lock / CAS / Atomic Operation
 
 </details>
 
-## I/O 작업이란?
+### I/O 작업이란?
 
 <a id="io-task"></a>
 
@@ -3209,7 +3209,7 @@ CPU가 직접 계산하지 않고, **외부 장치 / 외부 자원과의 데이�
 
 </details>
 
-## CPU 동기화에서 "실행 순서" 제어의 의미
+### CPU 동기화에서 "실행 순서" 제어의 의미
 
 <a id="execution-order"></a>
 
@@ -3419,7 +3419,7 @@ CPU 동기화에서 **"실행 순서를 제어한다"** 는 의미는 단순히 
 
 </details>
 
-## CPU 동기화 기술(Thread Synchronization)이란?
+### CPU 동기화 기술(Thread Synchronization)이란?
 
 <a id="cpu-synchronization"></a>
 
