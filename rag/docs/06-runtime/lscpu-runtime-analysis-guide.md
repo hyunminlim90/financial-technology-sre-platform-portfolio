@@ -366,6 +366,8 @@ Lock(Mutex/Spinlock)은 단순한 `CPU 동기화 기술`이 아니라 **비즈�
 - Balance
 - Inventory
 
+</br>
+
 <details>
   <summary>CPU 동기화 기술(Thread Synchronization)이란?</summary>
 
