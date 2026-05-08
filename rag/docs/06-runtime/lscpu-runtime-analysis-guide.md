@@ -325,7 +325,7 @@ Spinlock: Lock 획득 전까지 반복 확인(Busy Waiting)하며 CPU를 계속 
 
 ## 왜 Lock이 필요한가?
 
-소프트웨어는 데이터 무결성(Data Integrity)을 위해:
+Application / Runtime / OS 계층에서는 데이터 무결성(Data Integrity)을 위해:
 
 ```text
 동일한 공유 자원(shared resource)
