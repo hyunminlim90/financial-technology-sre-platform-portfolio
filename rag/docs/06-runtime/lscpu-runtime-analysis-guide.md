@@ -3,7 +3,7 @@
 **분류** : Infrastructure > Compute > CPU Analysis  
 **작성자** : SRE Team  
 **최종 수정** : 2026-05-06  
-**대상 환경** : Intel i9-13900 / Microsoft Hyper-V
+**대상 환경** : Intel i9-13900 / Microsoft Hyper-V / vm-01, vm-02
 
 </br>
 
