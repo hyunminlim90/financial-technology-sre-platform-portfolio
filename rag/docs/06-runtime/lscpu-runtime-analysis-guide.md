@@ -261,7 +261,7 @@ CPU가 명령어를 계속 실행하지 못하고,
 | **Branch Misprediction** | CPU의 분기 예측이 실패하여 잘못 실행한 명령어를 폐기하고 다시 실행하는 상태              |
 | **Memory Latency**       | 메모리 접근 자체가 느려 CPU가 데이터를 기다리는 상태                           |
 | **I/O Wait**             | 디스크·네트워크·파일 시스템 응답을 기다리며 CPU 작업 진행이 지연되는 상태               |
-| **Lock Contention**      | 여러 Thread가 동일 Lock(Mutex/Spinlock)을 경쟁하면서 대기하는 상태         |
+| **Lock Contention**      | 여러 Software Thread가 동일 Lock(Mutex/Spinlock)을 경쟁하면서 대기하는 상태         |
 | **CPU Throttling**       | Linux CFS Quota 제한으로 Container 실행이 일시적으로 제한되는 상태          |
 | **Context Switch**       | Scheduler가 실행 Thread를 교체하면서 발생하는 CPU 전환 비용                |
 | **NUMA Remote Access**   | 다른 NUMA Node의 메모리에 접근하면서 메모리 지연이 증가하는 상태                  |
@@ -338,16 +338,16 @@ Lock을 사용합니다.
 
 | 계층 (Layer) | 공유 자원 예시 | 설명 |
 |---|---|---|
-| Application | JVM Heap 영역 내의 객체 | 여러 Software Thread가 동일 Java 객체의 상태값을 읽고 수정하는 구조 |
-| Application | Task/Work Queue | Thread Pool 내부에서 여러 Worker Thread가 작업(Task/Event)을 공유하고 처리하는 Queue 구조 |
-| Runtime / I/O | Network Buffer | Netty/Event Loop 등이 네트워크 패킷 데이터를 읽고 쓰기 위해 공유하는 메모리 Buffer |
-| Runtime / Reactive | Event Loop Queue | Event Loop Thread가 비동기 이벤트·Callback·Task를 처리하기 위해 사용하는 Queue 구조 |
-| JVM | Cache(Map/ConcurrentMap) | 여러 Thread가 동일 Cache 데이터를 동시에 읽거나 수정하는 구조 |
-| Middleware | Kafka Partition 상태 | Consumer의 Offset, Commit 상태, Fetch Buffer 등을 여러 Thread가 함께 관리하는 구조 |
+| Business Domain | Session / Payment 상태 | 동일 사용자·결제 상태 데이터를 여러 요청이 동시에 변경할 수 있는 구조 |
+| Application | Heap 영역 내 객체 | Singleton Bean, 공유 객체 등 여러 Software Thread가 상태를 함께 사용하는 구조 |
+| Application | Task / Work Queue | 실행 대기 중인 Task를 Queue에 저장하고, 여러 Worker Thread가 이를 공유하며 가져가 처리하는 구조 |
+| Application | Local Cache (Map) | ConcurrentHashMap 등을 이용해 애플리케이션 수준에서 데이터를 공유·캐싱하는 구조 |
+| Runtime / Reactive | Event Loop Queue | Netty/WebFlux 환경에서 Event Loop가 비동기 이벤트·Callback을 처리하는 Queue 구조 |
+| Runtime / I/O | Network Buffer | 네트워크 패킷 데이터를 읽고 쓰기 위해 Runtime이 사용하는 메모리 Buffer |
+| Middleware | Kafka Partition 상태 | Consumer Offset, Commit 상태, Fetch Buffer 등을 여러 Thread가 함께 관리하는 구조 |
 | Infrastructure | DB Connection Pool | 여러 요청 Thread가 제한된 DB Connection 자원을 공유하는 구조 |
-| File System | File Handle / File Buffer | 여러 Thread가 동일 파일에 접근하거나 기록하는 구조 |
-| Logging | Log Buffer / Async Appender | 여러 Thread의 로그 데이터를 비동기적으로 수집·기록하기 위한 공유 Buffer |
-| Business Domain | Session / Payment 상태 | 여러 요청이 동일 사용자·결제 상태 데이터를 동시에 변경할 수 있는 구조 |
+| OS / Kernel | File Handle / Buffer | 운영체제가 관리하는 파일 접근 권한 및 파일 I/O Buffer 구조 |
+| Logging | Log Buffer / Async Appender | 여러 Thread의 로그 데이터를 비동기적으로 수집·기록하는 Buffer 구조 |
 
 <details>
   <summary>Task/Work Queue와 Worker Thread 구조</summary>
