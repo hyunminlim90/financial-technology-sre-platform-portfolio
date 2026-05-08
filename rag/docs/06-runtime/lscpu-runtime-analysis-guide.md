@@ -260,7 +260,7 @@ CPU가 명령어를 계속 실행하지 못하고,
 | **Branch Misprediction** | CPU의 분기 예측이 실패하여 잘못 실행한 명령어를 폐기하고 다시 실행하는 상태              |
 | **Memory Latency**       | 메모리 접근 자체가 느려 CPU가 데이터를 기다리는 상태                           |
 | [**I/O Wait**](#io-task)             | 디스크·네트워크·파일 시스템 응답을 기다리며 CPU 작업 진행이 지연되는 상태               |
-| **Lock Contention**      | 여러 Software Thread가 동일 Lock(Mutex/Spinlock)을 경쟁하면서 대기하는 상태         |
+| [**Lock Contention**](#lock-contention)      | 여러 Software Thread가 동일 Lock(Mutex/Spinlock)을 경쟁하면서 대기하는 상태         |
 | **CPU Throttling**       | Linux CFS Quota 제한으로 Container 실행이 일시적으로 제한되는 상태          |
 | **Context Switch**       | Scheduler가 실행 Thread를 교체하면서 발생하는 CPU 전환 비용                |
 | **NUMA Remote Access**   | 다른 NUMA Node의 메모리에 접근하면서 메모리 지연이 증가하는 상태                  |
@@ -337,7 +337,7 @@ Lock을 사용합니다.
 
 | 계층 (Layer) | 공유 자원 예시 | 설명 |
 |---|---|---|
-| Business Domain | Session / Payment 상태 | 동일 사용자·결제 상태 데이터를 여러 요청이 동시에 변경할 수 있는 구조 |
+| Business Domain | [Session / Payment 상태](#session-payment) | 동일 사용자·결제 상태 데이터를 여러 요청이 동시에 변경할 수 있는 구조 |
 | Application | Heap 영역 내 객체 | Singleton Bean, 공유 객체 등 여러 Software Thread가 상태를 함께 사용하는 구조 |
 | Application | Task / Work Queue | 실행 대기 중인 Task를 Queue에 저장하고, 여러 Worker Thread가 이를 공유하며 가져가 처리하는 구조 |
 | Application | Local Cache (Map) | ConcurrentHashMap 등을 이용해 애플리케이션 수준에서 데이터를 공유·캐싱하는 구조 |
@@ -355,7 +355,7 @@ Lock을 사용합니다.
 
 ## 왜 중요한가?
 
-Lock(Mutex/Spinlock)은 단순한 `CPU 동기화 기술`이 아니라 **비즈니스 데이터 무결성(Data Integrity)을 보호하기 위한 수단**입니다.
+Lock(Mutex/Spinlock)은 단순한 [CPU 동기화 기술](#cpu-synchronization)`이 아니라 **비즈니스 데이터 무결성(Data Integrity)을 보호하기 위한 수단**입니다.
 
 특히 아래와 같은 Business Domain 상태는 동시에 여러 요청(Request)이 접근할 수 있기 때문에 동시성 제어가 매우 중요합니다:
 
@@ -372,7 +372,7 @@ Lock(Mutex/Spinlock)은 단순한 `CPU 동기화 기술`이 아니라 **비즈�
 
 <br/>
 
-**여러 CPU Core 또는 Software Thread가 동일한 공유 메모리(shared memory)에 접근할 때, 데이터 무결성(Data Integrity)을 유지하기 위해 실행 순서와 접근을 제어하는 메커니즘**입니다.
+**여러 CPU Core 또는 Software Thread가 동일한 [공유 메모리(shared memory)](#shared-memory)에 접근할 때, 데이터 무결성(Data Integrity)을 유지하기 위해 실행 순서와 접근을 제어하는 메커니즘**입니다.
 
 즉:
 
@@ -382,396 +382,6 @@ Lock(Mutex/Spinlock)은 단순한 `CPU 동기화 기술`이 아니라 **비즈�
 ```
 
 </br>
-
-<details>
-  <summary>공유 메모리(Shared Memory)와 동기화 정리</summary>
-
-<br/>
-
-공유 메모리(Shared Memory)는 **여러 개의 프로세스(Process)나 스레드(Software Thread)가 공유해서 읽고 쓸 수 있는 공용 메모리 공간**을 의미합니다.
-
-</br>
-
-<details>
-  <summary>Java Thread → CPU Core → RAM 까지의 전체 처리 흐름과 동작 구조</summary>
-
-<br/>
-
-## 개요
-
-```java
-counter.value++;
-```
-
-이 한 줄의 코드는 내부적으로 다음 전체 계층을 거칩니다:
-
-```text
-Java 코드
-  ↓
-JVM Runtime
-  ↓
-OS Scheduler
-  ↓
-Physical CPU Core
-  ↓
-CPU Cache (L1 / L2 / L3)
-  ↓
-Memory Controller
-  ↓
-Physical RAM
-```
-
-## 1. 전체 계층 구조
-
-| 계층 | 역할 |
-|---|---|
-| **Application Code** | 논리적 의도 생성 |
-| **Software Thread** | 코드 실행 주체 |
-| **JVM Heap** | 논리적 공유 메모리 |
-| **OS Scheduler** | Thread ↔ CPU Core 매핑 |
-| **CPU Core** | 실제 계산 수행 |
-| **CPU Cache** | 고속 임시 저장 (L1/L2/L3) |
-| **Memory Barrier** | 실행 순서 강제 |
-| **Physical RAM** | 최종 데이터 저장 |
-
-## 2. Software Thread와 JVM Heap
-
-코드를 실행하는 주체는 **Software Thread**입니다.
-
-```java
-class Counter {
-    int value = 0;
-}
-Counter counter = new Counter();
-```
-
-이 객체는 **JVM Heap**에 저장되며, 여러 Thread가 동시에 접근 가능합니다.
-
-```text
-Thread A ─┐
-Thread B ─┼──→ Shared JVM Heap (counter 객체)
-Thread C ─┘
-```
-
-## 3. Java Thread와 CPU Core의 관계
-
-Java Thread는 **논리적인 실행 단위**입니다.  
-실제 CPU Core를 할당하는 것은 **OS Scheduler**입니다.
-
-```text
-Java Thread
-    ↓
-Native Thread (OS Thread)
-    ↓
-CPU Core 배치 (OS Scheduler 결정)
-```
-
-OS Scheduler 배치 예시:
-
-```text
-Thread A → CPU Core 1
-Thread B → CPU Core 3
-Thread C → 대기
-```
-
-## 4. `count++`의 실제 CPU 처리 과정
-
-```java
-count++;
-```
-
-이 단순해 보이는 코드는 실제로 다음 단계로 분리됩니다:
-
-```text
-1. RAM에서 값 읽기
-2. CPU Register에 적재
-3. +1 계산 (ALU)
-4. 결과를 Register에 저장
-5. Cache에 반영
-6. RAM에 반영
-```
-
-## 5. CPU Cache 구조와 문제
-
-현대 CPU는 RAM 접근 속도가 느리기 때문에 **L1/L2/L3 Cache**를 사용합니다.
-
-```text
-CPU Core
-   ↓
-L1 Cache  (~1ns)
-   ↓
-L2 Cache  (~5ns)
-   ↓
-L3 Cache  (~20ns)
-   ↓
-RAM       (~100ns)
-```
-
-**문제:** CPU Core마다 Cache가 독립적으로 존재합니다.
-
-```text
-CPU Core 1 Cache → value = 5
-CPU Core 2 Cache → value = 3   ← 같은 객체인데 다른 값
-```
-
-이것이 **Visibility Problem(메모리 가시성 문제)** 입니다.
-
-## 6. 동기화가 필요한 이유
-
-| 문제 | 설명 |
-|---|---|
-| **Race Condition** | 여러 Thread가 동시에 같은 값을 읽고 수정해 최종값이 잘못됨 |
-| **Visibility Problem** | Core별 Cache 불일치로 Thread마다 다른 값을 보는 상태 |
-| **Atomicity 부재** | `count++` 같은 연산이 중간에 끊길 수 있음 |
-
-## 7. `synchronized` 내부 실행 흐름
-
-```java
-synchronized(lock) {
-    count++;
-}
-```
-
-실제 내부 처리 순서:
-
-```text
-1. Lock 획득
-2. 다른 Thread 접근 차단
-3. Memory Barrier 실행 (실행 순서 강제)
-4. CPU Cache 동기화
-5. count 읽기 → 계산 → 저장
-6. Cache Flush (RAM 반영)
-7. Memory Barrier 실행
-8. Lock 해제
-```
-
-## 8. 동기화 기술의 핵심 역할
-
-| 역할 | 의미 |
-|---|---|
-| **실행 순서 제어** | 임계 영역 내 순차 실행 보장 |
-| **메모리 가시성 보장** | 모든 Thread가 동일한 최신 값을 보도록 강제 |
-| **원자성 보장** | 연산이 중간에 끊기지 않도록 보장 |
-| **Cache 동기화** | Core별 Cache 불일치 해소 |
-| **Happens-Before 보장** | 작업 간 시간적 선후 관계 강제 |
-
-**주요 동기화 기술:** `synchronized` / `volatile` / `Lock` / `CAS` / `AtomicOperation` / `Memory Barrier`
-
-## 9. 전체 처리 흐름 요약
-
-```text
-[Step 1] 개발자 코드 작성
-         counter.value++
-
-[Step 2] Software Thread 실행
-         Thread가 JVM Heap의 counter 객체 접근
-
-[Step 3] OS Scheduling
-         OS가 Thread를 물리 CPU Core에 배치
-
-[Step 4] CPU 연산
-         CPU가 Cache / RAM에서 값 읽기
-
-[Step 5] 값 계산 및 저장
-         ALU 연산 후 Cache에 반영
-
-[Step 6] 메모리 계층 동기화
-         Cache Flush → RAM 반영
-         Memory Barrier로 순서 강제
-```
-
-## 핵심 요약
-
-`counter.value++` 한 줄은 실제로 다음 전체 파이프라인을 의미합니다:
-
-```text
-Software Thread가 코드를 실행
-  → OS가 CPU Core를 할당
-  → CPU가 Cache / RAM에서 값을 읽고
-  → ALU가 계산하고
-  → Cache → RAM 순서로 값을 반영
-  → 동기화 기술이 순서와 가시성을 보장
-```
-
----
-
-</details>
-
-## 1. 계층별 공유 메모리의 실체
-
-### 1-1. 하드웨어 관점 (Main Memory / RAM)
-
-하드웨어 관점에서 공유 메모리는 **여러 CPU 코어가 동시에 접근 가능한 물리적인 메인 메모리(RAM)** 입니다.
-
-예시: DDR4 / DDR5 / Main Memory
-
-```text
-CPU Core 1
-CPU Core 2
-CPU Core 3
-     ↓
-  Shared RAM
-```
-
-### 1-2. 소프트웨어 관점 (JVM Heap)
-
-소프트웨어 관점에서는 **JVM Heap 영역**이 대표적인 공유 메모리입니다.
-
-모든 Java Thread가 동일한 Heap 객체를 함께 읽고 수정할 수 있기 때문입니다.
-
-```java
-class Counter {
-    int value = 0;
-}
-```
-
-위 객체가 Heap에 생성되면:
-
-```text
-Thread A → Counter.value 접근
-Thread B → Counter.value 접근
-Thread C → Counter.value 접근
-
-→ 모든 스레드가 동일 객체를 공유
-```
-
-## 2. 왜 "공유 메모리"가 중요한가?
-
-동기화(Synchronization)가 필요한 이유는 바로 이 공유 메모리 때문입니다.
-
-### Stack 메모리 — 개별 공간 (동기화 불필요)
-
-각 스레드는 자기만의 Stack 메모리를 가집니다.
-
-```text
-Thread A Stack  (자기 자신만 접근 가능)
-Thread B Stack  (자기 자신만 접근 가능)
-Thread C Stack  (자기 자신만 접근 가능)
-```
-
-`Local Variable` / `Method Parameter` / `Method Frame` 등은 안전합니다.
-
-### Heap / Static 메모리 — 공유 공간 (동기화 필요)
-
-반면 Heap이나 Static 영역은 **모든 Thread가 함께 접근 가능**합니다.
-
-```text
-Shared Object
-Static Variable
-Singleton Object
-Cache
-Connection Pool
-```
-
-등은 모두 공유 메모리이며, 여기서 문제가 발생합니다.
-
-## 3. Race Condition (데이터 오염)
-
-공유 메모리는 여러 스레드가 동시에 수정할 수 있기 때문에 Race Condition이 발생할 수 있습니다.
-
-```java
-count++;
-```
-
-이 코드는 실제로 3단계 작업입니다:
-
-```text
-1. count 읽기
-2. +1 계산
-3. 다시 저장
-```
-
-Thread A와 Thread B가 동시에 실행하면:
-
-```text
-A가 읽음 → 5
-B가 읽음 → 5
-A 저장  → 6
-B 저장  → 6   ← 최종값이 7이 아니라 6
-```
-
-이것이 **Race Condition**입니다.
-
-## 4. CPU 동기화와의 관계
-
-공유 메모리에 여러 CPU Core가 접근하면 다음 두 가지 문제가 발생합니다.
-
-### 4-1. 가시성 문제 (Visibility)
-
-```text
-Thread A가 값을 변경했지만
-Thread B CPU Cache에는 이전 값이 남아 있음
-
-→ RAM 값 ≠ CPU Cache 값
-```
-
-### 4-2. 원자성 문제 (Atomicity)
-
-```java
-count++;  // 원자적(Atomic) 작업이 아님
-```
-
-```text
-읽기 → 계산 → 저장
-      ↑
-  중간에 다른 스레드가 끼어들 수 있음
-```
-
-## 5. 동기화 기술이 필요한 이유
-
-이 문제들을 해결하기 위해 CPU 동기화 기술과 Lock 메커니즘이 필요합니다.
-
-**대표 기술:**
-
-| 기술 | 분류 |
-|---|---|
-| `synchronized` | Java 내장 Lock |
-| `ReentrantLock` | 명시적 Lock |
-| `CAS` (Compare And Swap) | Lock-free 원자 연산 |
-| `volatile` | 메모리 가시성 보장 |
-| `AtomicInteger` | 원자적 정수 연산 |
-| `Semaphore` | 접근 수 제한 |
-| `Mutex` | 상호 배제 Lock |
-| `Spin Lock` | Busy Waiting Lock |
-
-## 6. Lock Contention (락 경합)
-
-모든 스레드가 공유 메모리를 동시에 접근하려 하면 **"누가 먼저 사용할 것인가?"** 문제가 발생합니다.
-
-Lock을 얻기 위해 경쟁하는 상황을 **Lock Contention**이라고 합니다.
-
-```text
-Thread A → Lock 대기
-Thread B → Lock 사용 중
-Thread C → Lock 대기
-```
-
-## 7. 전체 흐름 정리
-
-```text
-CPU Core
-   ↓
-Software Thread
-   ↓
-Shared Memory (Heap / RAM)
-   ↓
-Synchronization
-   ↓
-Lock / CAS / Atomic Operation
-```
-
-## 핵심 요약
-
-공유 메모리란 **모든 스레드가 함께 사용하는 거대한 공용 데이터 저장소**입니다.
-
-대표적으로 RAM / JVM Heap / Static 영역 등이 있으며,  
-`Lock Contention` / `Race Condition` / `Visibility` / `Atomicity` 문제들이 모두 여기서 발생합니다.
-
-> **공유 메모리 = 멀티스레드 전쟁터**
-
----
-
-</details>
 
 <details>
   <summary>CPU 동기화에서 "실행 순서" 제어의 의미</summary>
@@ -3512,5 +3122,403 @@ rate(container_cpu_cfs_throttled_periods_total[5m])
 - `Platform > Kafka > Consumer Thread 최적화`
 
 ---
+
+# Appendix — Deep Dive
+
+이 섹션은 본문 흐름을 방해하지 않는 심화 설명 모음입니다.
+
+<a id="thread-cpu-ram-flow"></a>
+
+<details>
+  <summary>Java Thread → CPU Core → RAM 까지의 전체 처리 흐름과 동작 구조</summary>
+
+<br/>
+
+## 개요
+
+```java
+counter.value++;
+```
+
+이 한 줄의 코드는 내부적으로 다음 전체 계층을 거칩니다:
+
+```text
+Java 코드
+  ↓
+JVM Runtime
+  ↓
+OS Scheduler
+  ↓
+Physical CPU Core
+  ↓
+CPU Cache (L1 / L2 / L3)
+  ↓
+Memory Controller
+  ↓
+Physical RAM
+```
+
+## 1. 전체 계층 구조
+
+| 계층 | 역할 |
+|---|---|
+| **Application Code** | 논리적 의도 생성 |
+| **Software Thread** | 코드 실행 주체 |
+| **JVM Heap** | 논리적 공유 메모리 |
+| **OS Scheduler** | Thread ↔ CPU Core 매핑 |
+| **CPU Core** | 실제 계산 수행 |
+| **CPU Cache** | 고속 임시 저장 (L1/L2/L3) |
+| **Memory Barrier** | 실행 순서 강제 |
+| **Physical RAM** | 최종 데이터 저장 |
+
+## 2. Software Thread와 JVM Heap
+
+코드를 실행하는 주체는 **Software Thread**입니다.
+
+```java
+class Counter {
+    int value = 0;
+}
+Counter counter = new Counter();
+```
+
+이 객체는 **JVM Heap**에 저장되며, 여러 Thread가 동시에 접근 가능합니다.
+
+```text
+Thread A ─┐
+Thread B ─┼──→ Shared JVM Heap (counter 객체)
+Thread C ─┘
+```
+
+## 3. Java Thread와 CPU Core의 관계
+
+Java Thread는 **논리적인 실행 단위**입니다.  
+실제 CPU Core를 할당하는 것은 **OS Scheduler**입니다.
+
+```text
+Java Thread
+    ↓
+Native Thread (OS Thread)
+    ↓
+CPU Core 배치 (OS Scheduler 결정)
+```
+
+OS Scheduler 배치 예시:
+
+```text
+Thread A → CPU Core 1
+Thread B → CPU Core 3
+Thread C → 대기
+```
+
+## 4. `count++`의 실제 CPU 처리 과정
+
+```java
+count++;
+```
+
+이 단순해 보이는 코드는 실제로 다음 단계로 분리됩니다:
+
+```text
+1. RAM에서 값 읽기
+2. CPU Register에 적재
+3. +1 계산 (ALU)
+4. 결과를 Register에 저장
+5. Cache에 반영
+6. RAM에 반영
+```
+
+## 5. CPU Cache 구조와 문제
+
+현대 CPU는 RAM 접근 속도가 느리기 때문에 **L1/L2/L3 Cache**를 사용합니다.
+
+```text
+CPU Core
+   ↓
+L1 Cache  (~1ns)
+   ↓
+L2 Cache  (~5ns)
+   ↓
+L3 Cache  (~20ns)
+   ↓
+RAM       (~100ns)
+```
+
+**문제:** CPU Core마다 Cache가 독립적으로 존재합니다.
+
+```text
+CPU Core 1 Cache → value = 5
+CPU Core 2 Cache → value = 3   ← 같은 객체인데 다른 값
+```
+
+이것이 **Visibility Problem(메모리 가시성 문제)** 입니다.
+
+## 6. 동기화가 필요한 이유
+
+| 문제 | 설명 |
+|---|---|
+| **Race Condition** | 여러 Thread가 동시에 같은 값을 읽고 수정해 최종값이 잘못됨 |
+| **Visibility Problem** | Core별 Cache 불일치로 Thread마다 다른 값을 보는 상태 |
+| **Atomicity 부재** | `count++` 같은 연산이 중간에 끊길 수 있음 |
+
+## 7. `synchronized` 내부 실행 흐름
+
+```java
+synchronized(lock) {
+    count++;
+}
+```
+
+실제 내부 처리 순서:
+
+```text
+1. Lock 획득
+2. 다른 Thread 접근 차단
+3. Memory Barrier 실행 (실행 순서 강제)
+4. CPU Cache 동기화
+5. count 읽기 → 계산 → 저장
+6. Cache Flush (RAM 반영)
+7. Memory Barrier 실행
+8. Lock 해제
+```
+
+## 8. 동기화 기술의 핵심 역할
+
+| 역할 | 의미 |
+|---|---|
+| **실행 순서 제어** | 임계 영역 내 순차 실행 보장 |
+| **메모리 가시성 보장** | 모든 Thread가 동일한 최신 값을 보도록 강제 |
+| **원자성 보장** | 연산이 중간에 끊기지 않도록 보장 |
+| **Cache 동기화** | Core별 Cache 불일치 해소 |
+| **Happens-Before 보장** | 작업 간 시간적 선후 관계 강제 |
+
+**주요 동기화 기술:** `synchronized` / `volatile` / `Lock` / `CAS` / `AtomicOperation` / `Memory Barrier`
+
+## 9. 전체 처리 흐름 요약
+
+```text
+[Step 1] 개발자 코드 작성
+         counter.value++
+
+[Step 2] Software Thread 실행
+         Thread가 JVM Heap의 counter 객체 접근
+
+[Step 3] OS Scheduling
+         OS가 Thread를 물리 CPU Core에 배치
+
+[Step 4] CPU 연산
+         CPU가 Cache / RAM에서 값 읽기
+
+[Step 5] 값 계산 및 저장
+         ALU 연산 후 Cache에 반영
+
+[Step 6] 메모리 계층 동기화
+         Cache Flush → RAM 반영
+         Memory Barrier로 순서 강제
+```
+
+## 핵심 요약
+
+`counter.value++` 한 줄은 실제로 다음 전체 파이프라인을 의미합니다:
+
+```text
+Software Thread가 코드를 실행
+  → OS가 CPU Core를 할당
+  → CPU가 Cache / RAM에서 값을 읽고
+  → ALU가 계산하고
+  → Cache → RAM 순서로 값을 반영
+  → 동기화 기술이 순서와 가시성을 보장
+```
+
+---
+
+</details>
+
+<a id="shared-memory"></a>
+
+<details>
+  <summary>공유 메모리(Shared Memory)와 동기화 정리</summary>
+
+<br/>
+
+공유 메모리(Shared Memory)는 **여러 개의 프로세스(Process)나 스레드(Software Thread)가 공유해서 읽고 쓸 수 있는 공용 메모리 공간**을 의미합니다.
+
+</br>
+
+## 1. 계층별 공유 메모리의 실체
+
+### 1-1. 하드웨어 관점 (Main Memory / RAM)
+
+하드웨어 관점에서 공유 메모리는 **여러 CPU 코어가 동시에 접근 가능한 물리적인 메인 메모리(RAM)** 입니다.
+
+예시: DDR4 / DDR5 / Main Memory
+
+```text
+CPU Core 1
+CPU Core 2
+CPU Core 3
+     ↓
+  Shared RAM
+```
+
+### 1-2. 소프트웨어 관점 (JVM Heap)
+
+소프트웨어 관점에서는 **JVM Heap 영역**이 대표적인 공유 메모리입니다.
+
+모든 Java Thread가 동일한 Heap 객체를 함께 읽고 수정할 수 있기 때문입니다.
+
+```java
+class Counter {
+    int value = 0;
+}
+```
+
+위 객체가 Heap에 생성되면:
+
+```text
+Thread A → Counter.value 접근
+Thread B → Counter.value 접근
+Thread C → Counter.value 접근
+
+→ 모든 스레드가 동일 객체를 공유
+```
+
+## 2. 왜 "공유 메모리"가 중요한가?
+
+동기화(Synchronization)가 필요한 이유는 바로 이 공유 메모리 때문입니다.
+
+### Stack 메모리 — 개별 공간 (동기화 불필요)
+
+각 스레드는 자기만의 Stack 메모리를 가집니다.
+
+```text
+Thread A Stack  (자기 자신만 접근 가능)
+Thread B Stack  (자기 자신만 접근 가능)
+Thread C Stack  (자기 자신만 접근 가능)
+```
+
+`Local Variable` / `Method Parameter` / `Method Frame` 등은 안전합니다.
+
+### Heap / Static 메모리 — 공유 공간 (동기화 필요)
+
+반면 Heap이나 Static 영역은 **모든 Thread가 함께 접근 가능**합니다.
+
+```text
+Shared Object
+Static Variable
+Singleton Object
+Cache
+Connection Pool
+```
+
+등은 모두 공유 메모리이며, 여기서 문제가 발생합니다.
+
+## 3. Race Condition (데이터 오염)
+
+공유 메모리는 여러 스레드가 동시에 수정할 수 있기 때문에 Race Condition이 발생할 수 있습니다.
+
+```java
+count++;
+```
+
+이 코드는 실제로 3단계 작업입니다:
+
+```text
+1. count 읽기
+2. +1 계산
+3. 다시 저장
+```
+
+Thread A와 Thread B가 동시에 실행하면:
+
+```text
+A가 읽음 → 5
+B가 읽음 → 5
+A 저장  → 6
+B 저장  → 6   ← 최종값이 7이 아니라 6
+```
+
+이것이 **Race Condition**입니다.
+
+## 4. CPU 동기화와의 관계
+
+공유 메모리에 여러 CPU Core가 접근하면 다음 두 가지 문제가 발생합니다.
+
+### 4-1. [가시성 문제 (Visibility)](#thread-cpu-ram-flow)
+
+```text
+Thread A가 값을 변경했지만
+Thread B CPU Cache에는 이전 값이 남아 있음
+
+→ RAM 값 ≠ CPU Cache 값
+```
+
+### 4-2. 원자성 문제 (Atomicity)
+
+```java
+count++;  // 원자적(Atomic) 작업이 아님
+```
+
+```text
+읽기 → 계산 → 저장
+      ↑
+  중간에 다른 스레드가 끼어들 수 있음
+```
+
+## 5. 동기화 기술이 필요한 이유
+
+이 문제들을 해결하기 위해 CPU 동기화 기술과 Lock 메커니즘이 필요합니다.
+
+**대표 기술:**
+
+| 기술 | 분류 |
+|---|---|
+| `synchronized` | Java 내장 Lock |
+| `ReentrantLock` | 명시적 Lock |
+| `CAS` (Compare And Swap) | Lock-free 원자 연산 |
+| `volatile` | 메모리 가시성 보장 |
+| `AtomicInteger` | 원자적 정수 연산 |
+| `Semaphore` | 접근 수 제한 |
+| `Mutex` | 상호 배제 Lock |
+| `Spin Lock` | Busy Waiting Lock |
+
+## 6. Lock Contention (락 경합)
+
+모든 스레드가 공유 메모리를 동시에 접근하려 하면 **"누가 먼저 사용할 것인가?"** 문제가 발생합니다.
+
+Lock을 얻기 위해 경쟁하는 상황을 **Lock Contention**이라고 합니다.
+
+```text
+Thread A → Lock 대기
+Thread B → Lock 사용 중
+Thread C → Lock 대기
+```
+
+## 7. 전체 흐름 정리
+
+```text
+CPU Core
+   ↓
+Software Thread
+   ↓
+Shared Memory (Heap / RAM)
+   ↓
+Synchronization
+   ↓
+Lock / CAS / Atomic Operation
+```
+
+## 핵심 요약
+
+공유 메모리란 **모든 스레드가 함께 사용하는 거대한 공용 데이터 저장소**입니다.
+
+대표적으로 RAM / JVM Heap / Static 영역 등이 있으며,  
+`Lock Contention` / `Race Condition` / `Visibility` / `Atomicity` 문제들이 모두 여기서 발생합니다.
+
+> **공유 메모리 = 멀티스레드 전쟁터**
+
+---
+
+</details>
 
 *이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
