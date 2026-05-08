@@ -238,6 +238,8 @@ CPU Throttling
 <details>
   <summary>CPU Stall이란?</summary>
 
+</br>
+
 ```
 CPU가 명령어를 계속 실행하지 못하고,
 
