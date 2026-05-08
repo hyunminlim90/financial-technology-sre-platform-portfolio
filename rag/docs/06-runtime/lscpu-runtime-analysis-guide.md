@@ -313,8 +313,8 @@ CPU가 직접 계산하지 않고, **외부 장치 / 외부 자원과의 데이�
 
 ```
 여러 Software Thread가
-동일한 공유 자원(shared resource)에 접근하기 위해
-동일 Lock(Mutex/Spinlock)을 경쟁하면서
+동일한 공유 자원(shared resource)을 보호하는
+Lock(Mutex/Spinlock)을 경쟁하면서
 대기하는 상태
 
 Mutex: Lock 대기 중 Thread를 Sleep(Blocked) 상태로 전환하여 CPU 사용을 줄이는 방식
