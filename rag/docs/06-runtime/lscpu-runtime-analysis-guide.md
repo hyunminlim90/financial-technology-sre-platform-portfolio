@@ -3125,7 +3125,7 @@ Lock / CAS / Atomic Operation
 
 ###### · · ·
 
-## CPU 동기화에서 "실행 순서" 제어의 의미
+## CPU 동기화에서 "실행 순서와 접근 제어" 의 의미
 
 <a id="execution-order"></a>
 
@@ -3339,7 +3339,7 @@ CPU 동기화에서 **"실행 순서를 제어한다"** 는 의미는 단순히 
 
 <a id="thread-cpu-ram-flow"></a>
 
-## Java Thread → CPU Core → RAM 까지의 전체 처리 흐름과 동작 구조
+## Java Thread → CPU Core → RAM 까지의 전체 처리 흐름과 동작 구조 (가시성 문제)
 
 <details>
   <summary>설명</summary>
