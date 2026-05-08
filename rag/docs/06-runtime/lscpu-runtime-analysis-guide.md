@@ -827,8 +827,6 @@ CPU 실행 예산(Quota)을
 
 </details>
 
----
-
 ## 먼저 이해해야 하는 CPU 계층 구조
 
 <details>
