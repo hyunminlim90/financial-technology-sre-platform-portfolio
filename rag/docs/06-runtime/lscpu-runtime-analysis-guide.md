@@ -60,8 +60,6 @@ CPU 명령어를 실제 실행하는 하드웨어 회로
 
 입니다.
 
----
-
 ## Multi-core 란
 
 Multi-core는 **Physical Core 자체가 증가**하는 것입니다.
@@ -77,19 +75,15 @@ Physical Core 4개 = 동시에 실제 연산 가능한 하드웨어 4개
 → 동시에 실제 연산 가능한 물리 코어 4개 존재
 ```
 
----
-
 ## Physical Core vs Logical CPU — 핵심 구분
 
 | 개념 | 의미 |
 |---|---|
 | **Physical Core** | 실제 연산 하드웨어 (ALU, Cache 등 포함) |
-| **Logical CPU** | OS/Linux Kernel이 인식하는 CPU 실행 단위 |
+| **Logical CPU** | OS/Linux [Kernel](../20-deep-dive/kernel-and-cpu-topology.md)이 인식하는 CPU 실행 단위 |
 
 > **중요:** Physical Core = Hardware Thread 1개 라고 표현하면 오해가 생깁니다.  
 > Physical Core와 Hyper-thread(Logical CPU)는 서로 다른 계층의 개념입니다.
-
----
 
 ## HT/SMT 비활성화 시 구조
 
