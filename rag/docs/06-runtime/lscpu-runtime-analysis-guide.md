@@ -263,7 +263,7 @@ HT ON = 특정 워크로드에서 처리량 향상 (O)
 
 ## Software Thread 란
 
-Software Thread는 **[프로그램 실행 흐름](../20-deep-dive/software-thread-and-execution-flow.md)**입니다.
+Software Thread는 [프로그램 실행 흐름](../20-deep-dive/software-thread-and-execution-flow.md)입니다.
 
 CPU 내부 구조가 아니라 OS / JVM / Application 계층의 개념입니다.
 
