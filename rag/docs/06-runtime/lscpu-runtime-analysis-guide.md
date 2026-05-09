@@ -243,14 +243,12 @@ HT ON = 특정 워크로드에서 처리량 향상 (O)
 
 실제로는 [워크로드 특성에 따라 성능 향상](../20-deep-dive/hyper-threading-and-throughput-optimization.md) 폭이 다릅니다.
 
----
-
 ## 개념 정리
 
 | 개념 | 계층 | 의미 |
 |---|---|---|
 | **Physical Core** | 하드웨어 | 실제 연산 하드웨어 |
-| **Hyper-thread / SMT** | 하드웨어 | Logical CPU 논리 실행 단위 |
+| **Hyper-thread / SMT** | 하드웨어 | 하나의 코어를 논리적으로 분할하는 기술 |
 | **Logical CPU** | OS 인식 | Linux Kernel이 인식하는 CPU |
 | **Multi-core** | 하드웨어 | Physical Core 증가 |
 | **HT/SMT** | 하드웨어 기술 | Logical CPU 증가 |
