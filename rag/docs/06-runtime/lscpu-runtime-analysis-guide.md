@@ -12,7 +12,7 @@
 - VM을 생성할 때 vCPU를 얼마나 할당해야 할지 기준이 없는 분
 - lscpu 결과를 보고 어떤 항목이 중요한지 모르겠는 분
 - SRE 관점에서 CPU 자원을 어떻게 설계하고 모니터링해야 하는지 궁금한 분
-- [Kubernetes 환경에서 CPU Throttling 장애](../20-deep-dive/kubernetes-cpu-throttling.md)를 겪어본 분
+- [Kubernetes 환경에서 CPU Throttling 장애](../20-deep-dive/lscpu-runtime-analysis-guide/kubernetes-cpu-throttling.md)를 겪어본 분
 - WebFlux / Netty 기반 서비스에서 Latency 원인을 찾고 있는 분
 - "CPU 사용률은 낮은데 왜 느리지?" 라는 상황을 경험한 분
 
@@ -46,11 +46,11 @@ Physical Core 내부에는 실제로 다음이 존재합니다:
 |---|---|
 | **ALU** (Arithmetic Logic Unit) | 정수 연산 |
 | **FPU** (Floating Point Unit) | 부동소수점 연산 |
-| **[Load/Store Unit](../20-deep-dive/lsu-and-memory-access.md)** | 메모리 접근 |
-| **[Branch Predictor](../20-deep-dive/branch-predictor-and-execution-flow.md)** | 분기 처리 |
-| **[L1 / L2 Cache](../20-deep-dive/cpu-cache-and-memory-hierarchy.md)** | 고속 메모리 캐시 |
-| **[Pipeline](../20-deep-dive/cpu-pipeline-and-instruction-flow.md)** | 명령어 실행 파이프라인 |
-| **[Register](../20-deep-dive/cpu-register-and-execution-flow.md)** | 연산 임시 저장 |
+| **[Load/Store Unit](../20-deep-dive/lscpu-runtime-analysis-guide/lsu-and-memory-access.md)** | 메모리 접근 |
+| **[Branch Predictor](../20-deep-dive/lscpu-runtime-analysis-guide/branch-predictor-and-execution-flow.md)** | 분기 처리 |
+| **[L1 / L2 Cache](../20-deep-dive/lscpu-runtime-analysis-guide/cpu-cache-and-memory-hierarchy.md)** | 고속 메모리 캐시 |
+| **[Pipeline](../20-deep-dive/lscpu-runtime-analysis-guide/cpu-pipeline-and-instruction-flow.md)** | 명령어 실행 파이프라인 |
+| **[Register](../20-deep-dive/lscpu-runtime-analysis-guide/cpu-register-and-execution-flow.md)** | 연산 임시 저장 |
 
 즉 Physical Core는:
 
@@ -80,10 +80,10 @@ Physical Core 4개 = 동시에 실제 연산 가능한 하드웨어 4개
 | 개념 | 의미 |
 |---|---|
 | **Physical Core** | 실제 연산 하드웨어 (ALU, Cache 등 포함) |
-| **Logical CPU** | OS/Linux [Kernel](../20-deep-dive/kernel-and-cpu-topology.md)이 인식하는 CPU 실행 단위 |
+| **Logical CPU** | OS/Linux [Kernel](../20-deep-dive/lscpu-runtime-analysis-guide/kernel-and-cpu-topology.md)이 인식하는 CPU 실행 단위 |
 
-> **중요:** Physical Core = [Hardware Thread](../20-deep-dive/hardware-thread-and-cpu-topology.md) 1개 라고 표현하면 오해가 생깁니다.  
-> [Physical Core와 Hyper-thread](../20-deep-dive/physical-core-and-logical-cpu.md)(≈ Logical CPU)는 서로 다른 계층의 개념입니다.
+> **중요:** Physical Core = [Hardware Thread](../20-deep-dive/lscpu-runtime-analysis-guide/hardware-thread-and-cpu-topology.md) 1개 라고 표현하면 오해가 생깁니다.  
+> [Physical Core와 Hyper-thread](../20-deep-dive/lscpu-runtime-analysis-guide/physical-core-and-logical-cpu.md)(≈ Logical CPU)는 서로 다른 계층의 개념입니다.
 >
 > 하이퍼스레딩(Hyper-threading)은 논리적 분할 '기술'이고, 논리 CPU(Logical CPU)는 그 결과로 생성된 실체적 '작업 단위'입니다.
 
@@ -179,7 +179,7 @@ Thread(s) per core:  2
 Core(s) per socket:  8
 Socket(s):           1
 ```
-[Core(s) per socket](../20-deep-dive/cpu-socket-and-multi-socket-architecture.md)
+[Core(s) per socket](../20-deep-dive/lscpu-runtime-analysis-guide/cpu-socket-and-multi-socket-architecture.md)
 
 </br>
 
@@ -241,7 +241,7 @@ HT ON = 성능 2배 (X)
 HT ON = 특정 워크로드에서 처리량 향상 (O)
 ```
 
-실제로는 [워크로드 특성에 따라 성능 향상](../20-deep-dive/hyper-threading-and-throughput-optimization.md) 폭이 다릅니다.
+실제로는 [워크로드 특성에 따라 성능 향상](../20-deep-dive/lscpu-runtime-analysis-guide/hyper-threading-and-throughput-optimization.md) 폭이 다릅니다.
 
 ## 개념 정리
 
@@ -263,7 +263,7 @@ HT ON = 특정 워크로드에서 처리량 향상 (O)
 
 ## Software Thread 란
 
-Software Thread는 [프로그램 실행 흐름](../20-deep-dive/software-thread-and-execution-flow.md)입니다.
+Software Thread는 [프로그램 실행 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/software-thread-and-execution-flow.md)입니다.
 
 CPU 내부 구조가 아니라 OS / JVM / Application 계층의 개념입니다.
 
