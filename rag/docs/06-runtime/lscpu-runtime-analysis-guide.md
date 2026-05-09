@@ -183,9 +183,7 @@ Socket(s):           1
 
 </br>
 
-→ 물리 Core 8개 + Logical CPU 16개 구조
-
----
+→ 물리 Core 8개 기반의 Logical CPU 16개 구조
 
 ## HT OFF vs HT ON 비교
 
