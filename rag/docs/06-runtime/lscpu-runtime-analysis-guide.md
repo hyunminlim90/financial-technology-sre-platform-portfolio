@@ -50,7 +50,7 @@ Physical Core 내부에는 실제로 다음이 존재합니다:
 | **[Branch Predictor](../20-deep-dive/branch-predictor-and-execution-flow.md)** | 분기 처리 |
 | **[L1 / L2 Cache](../20-deep-dive/cpu-cache-and-memory-hierarchy.md)** | 고속 메모리 캐시 |
 | **[Pipeline](../20-deep-dive/cpu-pipeline-and-instruction-flow.md)** | 명령어 실행 파이프라인 |
-| **Register** | 연산 임시 저장 |
+| **[Register](../20-deep-dive/cpu-register-and-execution-flow.md)** | 연산 임시 저장 |
 
 즉 Physical Core는:
 
