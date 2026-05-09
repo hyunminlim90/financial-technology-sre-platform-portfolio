@@ -83,7 +83,7 @@ Physical Core 4개 = 동시에 실제 연산 가능한 하드웨어 4개
 | **Logical CPU** | OS/Linux [Kernel](../20-deep-dive/kernel-and-cpu-topology.md)이 인식하는 CPU 실행 단위 |
 
 > **중요:** Physical Core = Hardware Thread 1개 라고 표현하면 오해가 생깁니다.  
-> Physical Core와 Hyper-thread(Logical CPU)는 서로 다른 계층의 개념입니다.
+> [Physical Core와 Hyper-thread](../20-deep-dive/physical-core-and-logical-cpu.md)(Logical CPU)는 서로 다른 계층의 개념입니다.
 
 ## HT/SMT 비활성화 시 구조
 
