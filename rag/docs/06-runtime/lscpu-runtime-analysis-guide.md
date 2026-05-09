@@ -176,9 +176,10 @@ lscpu
 ```text
 CPU(s):              16
 Thread(s) per core:  2
-[Core(s) per socket](../20-deep-dive/cpu-socket-and-multi-socket-architecture.md):  8
+Core(s) per socket:  8
 Socket(s):           1
 ```
+[Core(s) per socket](../20-deep-dive/cpu-socket-and-multi-socket-architecture.md):  8
 
 → 물리 Core 8개 + Logical CPU 16개 구조
 
