@@ -251,7 +251,6 @@ HT ON = 특정 워크로드에서 처리량 향상 (O)
 | **Hyper-thread / SMT** | 하드웨어 | 하나의 코어를 논리적으로 분할하는 기술 |
 | **Logical CPU** | 논리/OS | Linux Kernel이 인식하는 CPU 실행 단위 |
 | **Multi-core** | 하드웨어 | Physical Core 증가 |
-| **HT/SMT** | 하드웨어 기술 | Logical CPU 증가 |
 
 </details>
 
