@@ -84,6 +84,8 @@ Physical Core 4개 = 동시에 실제 연산 가능한 하드웨어 4개
 
 > **중요:** Physical Core = Hardware Thread 1개 라고 표현하면 오해가 생깁니다.  
 > [Physical Core와 Hyper-thread](../20-deep-dive/physical-core-and-logical-cpu.md)(Logical CPU)는 서로 다른 계층의 개념입니다.
+>
+> 하이퍼스레딩(Hyper-threading)은 하나의 물리 코어를 두 개로 보이게 만드는 '기술'이고, 논리 CPU(Logical CPU)는 그 기술을 통해 운영체제가 인식하게 된 '작업 단위'입니다.
 
 ## HT/SMT 비활성화 시 구조
 
