@@ -38,8 +38,6 @@ CPU 칩 안에 실제로 존재하는 물리 회로입니다.
 = CPU 칩 안에 실제로 연산 가능한 두뇌 8개 존재
 ```
 
----
-
 ## Physical Core 내부 구성
 
 Physical Core 내부에는 실제로 다음이 존재합니다:
@@ -48,7 +46,7 @@ Physical Core 내부에는 실제로 다음이 존재합니다:
 |---|---|
 | **ALU** (Arithmetic Logic Unit) | 정수 연산 |
 | **FPU** (Floating Point Unit) | 부동소수점 연산 |
-| **Load/Store Unit** | 메모리 접근 |
+| **[Load/Store Unit](../20-deep-dive/lsu-and-memory-access.md)** | 메모리 접근 |
 | **Branch Predictor** | 분기 처리 |
 | **L1 / L2 Cache** | 고속 메모리 캐시 |
 | **Pipeline** | 명령어 실행 파이프라인 |
