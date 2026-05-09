@@ -272,7 +272,7 @@ CPU 내부 구조가 아니라 OS / JVM / Application 계층의 개념입니다.
 | 종류 | 예시 |
 |---|---|
 | **Java Thread** | `new Thread(...)` |
-| **Netty Event Loop Thread** | Netty I/O 처리 흐름 |
+| **Netty Event Loop Thread** | [Netty I/O 처리 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/netty-event-loop-and-network-io.md) |
 | **Kafka Consumer Thread** | Kafka 메시지 소비 흐름 |
 | **GC Thread** | JVM Garbage Collector 흐름 |
 | **Worker Thread** | Thread Pool 내 처리 흐름 |
