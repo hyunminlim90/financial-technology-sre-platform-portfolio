@@ -267,7 +267,7 @@ Software Thread는 [프로그램 실행 흐름](../20-deep-dive/lscpu-runtime-an
 
 CPU 내부 구조가 아니라 OS / JVM / Application 계층의 개념입니다.
 
-대표적인 Software Thread:
+JVM 환경의 주요 Software Thread:
 
 | 종류 | 예시 |
 |---|---|
