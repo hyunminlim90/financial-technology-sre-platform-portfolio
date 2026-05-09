@@ -202,8 +202,6 @@ Physical Core 1개
 └── Hyper-thread 1
 ```
 
----
-
 ## Multi-core + HT ON 구조
 
 ```text
@@ -232,8 +230,6 @@ Core 3
 └── HT 1  (Logical CPU 7)
 ```
 
----
-
 ## HT ON = 성능 2배가 아닌 이유
 
 HT/SMT는 Physical Core 내부 자원(ALU, Cache, Execution Unit 등)을 **공유**합니다.
@@ -245,7 +241,7 @@ HT ON = 성능 2배 (X)
 HT ON = 특정 워크로드에서 처리량 향상 (O)
 ```
 
-실제로는 워크로드 특성에 따라 성능 향상 폭이 다릅니다.
+실제로는 [워크로드 특성에 따라 성능 향상](../20-deep-dive/hyper-threading-and-throughput-optimization.md) 폭이 다릅니다.
 
 ---
 
