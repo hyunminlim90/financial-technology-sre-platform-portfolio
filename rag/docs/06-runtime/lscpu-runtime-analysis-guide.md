@@ -271,7 +271,7 @@ JVM 환경의 주요 Software Thread:
 
 | 종류 | 예시 |
 |---|---|
-| **Java Thread** | new Thread(...) |
+| **Java Thread** | [new Thread(...)](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-pool-and-kernel-thread.md) |
 | **Netty Event Loop Thread** | [Netty I/O 처리 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/netty-event-loop-and-network-io.md) |
 | **Kafka Consumer Thread** | [Kafka 메시지 소비 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/kafka-consumer-thread-and-message-flow.md) |
 | **GC Thread** | [JVM Garbage Collector 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/jvm-gc-thread-and-garbage-collection-flow.md) |
