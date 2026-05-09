@@ -149,8 +149,6 @@ HT(Hyper-Threading, Intel) / SMT(Simultaneous Multithreading, AMD)는:
 
 HT/SMT는 Physical Core 내부 자원을 논리적으로 분할해서 동시에 더 효율적으로 사용하려는 기술입니다.
 
----
-
 ## HT/SMT 활성화 구조
 
 ```text
@@ -167,8 +165,6 @@ Physical Core 1개
 
 Linux는 이를 Logical CPU 2개로 인식합니다.
 
----
-
 ## HT/SMT 활성화 예시
 
 ```bash
@@ -180,7 +176,7 @@ lscpu
 ```text
 CPU(s):              16
 Thread(s) per core:  2
-Core(s) per socket:  8
+[Core(s) per socket](../20-deep-dive/cpu-socket-and-multi-socket-architecture.md):  8
 Socket(s):           1
 ```
 
