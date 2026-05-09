@@ -252,6 +252,8 @@ HT ON = 특정 워크로드에서 처리량 향상 (O)
 | **Logical CPU** | 논리/OS | Linux Kernel이 인식하는 CPU 실행 단위 |
 | **Multi-core** | 하드웨어 | Physical Core 증가 |
 
+</br>
+
 </details>
 
 <details>
