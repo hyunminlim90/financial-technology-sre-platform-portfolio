@@ -281,6 +281,8 @@ JVM 환경의 주요 Software Thread:
 
 [Java Thread와 Netty Event Loop Thread 구조 비교](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-vs-netty-event-loop.md)
 
+</br>
+
 > Go Runtime의 Goroutine은 Java Thread와 다른 실행 모델을 사용합니다.
 
 | 종류 | 예시 |
