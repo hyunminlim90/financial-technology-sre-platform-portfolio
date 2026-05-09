@@ -109,8 +109,6 @@ Physical Core = Logical CPU
 Thread(s) per core: 1
 ```
 
----
-
 ## Multi-core + HT OFF 구조
 
 ```text
@@ -123,6 +121,8 @@ HT OFF
 |---|---|
 | **Multi-core** | Physical Core 증가 |
 | **HT/SMT** | Logical CPU 증가 |
+
+</br>
 
 </details>
 
