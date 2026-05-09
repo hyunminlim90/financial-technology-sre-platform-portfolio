@@ -278,9 +278,14 @@ JVM 환경의 주요 Software Thread:
 | **GC Thread** | [JVM Garbage Collector 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/jvm-gc-thread-and-garbage-collection-flow.md) |
 | [Worker Thread](../20-deep-dive/lscpu-runtime-analysis-guide/worker-thread-and-thread-pool-flow.md) | Thread Pool 내 처리 흐름 |
 | [POSIX Thread (pthread)](../20-deep-dive/lscpu-runtime-analysis-guide/pthread-jvm-and-kernel-virtualization-stack.md) | Linux 기반 스레드 |
-| **Go Routine 스케줄 대상** | Go Runtime 실행 흐름 |
 
 [Java Thread와 Netty Event Loop Thread 구조 비교](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-vs-netty-event-loop.md)
+
+> Go Runtime의 Goroutine은 Java Thread와 다른 실행 모델을 사용합니다.
+
+| 종류 | 예시 |
+|---|---|
+| **Go Routine 스케줄 대상** | Go Runtime 실행 흐름 |
 
 </br>
 
