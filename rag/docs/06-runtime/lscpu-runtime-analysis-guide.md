@@ -82,7 +82,7 @@ Physical Core 4개 = 동시에 실제 연산 가능한 하드웨어 4개
 | **Physical Core** | 실제 연산 하드웨어 (ALU, Cache 등 포함) |
 | **Logical CPU** | OS/Linux [Kernel](../20-deep-dive/kernel-and-cpu-topology.md)이 인식하는 CPU 실행 단위 |
 
-> **중요:** Physical Core = Hardware Thread 1개 라고 표현하면 오해가 생깁니다.  
+> **중요:** Physical Core = [Hardware Thread](../20-deep-dive/hardware-thread-and-cpu-topology.md) 1개 라고 표현하면 오해가 생깁니다.  
 > [Physical Core와 Hyper-thread](../20-deep-dive/physical-core-and-logical-cpu.md)(Logical CPU)는 서로 다른 계층의 개념입니다.
 >
 > 하이퍼스레딩(Hyper-threading)은 논리적 분할 '기술'이고, 논리 CPU(Logical CPU)는 그 결과로 생성된 실체적 '작업 단위'입니다.
