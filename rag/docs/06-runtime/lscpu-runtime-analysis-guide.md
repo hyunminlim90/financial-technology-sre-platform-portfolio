@@ -279,9 +279,11 @@ CPU 내부 구조가 아니라 OS / JVM / Application 계층의 개념입니다.
 | **POSIX Thread (pthread)** | Linux 기반 스레드 |
 | **Go Routine 스케줄 대상** | Go Runtime 실행 흐름 |
 
-이들은 전부 **Software 계층 실행 흐름**입니다.
+[Java Thread와 Netty Event Loop Thread 구조 비교](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-vs-netty-event-loop.md)
 
----
+</br>
+
+이들은 전부 **Software 계층 실행 흐름**입니다.
 
 ## Hyper-thread vs Software Thread 핵심 구분
 
