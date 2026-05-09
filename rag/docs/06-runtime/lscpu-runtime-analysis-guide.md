@@ -274,7 +274,7 @@ JVM 환경의 주요 Software Thread:
 | **Java Thread** | new Thread(...) |
 | **Netty Event Loop Thread** | [Netty I/O 처리 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/netty-event-loop-and-network-io.md) |
 | **Kafka Consumer Thread** | [Kafka 메시지 소비 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/kafka-consumer-thread-and-message-flow.md) |
-| **GC Thread** | JVM Garbage Collector 흐름 |
+| **GC Thread** | [JVM Garbage Collector 흐름](../20-deep-dive/lscpu-runtime-analysis-guide/jvm-gc-thread-and-garbage-collection-flow.md) |
 | **Worker Thread** | Thread Pool 내 처리 흐름 |
 | **POSIX Thread (pthread)** | Linux 기반 스레드 |
 | **Go Routine 스케줄 대상** | Go Runtime 실행 흐름 |
