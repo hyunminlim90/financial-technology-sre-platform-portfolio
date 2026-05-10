@@ -306,7 +306,7 @@ Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생
 > Hyper-thread(하드웨어)와 Logical CPU(OS)는 같은 대상을 가리키며, '[누가 무엇으로 보는가](../20-deep-dive/lscpu-runtime-analysis-guide/hyper-thread-and-logical-cpu.md)'라는 관점의 차이만 있습니다. </br>
 > HT가 활성화된 Physical Core 하나는 OS에 Logical CPU 2개로 노출됩니다.
 
-## Linux 에서의 Thread와 task_struct
+## Linux 에서의 [Thread와 task_struct](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-to-linux-task-struct.md)
 
 Linux Kernel은 실제로 [Thread와 Process](../20-deep-dive/lscpu-runtime-analysis-guide/linux-task-struct-and-pid-tid-model.md)를 꽤 비슷하게 취급합니다.
 
