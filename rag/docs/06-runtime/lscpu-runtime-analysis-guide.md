@@ -367,7 +367,7 @@ Hyper-thread(Logical CPU) 1개
      └── Worker Thread
 ```
 
-여러 Software Thread가 동일한 Logical CPU 위에서 실행될 수 있습니다.
+여러 Software Thread가 [동일한 Logical CPU 위에서 실행](../20-deep-dive/lscpu-runtime-analysis-guide/linux-context-switch-and-task-struct.md)될 수 있습니다.
 
 ---
 
