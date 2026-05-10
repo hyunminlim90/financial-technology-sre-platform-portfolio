@@ -335,24 +335,24 @@ Software Thread는 결국 Linux Scheduler(CFS)에 의해 Logical CPU 위에서 �
 ```text
 1. Down-call
 
-  Java Thread (new Thread().start())
-      └── JVM C/C++ (native start0())
-          └── POSIX Thread (pthread_create)
-              └── Linux Thread (task_struct/LWP)
-                  └── Scheduler(CFS)
+    Java Thread (new Thread().start())
+        └── JVM C/C++ (native start0())
+            └── POSIX Thread (pthread_create)
+                └── Linux Thread (task_struct/LWP)
+                    └── Scheduler(CFS)
 
 
 2. Hardware
 
-  Logical CPU (Hyper-thread)
-      └── Physical Core
+    Logical CPU (Hyper-thread)
+        └── Physical Core
 
 
 3. Up-call / Callback
 
-  Linux Kernel (Context Switch)
-      └── JVM C++ (Thread Entry Point)
-          └── Java Thread (run())
+    Linux Kernel (Context Switch)
+        └── JVM C++ (Thread Entry Point)
+            └── Java Thread (run())
 ```
 
 ## Logical CPU 1개 위의 Software Thread 구조
