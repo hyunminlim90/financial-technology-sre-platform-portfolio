@@ -300,7 +300,7 @@ Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생
 | 종류 | 계층 | 실제 의미 |
 |------|------|-----------|
 | **Hyper-thread** | 하드웨어 | Physical Core 하나를 두 개의 실행 통로로 나누는 기술, 또는 그 물리적 통로 자체 |
-| **Logical CPU** | OS Kernel | Hyper-threading으로 생성된 실행 통로를 OS(Linux Kernel)가 스케줄링 가능한 CPU 단위로 인식할 때 부르는 명칭 |
+| **Logical CPU** | OS Kernel | Hyper-threading으로 생성된 실행 통로를 [OS(Linux Kernel)가 스케줄링 가능한 CPU 단위](../20-deep-dive/lscpu-runtime-analysis-guide/linux-cfs-scheduler-and-hardware-context.md)로 인식할 때 부르는 명칭 |
 | **Software Thread** | OS / JVM / Application | 프로그램 실행 흐름 (Java Thread, Go Routine, pthread 등) |
 
 > Hyper-thread(하드웨어)와 Logical CPU(OS)는 같은 대상을 가리키며, '누가 무엇으로 보는가'라는 관점의 차이만 있습니다.
