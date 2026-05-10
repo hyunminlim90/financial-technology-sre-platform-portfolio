@@ -316,7 +316,9 @@ Linux Kernel은 [Process와 Thread](../20-deep-dive/lscpu-runtime-analysis-guide
 
 Linux에서 [OS Thread(Linux Thread)](../20-deep-dive/lscpu-runtime-analysis-guide/os-thread-and-linux-thread.md)의 실체는  
 
-task_struct 기반의 LWP(Lightweight Process)입니다.
+task_struct 기반의 LWP(Lightweight Process)
+
+입니다.
 
 </br>
 
