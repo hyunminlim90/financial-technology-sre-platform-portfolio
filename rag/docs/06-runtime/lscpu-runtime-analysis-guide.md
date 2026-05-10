@@ -310,7 +310,14 @@ Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생
 
 ## Linux 에서의 [Thread와 task_struct](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-to-linux-task-struct.md)
 
-new Thread()는 JVM Heap에 Java Thread 객체만 생성합니다.
+
+
+
+
+
+
+
+
 
 [OS Thread](../20-deep-dive/lscpu-runtime-analysis-guide/os-thread-and-linux-thread.md)나 task_struct는 이 시점에 생성되지 않습니다.
 
@@ -345,6 +352,22 @@ Java Thread, Worker Thread, Kafka Consumer Thread 같은 고수준 Software Thre
 | Load Average 증가 | Runqueue 적체 |
 | unable to create new native thread | task_struct 생성 한도 도달 (threads-max, ulimit -u, cgroup pids.max) |
 | CPU Throttling | cgroup CPU Quota 소진으로 Runnable task 실행 제한 |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Software Thread 실행 계층 구조
 
