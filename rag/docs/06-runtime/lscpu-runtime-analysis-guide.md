@@ -306,21 +306,41 @@ Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생
 > Hyper-thread(하드웨어)와 Logical CPU(OS)는 같은 대상을 가리키며, '[누가 무엇으로 보는가](../20-deep-dive/lscpu-runtime-analysis-guide/hyper-thread-and-logical-cpu.md)'라는 관점의 차이만 있습니다. </br>
 > HT가 활성화된 Physical Core 하나는 OS에 Logical CPU 2개로 노출됩니다.
 
-## Linux 에서의 Thread
+## Linux 에서의 Thread와 task_struct
 
 Linux Kernel은 실제로 [Thread와 Process](../20-deep-dive/lscpu-runtime-analysis-guide/linux-task-struct-and-pid-tid-model.md)를 꽤 비슷하게 취급합니다.
 
-내부적으로는 `task_struct` 기반입니다.
+new Thread()는 JVM Heap에 Thread 객체만 생성한다. OS Thread나 task_struct는 이 시점에 생성되지 않는다.
 
-즉 Scheduler(CFS)는:
+start() 호출 이후 실제 실행 단위가 생성된다. JVM Native Layer → pthread_create() → clone() 경로를 거쳐 Linux Kernel 내부에 task_struct/LWP로 실체화된다.
 
-```text
-Software 실행 단위(task)
+```
+new Thread()   →  JVM Heap에 Thread 객체 생성 (OS Thread 없음)
+thread.start() →  JVM Native Layer → pthread_create() → clone() → task_struct 생성
 ```
 
-를 관리합니다.
+Linux Kernel은 각 Thread를 task_struct로 관리하며, Thread의 실체는 **자원을 공유하는 task_struct**, 즉 LWP(Lightweight Process)이다.
 
----
+CFS Scheduler는 task_struct가 Runnable 상태일 때 Runqueue에 등록하고, vruntime 기준으로 실행 대상을 선택해 Logical CPU에 배치한다. 이후 Physical Core에서 실제 연산이 수행된다.
+
+```
+task_struct (LWP)
+  ↓ CFS Runqueue 등록 (Runnable 상태)
+  ↓ vruntime 기준 선택
+  ↓ Logical CPU 배치
+  ↓ Physical Core 실행
+```
+
+Java Thread, Worker Thread, Kafka Consumer Thread 같은 고수준 Software Thread는 모두 커널 수준에서 CFS가 스케줄링하는 task_struct로 연결된다.
+
+이 구조를 이해하면 아래 운영 이슈를 Linux 실행 단위 관점에서 분석할 수 있다.
+
+| 현상 | 원인 |
+|------|------|
+| Context Switching 증가 | Runnable task_struct 수 과다 |
+| Load Average 증가 | Runqueue 적체 |
+| unable to create new native thread | task_struct 생성 한도 도달 (threads-max, ulimit -u, cgroup pids.max) |
+| CPU Throttling | cgroup CPU Quota 소진으로 Runnable task 실행 제한 |
 
 ## Software Thread 실행 계층 구조
 
