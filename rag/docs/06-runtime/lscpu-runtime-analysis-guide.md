@@ -283,11 +283,11 @@ JVM 환경의 주요 Software Thread:
 
 </br>
 
-> Go Runtime의 Goroutine은 Java Thread와 다른 실행 모델을 사용합니다.
+> Go Runtime의 Go routine은 Java Thread와 다른 실행 모델을 사용합니다.
 
 | 종류 | 예시 |
 |---|---|
-| **Go Routine 스케줄 대상** | Go Runtime 실행 흐름 |
+| [Go Routine 스케줄 대상](../20-deep-dive/lscpu-runtime-analysis-guide/goroutine-and-go-runtime-scheduler.md) | Go Runtime 실행 흐름 |
 
 </br>
 
