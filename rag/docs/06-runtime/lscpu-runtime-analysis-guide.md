@@ -340,6 +340,7 @@ Software Thread는 결국 Linux Scheduler(CFS)에 의해 Logical CPU 위에서 �
             └── POSIX Thread (pthread_create)
                 └── Linux Thread (task_struct/LWP)
                     └── Scheduler(CFS)
+                        └── CFS Runnable Queue (Red-Black Tree)
 
 
 [Hardware]
@@ -368,8 +369,6 @@ Hyper-thread(Logical CPU) 1개
 ```
 
 여러 Software Thread가 [동일한 Logical CPU 위에서 실행](../20-deep-dive/lscpu-runtime-analysis-guide/linux-context-switch-and-task-struct.md)될 수 있습니다.
-
----
 
 ## Linux Scheduler(CFS) 역할
 
