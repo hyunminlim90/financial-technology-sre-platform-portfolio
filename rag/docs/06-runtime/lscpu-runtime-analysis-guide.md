@@ -312,6 +312,8 @@ Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생
 
 Linux Kernel은 [Process와 Thread](../20-deep-dive/lscpu-runtime-analysis-guide/linux-task-struct-and-pid-tid-model.md)를 내부적으로 동일한 실행 단위(Task) 관점에서 관리합니다.
 
+즉,
+
 Linux에서 [OS Thread(Linux Thread)](../20-deep-dive/lscpu-runtime-analysis-guide/os-thread-and-linux-thread.md)의 실체는 task_struct 기반의 LWP(Lightweight Process)입니다.
 
 > CFS Scheduler는 이러한 task 단위를 실제 스케줄링 대상으로 관리합니다.
