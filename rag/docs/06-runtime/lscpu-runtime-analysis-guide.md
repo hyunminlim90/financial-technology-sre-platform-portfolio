@@ -310,7 +310,7 @@ Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생
 
 Linux Kernel은 실제로 [Thread와 Process](../20-deep-dive/lscpu-runtime-analysis-guide/linux-task-struct-and-pid-tid-model.md)를 꽤 비슷하게 취급합니다.
 
-new Thread()는 JVM Heap에 Thread 객체만 생성합니다.
+new Thread()는 JVM Heap에 Java Thread 객체만 생성합니다.
 
 OS Thread나 task_struct는 이 시점에 생성되지 않습니다.
 
