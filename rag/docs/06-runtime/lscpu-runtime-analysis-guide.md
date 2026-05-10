@@ -318,6 +318,8 @@ Linux에서 [OS Thread(Linux Thread)](../20-deep-dive/lscpu-runtime-analysis-gui
 > 
 > [Java Thread에서 task_struct의 생명주기](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-to-task-struct-lifecycle.md)
 
+</br>
+
 ## Software Thread 실행 계층 구조
 
 Software Thread는 결국 Linux Scheduler(CFS)에 의해 Logical CPU 위에서 실행됩니다.
