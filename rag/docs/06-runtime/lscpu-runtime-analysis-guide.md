@@ -303,7 +303,7 @@ Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생
 | **Logical CPU** | OS Kernel | [Linux Kernel이 스케줄링 가능한 CPU 단위](../20-deep-dive/lscpu-runtime-analysis-guide/linux-cfs-scheduler-and-hardware-context.md)로 인식할 때 부르는 명칭 |
 | **Software Thread** | OS / JVM / Application | 프로그램 실행 흐름 (Java Thread, Go Routine, pthread 등) |
 
-> Hyper-thread(하드웨어)와 Logical CPU(OS)는 같은 대상을 가리키며, '누가 무엇으로 보는가'라는 관점의 차이만 있습니다. </br>
+> Hyper-thread(하드웨어)와 Logical CPU(OS)는 같은 대상을 가리키며, '[누가 무엇으로 보는가](../20-deep-dive/lscpu-runtime-analysis-guide/hyper-thread-and-logical-cpu.md)'라는 관점의 차이만 있습니다. </br>
 > HT가 활성화된 Physical Core 하나는 OS에 Logical CPU 2개로 노출됩니다.
 
 ## Linux 에서의 Thread
