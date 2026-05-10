@@ -351,9 +351,12 @@ Software Thread는 결국 Linux Scheduler(CFS)에 의해 Logical CPU 위에서 �
 
 [Up-call / Callback]
 
-    Linux Kernel (Context Switch)
-        └── JVM C++ (Thread Entry Point)
-            └── Java Thread (run())
+    Linux Kernel (Scheduler Decision)
+        └── Context Switch
+            └── Running 상태 전환 관리
+                └── CPU Context 복구 (Register, Program Counter, Stack Pointer 등 task_struct 정보 로드)
+                    └── JVM C++ (Thread Entry Point)
+                        └── Java Thread (run())
 ```
 
 ## Logical CPU 1개 위의 Software Thread 구조
@@ -383,7 +386,7 @@ CPU Time을 분배/계산한다
 
 - 어떤 Thread(task_struct)를 실행할지 결정
 - CPU Time 분배
-- Running 상태 전환 관리
+- [Running 상태 전환 관리]()
 - [Runnable Queue](../20-deep-dive/lscpu-runtime-analysis-guide/linux-cfs-scheduler-and-runnable-queue.md) 기반 스케줄링
 
 ---
