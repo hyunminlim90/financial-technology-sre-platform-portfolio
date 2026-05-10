@@ -306,7 +306,127 @@ Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생
 > Hyper-thread(하드웨어)와 Logical CPU(OS)는 같은 대상을 가리키며, '[누가 무엇으로 보는가](../20-deep-dive/lscpu-runtime-analysis-guide/hyper-thread-and-logical-cpu.md)'라는 관점의 차이만 있습니다. </br>
 > HT가 활성화된 Physical Core 하나는 OS에 Logical CPU 2개로 노출됩니다.
 
-## Linux 에서의 [Thread와 task_struct](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-to-linux-task-struct.md)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Linux에서의 [Thread와 task_struct](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-to-linux-task-struct.md)
+
+### 1. new Thread()와 start()의 차이
+
+new Thread()는 JVM Heap에 Java Thread 객체만 생성한다. 이 시점에는 OS Thread나 `task_struct`가 생성되지 않는다.
+
+실제 실행 단위는 `start()` 호출 이후에 생성된다.
+
+```
+new Thread()   →  JVM Heap에 Thread 객체 생성 (OS Thread 없음)
+thread.start() →  JVM Native Layer → pthread_create() → clone() → task_struct 생성
+```
+
+---
+
+## 2. task_struct와 LWP
+
+Linux Kernel은 Thread와 Process를 동일한 구조체인 `task_struct`로 관리한다. Thread의 실체는 **자원을 공유하는 `task_struct`**, 즉 LWP(Lightweight Process)다.
+
+```
+Linux Thread = LWP = task_struct
+```
+
+Java Thread, Worker Thread, Kafka Consumer Thread 같은 고수준 Software Thread는 모두 커널 수준에서 `task_struct`로 실체화된다.
+
+---
+
+## 3. CFS Scheduler와 실행 흐름
+
+CFS Scheduler는 `task_struct`가 Runnable 상태일 때 Runqueue에 등록하고, `vruntime` 기준으로 실행 대상을 선택해 Logical CPU에 배치한다.
+
+```
+task_struct (LWP)
+  ↓ CFS Runqueue 등록 (Runnable 상태)
+  ↓ vruntime 기준 선택
+  ↓ Logical CPU 배치
+  ↓ Physical Core 실행
+```
+
+---
+
+## 4. run()의 위치와 역할
+
+`start()`가 커널 자원(`task_struct`)을 확보하는 과정이라면, `run()`은 확보된 자원 위에서 실제 연산이 수행되는 단계다.
+
+전체 흐름에서 `run()`은 Logical CPU 배치 이후, Physical Core에서 실제 연산이 일어나는 지점에 위치한다.
+
+```
+new Thread()         →  JVM Heap에 Thread 객체 생성
+thread.start()       →  JVM Native Layer → clone() → task_struct 생성
+CFS Scheduler        →  task_struct를 Runqueue에 등록 및 스케줄링
+Context Switch       →  Logical CPU에 하드웨어 컨텍스트 로드
+run() 실행           →  Logical CPU 위에서 실제 비즈니스 로직 연산 수행  ★
+```
+
+### 계층별 run()의 의미
+
+| 계층 | 단계 | run()의 역할 |
+|------|------|-------------|
+| Java Application | 정의 (Definition) | 실행할 로직이 담긴 코드 블록 |
+| JVM Native | 진입 (Entry Point) | `task_struct`가 처음으로 실행할 타겟 메서드 |
+| Linux Kernel | 실행 (Execution) | `task_struct`가 CPU를 점유하고 수행하는 연산 내용 |
+
+---
+
+## 5. 운영 이슈 분석
+
+이 구조를 이해하면 아래 이슈를 Linux 실행 단위 관점에서 분석할 수 있다.
+
+| 현상 | 원인 |
+|------|------|
+| Context Switching 증가 | Runnable `task_struct` 수 과다 |
+| Load Average 증가 | Runqueue 적체 |
+| `unable to create new native thread` | `task_struct` 생성 한도 도달 (`threads-max`, `ulimit -u`, `cgroup pids.max`) |
+| CPU Throttling | cgroup CPU Quota 소진으로 Runnable task 실행 제한 |
+| I/O Wait 높음 | `run()` 내부 외부 호출 대기 중 `task_struct`가 Sleeping 상태로 전환 |
+| run() 실행 지연 | CPU Saturation으로 CFS가 해당 `task_struct`를 Logical CPU에 배치하지 못하는 상태 |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 new Thread()는 JVM Heap에 Java Thread 객체만 생성합니다.
 
