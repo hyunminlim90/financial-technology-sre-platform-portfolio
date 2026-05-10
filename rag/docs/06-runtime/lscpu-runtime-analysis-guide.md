@@ -333,15 +333,25 @@ task_struct 기반의 LWP(Lightweight Process)
 Software Thread는 결국 Linux Scheduler(CFS)에 의해 Logical CPU 위에서 실행됩니다.
 
 ```text
-Application
-└── Java Thread
-    └── Linux Thread(Task)
-        └── Scheduler(CFS)
-            └── Logical CPU(Hyper-thread)
-                └── Physical Core
-```
+Down-call
 
----
+  Java Thread (new Thread().start())
+      └── JVM C/C++ (native start0())
+          └── POSIX Thread (pthread_create)
+              └── Linux Thread (task_struct/LWP)
+                  └── Scheduler(CFS)
+
+Hardware
+
+  Logical CPU (Hyper-thread)
+      └── Physical Core
+
+Up-call / Callback
+
+  Linux Kernel (Context Switch)
+      └── JVM C++ (Thread Entry Point)
+          └── Java Thread (run())
+```
 
 ## Logical CPU 1개 위의 Software Thread 구조
 
