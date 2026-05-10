@@ -318,6 +318,8 @@ Linux에서 [OS Thread(Linux Thread)](../20-deep-dive/lscpu-runtime-analysis-gui
 
 task_struct 기반의 LWP(Lightweight Process)입니다.
 
+</br>
+
 > CFS Scheduler는 이러한 task 단위를 실제 스케줄링 대상으로 관리합니다.
 > 
 > [Java Thread에서 task_struct의 생명주기](../20-deep-dive/lscpu-runtime-analysis-guide/java-thread-to-task-struct-lifecycle.md)
