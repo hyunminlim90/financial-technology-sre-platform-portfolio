@@ -298,7 +298,7 @@ JVM 환경의 주요 Software Thread:
 Thread라는 단어가 두 계층에 모두 사용되기 때문에 혼동이 생길 수 있습니다.
 
 | 종류 | 실제 의미 | 계층 |
-|------|------|-----------|------|
+|------|-----------|------|
 | **Hyper-thread** | Physical Core 하나를 두 개의 실행 통로로 나누는 기술, 또는 그 물리적 통로 자체 | 하드웨어 |
 | **Logical CPU / vCPU** | Hyper-threading으로 생성된 실행 통로를 OS(Linux Kernel)가 스케줄링 가능한 CPU 단위로 인식할 때 부르는 명칭 | OS Kernel |
 | **Software Thread** | 프로그램 실행 흐름 (Java Thread, Go Routine, pthread 등) | OS / JVM / Application |
