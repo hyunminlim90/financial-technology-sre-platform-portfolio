@@ -386,7 +386,7 @@ CPU Time을 분배/계산한다
 
 - 어떤 Thread(task_struct)를 실행할지 결정
 - CPU Time 분배
-- [Running 상태 전환 관리]()
+- [Running 상태 전환 관리](../20-deep-dive/lscpu-runtime-analysis-guide/linux-context-switch-and-cpu-context-restore.md)
 - [Runnable Queue](../20-deep-dive/lscpu-runtime-analysis-guide/linux-cfs-scheduler-and-runnable-queue.md) 기반 스케줄링
 
 ---
