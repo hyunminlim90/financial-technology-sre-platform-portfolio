@@ -439,7 +439,7 @@ Context Switch
 Runnable Thread가 과도하게 증가하면:
 
 - Runnable Queue 증가
-- Context Switch 증가
+- [Context Switch](../20-deep-dive/lscpu-runtime-analysis-guide/cpu-saturation-and-kernel-user-mode.md) 증가
 - CPU Cache Miss 증가
 - Scheduler Overhead 증가
 - CPU Saturation 발생
