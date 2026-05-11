@@ -434,8 +434,6 @@ Context Switch
 
 가 발생할 수 있습니다.
 
----
-
 ## CPU Saturation 과 Scheduler Overhead
 
 Runnable Thread가 과도하게 증가하면:
