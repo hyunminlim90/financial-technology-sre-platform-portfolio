@@ -446,7 +446,7 @@ Runnable Thread가 과도하게 증가하면:
 
 특히 다음 구조에서 이러한 현상이 심해집니다:
 
-- Thread-per-request 구조
+- [Thread-per-request](../20-deep-dive/lscpu-runtime-analysis-guide/thread-per-request-and-cpu-saturation.md) 구조
 - Blocking I/O 사용
 - 과도한 Thread Pool 설정
 
