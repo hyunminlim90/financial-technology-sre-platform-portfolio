@@ -357,6 +357,14 @@ Software Thread는 결국 Linux Scheduler(CFS)에 의해 Logical CPU 위에서 �
                 └── CPU Context 복구 (Register, Program Counter, Stack Pointer 등 task_struct 정보 로드)
                     └── JVM C++ (Thread Entry Point)
                         └── Java Thread (run())
+
+                        [Running]
+                            │
+                            ├───▶ [Time Slice 소진] ──▶ [Runnable] (다시 Red-Black Tree로)
+                            │
+                            ├───▶ [I/O 요청/Sleep] ──▶ [Blocked/Sleeping] (Wait Queue로 이동)
+                            │
+                            └───▶ [작업 완료] ───────▶ [Exit/Dead] (소멸)
 ```
 
 ## Logical CPU 1개 위의 Software Thread 구조
@@ -388,8 +396,6 @@ CPU Time을 분배/계산한다
 - CPU Time 분배
 - [Running 상태 전환 관리](../20-deep-dive/lscpu-runtime-analysis-guide/linux-context-switch-and-cpu-context-restore.md)
 - [Runnable Queue](../20-deep-dive/lscpu-runtime-analysis-guide/linux-cfs-scheduler-and-runnable-queue.md) 기반 스케줄링
-
----
 
 ## Running / Runnable / Context Switch
 
