@@ -405,6 +405,8 @@ CPU Time을 분배/계산한다
 | **Runnable** | 실행 대기 중 (CPU 할당 기다리는 상태) |
 | **Blocked** | I/O 대기 등으로 대기 중 |
 
+Linux Kernel의 [task_struct 상태 관리](../20-deep-dive/lscpu-runtime-analysis-guide/linux-task-struct-state-management.md)
+
 **핵심:**
 
 ```text
