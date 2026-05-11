@@ -411,7 +411,7 @@ Linux Kernel의 [task_struct 상태 관리](../20-deep-dive/lscpu-runtime-analys
 
 ```text
 Hyper-thread(Logical CPU) 1개
-= 동시에 Running 가능한 Thread 1개
+= 동시에 Running 가능한 Thread(task_struct) 1개
 ```
 
 Runnable 상태의 Software Thread는 훨씬 많이 존재할 수 있습니다.
