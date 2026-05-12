@@ -448,7 +448,7 @@ Runnable Thread(task_struct)가 과도하게 증가하면:
 
 - [Thread-per-request](../20-deep-dive/lscpu-runtime-analysis-guide/thread-per-request-and-cpu-saturation.md) 구조
 - [Blocking I/O](../20-deep-dive/lscpu-runtime-analysis-guide/blocking-io-and-thread-pool-exhaustion.md) 사용
-- 과도한 Thread Pool 설정
+- 과도한 [Thread Pool 설정](../20-deep-dive/lscpu-runtime-analysis-guide/cpu-saturation-and-thread-pool-tuning.md)
 
 > CPU Saturation과 [I/O 처리 모델](../20-deep-dive/lscpu-runtime-analysis-guide/cpu-saturation-and-io-models.md)
 
