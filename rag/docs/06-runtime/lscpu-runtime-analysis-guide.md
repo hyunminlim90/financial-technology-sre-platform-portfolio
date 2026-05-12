@@ -488,7 +488,11 @@ Thread-per-request
     │    ├── Thread Pool 조회
     │    │    ├── Idle Thread 존재 시 → 해당 Thread 할당
     │    │    ├── Idle Thread 없을 시 → 신규 Thread 생성 시도
-    │    │    └── 요청 1개당 Thread 1개 전담 할당 (Thread-per-request 모델)
+    │    │    ├── 요청 1개당 Thread 1개 전담 할당 (Thread-per-request 모델)
+    │    │    └── Thread Pool 완전 고갈 시
+    │    │         ├── TCP Backlog Queue (OS 레벨 Accept Queue)에 연결 적체
+    │    │         ├── Accept Queue 초과 시 → OS가 신규 TCP 연결 거부
+    │    │         └── 클라이언트 관점: Connection Refused 발생
     │    │
     │    └── Request Dispatcher (URL 라우팅 및 서블릿 연결)
     │         ├── 할당된 Worker Thread가 Dispatcher 호출
@@ -525,7 +529,11 @@ Thread-per-request
          ├── Kernel Stack 생성 (System Call 상태, Register 정보, Scheduling 정보 보관)
          ├── Scheduling Metadata 초기화 (State, Priority, vruntime, CPU Accounting)
          ├── Memory Mapping 정보 등록
-         └── 초기 상태: TASK_RUNNING → CFS Runqueue의 Red-Black Tree에 등록
+         ├── 초기 상태: TASK_RUNNING → CFS Runqueue의 Red-Black Tree에 등록
+         └── Thread Local Storage (TLS) 오버헤드
+              ├── 각 task_struct 생성 시 TLS 세그먼트 독립 할당
+              ├── task_struct 수 증가 비례로 TLS 메모리 파편화 심화
+              └── GC 대상 외 영역(Native Memory)이므로 JVM Heap 모니터링에서 누락되기 쉬움
 
 
 → I/O 대기 시 '자원 고립(유령 점유)'
