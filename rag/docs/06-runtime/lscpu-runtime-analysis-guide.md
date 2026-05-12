@@ -472,17 +472,35 @@ Runnable Thread(task_struct)가 과도하게 증가하면:
 
 ## Thread-per-request vs Event Loop
 
-전통적인 Blocking I/O 커널 레벨 동작 분석:
+전통적인 Blocking I/O 구조:
 
 ```text
 Thread-per-request
 
 → 요청마다 Thread 1개 할당
     ├── Web Request Inbound
-    │    ├── 브라우저/클라이언트로부터 새로운 HTTP 요청 도착
-    │    ├── WAS(Tomcat 등) Request Dispatcher가 요청 수신
-    │    ├── Thread Pool 조회: Idle Thread 존재 시 할당, 없으면 신규 Thread 생성 시도
-    │    └── 요청 1개당 Thread 1개 전담 할당 (Thread-per-request 모델)
+    │    ├── 브라우저/클라이언트로부터 새로운 HTTP 요청 도착 (TCP 연결)
+    │    │
+    │    ├── Tomcat Acceptor
+    │    │    ├── TCP 연결 수신 및 Socket 오픈
+    │    │    └── 처리 가능한 Worker Thread 확보 요청
+    │    │
+    │    ├── Thread Pool 조회
+    │    │    ├── Idle Thread 존재 시 → 해당 Thread 할당
+    │    │    ├── Idle Thread 없을 시 → 신규 Thread 생성 시도
+    │    │    └── 요청 1개당 Thread 1개 전담 할당 (Thread-per-request 모델)
+    │    │
+    │    └── Request Dispatcher (URL 라우팅 및 서블릿 연결)
+    │         ├── 할당된 Worker Thread가 Dispatcher 호출
+    │         ├── 요청 URL 분석 → 담당 Servlet / Controller 식별
+    │         │    ├── (예시) GET /api/order → OrderServlet
+    │         │    └── (예시) POST /api/pay  → PaymentController
+    │         ├── HttpServletRequest / HttpServletResponse 객체 생성
+    │         ├── Forward: 제어권을 대상 Servlet으로 완전히 이전
+    │         │    └── 클라이언트는 서버 내부 이동을 인지하지 못함 (URL 변경 없음)
+    │         ├── Include: 대상 컴포넌트 실행 후 제어권 원래 Servlet으로 반환
+    │         │    └── 응답 페이지 조립 시 사용 (header, footer 포함 등)
+    │         └── 대상 Servlet에 Request / Response 객체 전달 → 비즈니스 로직 진입
     │
     ├── Java Thread.start() (또는 Pool 할당)
     │    ├── java.lang.Thread 객체 생성
