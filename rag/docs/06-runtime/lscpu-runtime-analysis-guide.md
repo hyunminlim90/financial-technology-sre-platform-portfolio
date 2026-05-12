@@ -476,13 +476,29 @@ Runnable Thread(task_struct)가 과도하게 증가하면:
 
 ```text
 Thread-per-request
+
 → 요청마다 Thread 1개 할당
-    ├── Java Thread.start()
-    ├── JVM Native (C++) pthread_create()
-    ├── Kernel System Call clone()
+    ├── Web Request Inbound: 브라우저/클라이언트로부터 새로운 HTTP 요청 도착
+    ├── Java Thread.start() (또는 Pool 할당): 해당 요청을 전담 처리할 새로운 실행 흐름 할당
+    ├── JVM Native (C++) pthread_create(): JNI(Java Native Interface)를 통해 OS 표준 스레드 라이브러리(POSIX Threads) 호출
+    ├── System Call clone(): START
     └── Kernal Object task_struct
-→ 
-→ I/O 대기 중에도 Java Thread 점유
+
+→ I/O 대기 시 '자원 고립(유령 점유)'
+    ├── Java Blocking Call: read() send() ... (결과 반환 전까지 메서드 스택 프레임 유지)
+    ├── System Call: Trap 발생 (User → Kernel 모드 전환 오버헤드)
+    ├── State Change: task_struct 상태 변경 (TASK_RUNNING → TASK_INTERRUPTIBLE)
+    └── Scheduling: Runqueue에서 제거되어 Wait Queue로 이동
+        ├── [CPU] 사용량 0%: Kernel의 '관리/복귀' 비용 소모
+        │    ├── 인터럽트 처리 (Interrupt Handling) 및 Context Switching 오버헤드
+        │    ├── Wait Queue 리스트 스캔 및 대상 식별 비용
+        │    └── task_struct 복귀 시 Red-Black Tree 삽입/정렬 비용
+        ├── [Memory] 반납 불가 고정:
+        │    ├── JVM Stack (~1MB): Java Thread가 반납되지 않아 스택 메모리 점유 지속
+        │    ├── Kernel Stack / task_struct: OS 레벨의 TCB(Thread Control Block) 유지
+        │    └── Cache Thrashing: 복귀 시 Cache Miss로 인해 RAM에서 데이터를 로드하는 Pipeline Stall(지연) 발생
+        └── [Java] Thread Starvation: I/O 응답 전까지 Java Thread가 Pool에 반납되지 않고 점유 상태 유지 (Pool 고갈로 신규 요청 거절)
+
 → Thread 수 증가 → Context Switch 증가
 → CPU Saturation 위험
 ```
