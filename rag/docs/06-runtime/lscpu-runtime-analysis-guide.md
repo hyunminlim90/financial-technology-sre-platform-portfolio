@@ -478,9 +478,9 @@ Runnable Thread(task_struct)가 과도하게 증가하면:
 Thread-per-request
 → 요청마다 Thread 1개 할당
     ├── Java Thread.start()
-    ├── JVM Native (C++) ── pthread_create()
-    ├── Kernel System Call ── clone()
-    └── Kernal Object ── task_struct
+    ├── JVM Native (C++) pthread_create()
+    ├── Kernel System Call clone()
+    └── Kernal Object task_struct
 → 
 → I/O 대기 중에도 Java Thread 점유
 → Thread 수 증가 → Context Switch 증가
