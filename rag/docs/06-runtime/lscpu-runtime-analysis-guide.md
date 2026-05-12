@@ -472,35 +472,147 @@ Runnable Thread(task_struct)가 과도하게 증가하면:
 
 ## Thread-per-request vs Event Loop
 
-전통적인 Blocking 구조:
+전통적인 Blocking I/O 커널 레벨 동작 분석:
 
 ```text
 Thread-per-request
 
 → 요청마다 Thread 1개 할당
-    ├── Web Request Inbound: 브라우저/클라이언트로부터 새로운 HTTP 요청 도착
-    ├── Java Thread.start() (또는 Pool 할당): 해당 요청을 전담 처리할 새로운 실행 흐름 할당
-    ├── JVM Native (C++) pthread_create(): JNI(Java Native Interface)를 통해 OS 표준 스레드 라이브러리(POSIX Threads) 호출
+    ├── Web Request Inbound
+    │    ├── 브라우저/클라이언트로부터 새로운 HTTP 요청 도착
+    │    ├── WAS(Tomcat 등) Request Dispatcher가 요청 수신
+    │    ├── Thread Pool 조회: Idle Thread 존재 시 할당, 없으면 신규 Thread 생성 시도
+    │    └── 요청 1개당 Thread 1개 전담 할당 (Thread-per-request 모델)
+    │
+    ├── Java Thread.start() (또는 Pool 할당)
+    │    ├── java.lang.Thread 객체 생성
+    │    ├── Program Counter (PC), JVM Stack, Method Stack Frame, Thread Local State 초기화
+    │    ├── JVM Stack 메모리 점유 시작 (기본 약 1MB, -Xss 옵션으로 조정 가능)
+    │    └── Thread 수 증가 시 JVM Stack 메모리 선형 증가
+    │
+    ├── JVM Native (C++) pthread_create()
+    │    ├── HotSpot JVM이 Java Thread 객체와 Native Thread를 1:1 매핑
+    │    ├── JNI(Java Native Interface)를 통해 OS 표준 스레드 라이브러리(POSIX Threads) 호출
+    │    ├── Native Stack 생성 및 TLS(Thread Local Storage) 초기화
+    │    └── OS Kernel에 Thread 생성 요청 전달
+    │
     ├── System Call clone(): START
-    └── Kernal Object task_struct
+    │    ├── User Mode → Kernel Mode 전환 (Trap 발생)
+    │    ├── clone() 시스템 콜 실행
+    │    ├── PID/TID 할당
+    │    └── CFS Scheduler Runqueue에 신규 task_struct 삽입
+    │
+    └── Kernel Object task_struct 생성
+         ├── task_struct: OS 레벨 Thread Control Block(TCB) 실체화
+         ├── Kernel Stack 생성 (System Call 상태, Register 정보, Scheduling 정보 보관)
+         ├── Scheduling Metadata 초기화 (State, Priority, vruntime, CPU Accounting)
+         ├── Memory Mapping 정보 등록
+         └── 초기 상태: TASK_RUNNING → CFS Runqueue의 Red-Black Tree에 등록
+
 
 → I/O 대기 시 '자원 고립(유령 점유)'
-    ├── Java Blocking Call: read() send() ... (결과 반환 전까지 메서드 스택 프레임 유지)
+    │
+    ├── Java Blocking Call: read() / send() / JDBC Query / REST API Call / File I/O ...
+    │    ├── 메서드 반환 불가 → Method Stack Frame 유지
+    │    ├── Java Thread 점유 지속 → Thread Pool 반환 불가
+    │    └── 결과 반환 전까지 해당 Thread는 신규 요청 처리 불가
+    │
     ├── System Call: Trap 발생 (User → Kernel 모드 전환 오버헤드)
-    ├── State Change: task_struct 상태 변경 (TASK_RUNNING → TASK_INTERRUPTIBLE)
+    │    ├── JNI Transition: User Mode → Kernel Mode 전환
+    │    ├── CPU Privilege Level 변경 (Ring 3 → Ring 0)
+    │    ├── 현재 CPU Register 상태 저장 (Program Counter, Stack Pointer, CPU Flags)
+    │    └── Kernel 내부 I/O 처리 루틴 진입
+    │
+    ├── State Change: task_struct 상태 변경
+    │    ├── TASK_RUNNING → TASK_INTERRUPTIBLE
+    │    └── 이 순간부터 해당 task_struct는 CPU 실행 대상에서 제외
+    │
     └── Scheduling: Runqueue에서 제거되어 Wait Queue로 이동
-        ├── [CPU] 사용량 0%: Kernel의 '관리/복귀' 비용 소모
-        │    ├── 인터럽트 처리 (Interrupt Handling) 및 Context Switching 오버헤드
-        │    ├── Wait Queue 리스트 스캔 및 대상 식별 비용
-        │    └── task_struct 복귀 시 Red-Black Tree 삽입/정렬 비용
-        ├── [Memory] 반납 불가 고정:
-        │    ├── JVM Stack (~1MB): Java Thread가 반납되지 않아 스택 메모리 점유 지속
-        │    ├── Kernel Stack / task_struct: OS 레벨의 TCB(Thread Control Block) 유지
-        │    └── Cache Thrashing: 복귀 시 Cache Miss로 인해 RAM에서 데이터를 로드하는 Pipeline Stall(지연) 발생
-        └── [Java] Thread Starvation: I/O 응답 전까지 Java Thread가 Pool에 반납되지 않고 점유 상태 유지 (Pool 고갈로 신규 요청 거절)
+         ├── CFS Runqueue에서 task_struct 제거 (Red-Black Tree에서 노드 삭제)
+         ├── I/O Wait Queue에 task_struct 삽입 (해당 I/O 이벤트 대기 목록 등록)
+         │
+         ├── [CPU] 사용량 ≈ 0%: 직접 연산 없음, Kernel의 '관리/복귀' 비용만 지속 소모
+         │    ├── Interrupt Handling 오버헤드
+         │    │    ├── I/O 완료 시 NIC/Disk Controller가 IRQ(Interrupt Request) 발생
+         │    │    ├── Kernel Interrupt Handler 실행 (IRQ 처리 → SoftIRQ 실행)
+         │    │    └── Wake-up 대상 task_struct 탐색 수행
+         │    ├── Wait Queue 리스트 스캔 및 대상 식별 비용
+         │    │    ├── wait_queue 구조체 순회
+         │    │    ├── 완료된 I/O에 대응하는 task_struct 식별
+         │    │    └── wake_up() 호출로 상태 복구 트리거
+         │    └── task_struct 복귀 시 Red-Black Tree 삽입/정렬 비용
+         │         ├── TASK_INTERRUPTIBLE → TASK_RUNNING 상태 복구
+         │         ├── CFS Runqueue의 Red-Black Tree에 노드 재삽입
+         │         └── vruntime 재계산 및 Scheduling 대상 재정렬
+         │
+         ├── [Memory] 반납 불가 고정: CPU를 반납했어도 메모리는 전액 점유 유지
+         │    ├── JVM Stack (~1MB)
+         │    │    ├── Java Thread가 Pool에 반납되지 않아 Stack 메모리 점유 지속
+         │    │    ├── Method Stack Frame, 지역 변수, Call Context 전체 유지
+         │    │    └── Thread 수 비례로 Heap 외 메모리 직접 증가 → OOM 위험
+         │    ├── Kernel Stack / task_struct
+         │    │    ├── OS 레벨 TCB(Thread Control Block) 전체 유지
+         │    │    ├── System Call 상태, Register 정보, Interrupt 복귀 정보 보존
+         │    │    └── Scheduling Metadata(State, Priority, CPU Accounting) 지속 관리
+         │    └── Cache Thrashing
+         │         ├── I/O 완료 후 대량 Wake-up 발생 시 L1/L2 Cache Miss 급증
+         │         ├── 빈번한 Task 교체로 이전 Task의 Cache 데이터 무효화
+         │         ├── RAM에서 데이터를 다시 로드하는 Pipeline Stall(지연) 발생
+         │         └── Cache Hit Ratio 급감 → 연산 속도 저하
+         │
+         └── [Java] Thread Starvation
+              ├── I/O 응답 전까지 Java Thread가 Pool에 반납되지 않고 점유 상태 유지
+              ├── Blocking Thread 누적 → Pool Idle Thread 감소 → Pool Exhaustion
+              ├── 신규 요청 처리 불가 → Queue 적체 → Timeout / Reject
+              └── WAS가 신규 Thread 생성 시도 → task_struct 추가 생성 → 부하 가중
+
 
 → Thread 수 증가 → Context Switch 증가
+    │
+    ├── 대규모 Blocking 누적 시 붕괴 메커니즘
+    │    ├── DB/External API 지연 → 기존 Thread들이 Wait Queue에 적체
+    │    ├── 신규 요청 처리 시도 → 추가 Java Thread 생성 → 추가 task_struct 생성
+    │    ├── I/O 복구 시점: Wait Queue의 대량 task_struct가 동시에 Runnable Queue로 전이
+    │    │    └── Thundering Herd: 한정된 Logical CPU를 차지하기 위한 극심한 경합 발생
+    │    ├── Context Switch 폭증
+    │    │    ├── Voluntary Context Switch: Blocking 진입 시 자발적 CPU 반납
+    │    │    ├── Involuntary Context Switch: Time Slice 종료로 인한 강제 선점
+    │    │    └── 유효한 비즈니스 연산보다 Scheduler의 Task 교체 오버헤드가 CPU를 더 많이 점유
+    │    └── Scheduler Saturation
+    │         ├── CFS Red-Black Tree 탐색 횟수 급증
+    │         ├── vruntime 계산 및 task 재정렬 비용 급증
+    │         ├── CPU Context 저장·복구 반복 (Program Counter, Stack Pointer, CPU Flags, General Registers)
+    │         └── System CPU Time(sy) 급증 → Business Logic 실행 시간 감소
+    │
+    └── 최종 장애 상태
+         ├── CPU Usage: 100% (but Scheduler 비용으로 포화)
+         ├── Runnable Queue: 폭증
+         ├── Wait Queue: 폭증
+         ├── Context Switch: 급증
+         ├── L1/L2 Cache Hit Ratio: 급감
+         ├── Tail Latency (P99/P999): 급증
+         ├── Throughput: 붕괴 (CPU 100%이나 실제 처리량 0에 수렴)
+         └── 신규 요청: Timeout / Reject
+
+
 → CPU Saturation 위험
+    │
+    └── 핵심 메커니즘 요약
+         I/O 지연
+             ↓
+         Wait Queue 적체 + Thread Pool 고갈
+             ↓
+         신규 task_struct 추가 생성
+             ↓
+         I/O 완료 시 대량 Wake-up (Thundering Herd)
+             ↓
+         Runnable Queue 폭증
+             ↓
+         Context Switch 급증 + Cache Miss 급증
+             ↓
+         Scheduler Overhead 포화
+             ↓
+         CPU Saturation → Throughput 붕괴
 ```
 
 Spring WebFlux / Netty 구조:
