@@ -450,6 +450,8 @@ Runnable Thread(task_struct)가 과도하게 증가하면:
 - [Blocking I/O](../20-deep-dive/lscpu-runtime-analysis-guide/blocking-io-and-thread-pool-exhaustion.md) 사용
 - 과도한 Thread Pool 설정
 
+> CPU Saturation과 [I/O 처리 모델](../20-deep-dive/lscpu-runtime-analysis-guide/cpu-saturation-and-io-models.md)
+
 ---
 
 ## 멀티코어 / 멀티스레드 / HT 개념 최종 정리
