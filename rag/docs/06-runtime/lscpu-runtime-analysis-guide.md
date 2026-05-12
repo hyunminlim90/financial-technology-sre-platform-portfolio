@@ -476,7 +476,7 @@ Runnable Thread(task_struct)가 과도하게 증가하면:
 
 ```text
 Thread-per-request
-→ 요청마다 Java Thread 1개 할당
+→ 요청마다 Thread 1개 할당
     ├── Java Thread.start()
     ├── JVM Native (C++) ── pthread_create()
     ├── Kernel System Call ── clone()
