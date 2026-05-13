@@ -565,6 +565,21 @@ Thread-per-request
     │                   ├── 직렬화 결과를 HttpServletResponse의 OutputStream에 기록
     │                   └── HTTP 상태 코드, Content-Type 헤더 설정 후 응답 완료
     │
+    │               ※ [예외 발생 시 대체 흐름] HandlerExceptionResolver
+    │                   ├── 1~6번 수행 중 예외 발생 시 DispatcherServlet이 예외를 포착
+    │                   ├── 등록된 HandlerExceptionResolver 목록을 순서대로 탐색
+    │                   ├── ExceptionHandlerExceptionResolver (최우선 처리)
+    │                   │    ├── @ExceptionHandler 어노테이션이 붙은 메서드 탐색
+    │                   │    │    ├── 해당 Controller 내부 @ExceptionHandler 우선 적용
+    │                   │    │    └── 없을 시 → @ControllerAdvice 전역 핸들러 탐색
+    │                   │    └── 매핑된 메서드 실행 → MessageConverter를 통해 JSON 응답 직렬화
+    │                   ├── ResponseStatusExceptionResolver
+    │                   │    └── @ResponseStatus 어노테이션 기반 HTTP 상태 코드 자동 매핑
+    │                   ├── DefaultHandlerExceptionResolver
+    │                   │    └── Spring MVC 표준 예외 → HTTP 상태 코드 변환 (405, 415 등)
+    │                   └── 처리 불가 시 → Servlet Container로 예외 전파 → 500 Internal Server Error
+    │
+    │
     ├── Java Thread.start() (또는 Pool 할당)
     │    ├── java.lang.Thread 객체 생성
     │    ├── Program Counter (PC), JVM Stack, Method Stack Frame, Thread Local State 초기화
