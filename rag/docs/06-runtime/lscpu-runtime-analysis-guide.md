@@ -757,7 +757,7 @@ Thread-per-request
          CPU Saturation → Throughput 붕괴
 ```
 
-Java Servlet 표준(J2EE/Jakarta EE) 기반의 수동 처리 방식
+[WAS](../20-deep-dive/lscpu-runtime-analysis-guide/was-jvm-kernel-and-binary-execution-flow.md) (Web Application Server/Dynamic content)
 
 [DispatcherServlet이란](../20-deep-dive/lscpu-runtime-analysis-guide/dispatcher-servlet-jvm-memory-and-task-struct.md)
 
