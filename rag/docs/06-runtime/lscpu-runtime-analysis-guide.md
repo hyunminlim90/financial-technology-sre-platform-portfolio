@@ -759,6 +759,8 @@ Thread-per-request
 
 [WAS](../20-deep-dive/lscpu-runtime-analysis-guide/was-jvm-kernel-and-binary-execution-flow.md) (Web Application Server/Dynamic content)
 
+[RequestDispatcher란](../20-deep-dive/lscpu-runtime-analysis-guide/request-dispatcher-and-servlet-container-flow.md)
+
 [DispatcherServlet이란](../20-deep-dive/lscpu-runtime-analysis-guide/dispatcher-servlet-jvm-memory-and-task-struct.md)
 
 Spring WebFlux / Netty 구조:
