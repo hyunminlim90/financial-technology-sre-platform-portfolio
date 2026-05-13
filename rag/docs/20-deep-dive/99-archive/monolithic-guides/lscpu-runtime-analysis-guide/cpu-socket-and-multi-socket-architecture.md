@@ -1,4 +1,4 @@
-# CPU Socket과 Multi-Socket CPU 구조
+# CPU Socket과 Multi-Socket CPU 구조 (E2E 분석 적용됨)
 
 ---
 

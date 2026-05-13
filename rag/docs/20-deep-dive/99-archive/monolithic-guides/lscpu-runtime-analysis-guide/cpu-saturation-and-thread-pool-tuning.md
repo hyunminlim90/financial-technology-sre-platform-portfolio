@@ -1,4 +1,4 @@
-# CPU Saturation과 Thread Pool 설정
+# CPU Saturation과 Thread Pool 설정 (E2E 분석 적용됨)
 
 ## 개요
 

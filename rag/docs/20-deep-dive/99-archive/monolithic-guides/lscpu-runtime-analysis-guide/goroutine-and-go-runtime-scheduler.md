@@ -1,4 +1,4 @@
-# Go Routine과 Go Runtime Scheduler 구조
+# Go Routine과 Go Runtime Scheduler 구조 (E2E 분석 적용됨)
 
 ## 1. Go Routine 개요
 

@@ -1,4 +1,4 @@
-# CPU Saturation과 I/O 처리 구조
+# CPU Saturation과 I/O 처리 구조 (E2E 분석 적용됨)
 
 ## 1. 개요
 

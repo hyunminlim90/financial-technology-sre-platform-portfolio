@@ -1,4 +1,4 @@
-# DispatcherServlet, Singleton, JVM Memory, task_struct 실행 구조
+# DispatcherServlet, Singleton, JVM Memory, task_struct 실행 구조 (E2E 분석 적용됨)
 
 ## 개요
 

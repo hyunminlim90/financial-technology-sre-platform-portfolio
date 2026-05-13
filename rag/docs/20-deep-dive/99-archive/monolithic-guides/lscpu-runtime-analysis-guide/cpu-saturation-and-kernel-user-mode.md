@@ -1,4 +1,4 @@
-# CPU Saturation, Context Switch, Blocking I/O, User Mode / Kernel Mode
+# CPU Saturation, Context Switch, Blocking I/O, User Mode / Kernel Mode (E2E 분석 적용됨)
 
 ## 1. 개요
 
