@@ -494,17 +494,18 @@ Thread-per-request
     │    │         ├── Accept Queue 초과 시 → OS가 신규 TCP 연결 거부
     │    │         └── 클라이언트 관점: Connection Refused 발생
     │    │
-    │    └── [Java Servlet 표준 (Jakarta EE) 기반 수동 처리 영역] - Request Dispatcher (URL 라우팅 및 서블릿 연결) 
-    │         ├── 할당된 Worker Thread가 Dispatcher 호출
-    │         ├── 요청 URL 분석 → 담당 Servlet / Controller 식별
-    │         │    ├── (예시) GET /api/order → OrderServlet
-    │         │    └── (예시) POST /api/pay  → PaymentController
-    │         ├── HttpServletRequest / HttpServletResponse 객체 생성
-    │         ├── Forward: 제어권을 대상 Servlet으로 완전히 이전
-    │         │    └── 클라이언트는 서버 내부 이동을 인지하지 못함 (URL 변경 없음)
-    │         ├── Include: 대상 컴포넌트 실행 후 제어권 원래 Servlet으로 반환
-    │         │    └── 응답 페이지 조립 시 사용 (header, footer 포함 등)
-    │         └── 대상 Servlet에 Request / Response 객체 전달 → 비즈니스 로직 진입
+    │    └── [Java Servlet 표준 (Jakarta EE) 기반 수동 처리 영역]
+    │         └── Request Dispatcher (URL 라우팅 및 서블릿 연결) 
+    │             ├── 할당된 Worker Thread가 Dispatcher 호출
+    │             ├── 요청 URL 분석 → 담당 Servlet / Controller 식별
+    │             │    ├── (예시) GET /api/order → OrderServlet
+    │             │    └── (예시) POST /api/pay  → PaymentController
+    │             ├── HttpServletRequest / HttpServletResponse 객체 생성
+    │             ├── Forward: 제어권을 대상 Servlet으로 완전히 이전
+    │             │    └── 클라이언트는 서버 내부 이동을 인지하지 못함 (URL 변경 없음)
+    │             ├── Include: 대상 컴포넌트 실행 후 제어권 원래 Servlet으로 반환
+    │             │    └── 응답 페이지 조립 시 사용 (header, footer 포함 등)
+    │             └── 대상 Servlet에 Request / Response 객체 전달 → 비즈니스 로직 진입
     │
     ├── Java Thread.start() (또는 Pool 할당)
     │    ├── java.lang.Thread 객체 생성
