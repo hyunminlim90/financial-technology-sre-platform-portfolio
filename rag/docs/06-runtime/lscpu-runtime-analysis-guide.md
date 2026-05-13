@@ -494,6 +494,22 @@ Thread-per-request
     │    │         ├── Accept Queue 초과 시 → OS가 신규 TCP 연결 거부
     │    │         └── 클라이언트 관점: Connection Refused 발생
     │    │
+    │    ├──▶ [WAS 레벨: Servlet Filter Chain]
+    │    │     └── FilterChain (DispatcherServlet 진입 이전 WAS 레벨 처리)
+    │    │         ├── web.xml 또는 @WebFilter / FilterRegistrationBean 등록 순서대로 실행
+    │    │         ├── Filter 1: Spring Security FilterChain (보안 전담 필터 묶음)
+    │    │         │    ├── SecurityContextPersistenceFilter: SecurityContext 로드 및 저장
+    │    │         │    ├── UsernamePasswordAuthenticationFilter: 로그인 요청 처리
+    │    │         │    ├── JwtAuthenticationFilter (커스텀): JWT 토큰 파싱 및 인증 객체 생성
+    │    │         │    └── ExceptionTranslationFilter: 인증/인가 예외 → 401 / 403 응답 변환
+    │    │         ├── Filter 2: CorsFilter
+    │    │         │    └── Cross-Origin 요청 허용 여부 검증 및 CORS 헤더 설정
+    │    │         ├── Filter 3: CharacterEncodingFilter
+    │    │         │    └── 요청/응답 문자 인코딩 UTF-8 강제 설정
+    │    │         ├── Filter N: 커스텀 필터 (요청 로깅, MDC Trace ID 주입 등)
+    │    │         ├── doFilter() 호출 시 다음 Filter 또는 DispatcherServlet으로 제어권 전달
+    │    │         └── Filter에서 chain.doFilter() 미호출 시 → 요청 차단 및 즉시 응답 반환
+    │    │
     │    ├──▶ [Java Servlet 표준 (Jakarta EE) 기반 수동 처리 영역]
     │    │     └── Request Dispatcher (URL 라우팅 및 서블릿 연결) 
     │    │         ├── 할당된 Worker Thread가 Dispatcher 호출
