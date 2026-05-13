@@ -1,96 +1,1179 @@
-# RequestDispatcher: 전 계층 동작 메커니즘 분석
+# RequestDispatcher: Servlet Container 내부 전달 구조 (E2E 분석 적용됨)
 
 ## 개요
 
-`RequestDispatcher`는 Servlet 스펙이 정의하는 서버 내부 요청 전달 인터페이스다. 클라이언트가 보낸 단일 HTTP 요청을 서버 내부의 다른 자원으로 전달하거나(`forward`), 다른 자원의 실행 결과를 현재 응답에 포함(`include`)하는 데 사용된다. 이 문서는 Hardware부터 Application까지 전 계층에서 실제로 발생하는 메커니즘 실체를 분석한다.
+`RequestDispatcher`는 Servlet 스펙에서 제공하는 내부 요청 전달 인터페이스다.
+
+클라이언트가 보낸 하나의 HTTP 요청을 서버 내부의 다른 자원으로 전달하거나,
+다른 자원의 실행 결과를 현재 응답에 포함할 때 사용된다.
+
+```
+Client Request
+    ↓
+Servlet Container
+    ↓
+Servlet / DispatcherServlet
+    ↓
+RequestDispatcher
+    ↓
+Target Resource
+```
+
+DispatcherServlet이 외부 HTTP 요청을 Spring MVC 내부로 진입시키는 Front Controller라면,
+RequestDispatcher는 Servlet Container 내부에서 자원 간 실행 흐름을 전달하는 구조다.
 
 ---
 
-## 전 계층 메커니즘 분석표
+## 1. RequestDispatcher의 계층적 위치
 
-| 구분 | 주도권 | 메커니즘 실체 | SRE 분석 도구 / 관찰 키워드 |
-|------|--------|--------------|---------------------------|
-| **Worker Thread 획득** | Container → App | HTTP 요청 수신 시 Tomcat NIO Connector가 Acceptor Thread로 연결을 수락. Poller가 OP_READ 이벤트를 감지하고 Executor Thread Pool에서 Worker Thread를 할당. task_struct가 Running 상태로 전환되어 Servlet 코드 진입 | `/proc/PID/status`의 Threads 항목, `jstack` ThreadPool 상태, Tomcat `maxThreads` 설정, `ps -eLf`로 task_struct 수 확인 |
-| **시스템 콜 — 요청 수신** | Hardware → Kernel → App | NIC에서 패킷 수신 시 DMA로 sk_buff 할당. IRQ 발생 후 SoftIRQ(NET_RX)가 TCP/IP 스택을 처리. `epoll_wait()` 반환으로 User Mode 복귀. Accept Queue(ESTABLISH 상태)에서 소켓 디스크립터 반환 | `/proc/interrupts`, `mpstat`의 `%irq` / `%soft`, `ss -s`로 Accept Queue 상태, `netstat -s`의 `TCPBacklogDrop` |
-| **TCP Backlog / SYN Queue** | Kernel | 연결 요청 급증 시 SYN Queue(half-open)와 Accept Queue(fully established) 포화 발생. `tcp_syncookies`가 비활성화된 경우 SYN Drop 발생. forward 처리 지연으로 Accept Queue 소진 가능 | `ss -lnt`의 `Recv-Q`, `netstat -s \| grep -i listen`, `/proc/sys/net/ipv4/tcp_max_syn_backlog`, `/proc/sys/net/core/somaxconn` |
-| **sk_buff 관리** | Kernel | 수신된 HTTP 요청 데이터는 sk_buff 링크드 리스트로 구성. Kernel이 소켓 수신 버퍼(`SO_RCVBUF`)에 적재하고 JVM이 `read()` 시스템 콜로 복사. forward 처리 중 응답 데이터는 송신 버퍼(`SO_SNDBUF`)를 통해 전송 | `ss -tm`으로 소켓 버퍼 사용량, `/proc/net/sockstat`, `sysctl net.core.rmem_max`, `perf trace -e net:*` |
-| **하드웨어 인터럽트 (IRQ)** | Hardware → Kernel | NIC 패킷 수신 완료, Disk I/O 완료 시 CPU에 IRQ 신호 전달. CPU 실행 중단 후 IRQ Handler 수행. forward 대상이 정적 파일인 경우 Disk I/O 완료 IRQ가 발생 | `/proc/interrupts`, `mpstat -I ALL`, `perf stat -e irq:*`, `sar -I ALL` |
-| **소프트 인터럽트 (SoftIRQ)** | Kernel | NET_RX SoftIRQ가 sk_buff를 TCP/IP 스택으로 전달. 트래픽 폭증 시 `ksoftirqd` 커널 스레드의 CPU 사용률 급증. forward 요청 부하 증가 시 SoftIRQ CPU 점유 증가 | `mpstat`의 `%soft`, `/proc/softirqs`, `sar -I ALL`, `watch -d cat /proc/softirqs` |
-| **RPS / RFS** | Kernel | 멀티 코어 환경에서 NIC 수신 패킷을 여러 CPU로 분산(RPS). RFS는 패킷을 처리하는 Worker Thread가 실행 중인 CPU로 라우팅하여 Cache Miss 감소. Tomcat Worker Thread 부하와 NIC 처리 CPU 불일치 시 Cache Thrashing 발생 | `cat /sys/class/net/eth0/queues/rx-0/rps_cpus`, `ethtool -l eth0`, `/proc/net/rps_dev_flow_table_cnt` |
-| **System Call — forward/include 경로** | App → Kernel | 동적 Servlet으로 forward 시 JVM 내부 메서드 호출만 발생(User Mode). 정적 파일로 forward 시 `open()`, `read()`, `sendfile()` 시스템 콜 발생. 응답 소켓 쓰기 시 `write()` 또는 `sendfile()` 호출 | `strace -p PID -e trace=file,network`, `perf trace`, `/proc/PID/syscall`로 현재 시스템 콜 확인 |
-| **vDSO** | App (User-side) | `clock_gettime()` 등 시간 조회 호출은 Kernel 전환 없이 vDSO를 통해 처리. forward 처리 중 타임스탬프 빈번 호출 시 시스템 콜 오버헤드 없이 처리 | `perf stat` 시스템 콜 목록 미등장 확인, `/proc/PID/maps`의 `vdso` 항목, `ltrace` |
-| **Context Switch** | Kernel | RequestDispatcher.forward/include 자체는 동일 task_struct에서 실행되므로 Context Switch 미발생. 단, 대상 자원 내부에서 Blocking I/O 발생 시 task_struct가 Wait Queue로 이동하고 다른 task_struct로 Context Switch 발생 | `vmstat`의 `cs` 항목, `pidstat -w -p PID`, `perf stat -e context-switches`, `/proc/PID/status`의 `voluntary_ctxt_switches` |
-| **task_struct 상태 전이** | Kernel | forward/include 실행 중 Blocking I/O 미발생 시 task_struct는 TASK_RUNNING 유지. JDBC, 외부 HTTP, 파일 I/O 진입 시 `TASK_INTERRUPTIBLE` 상태로 전환되어 Wait Queue 이동. I/O 완료 IRQ 후 Runqueue로 복귀 | `/proc/PID/status`의 `State`, `ps aux`의 `STAT` 항목, `strace`로 Blocking 시스템 콜 확인, Thread Dump의 `WAITING`/`BLOCKED` 상태 |
-| **JVM Thread — Worker Thread 점유** | JVM / Container | forward/include 동안 동일 Worker Thread가 계속 점유. Thread Pool에 반환 불가. Blocking I/O가 전파되면 Pool의 모든 Worker Thread가 점유 상태로 고갈 가능. Connection Pool Exhaustion과 연계 | Tomcat Manager App, `jstack`의 `WAITING` 상태 스레드 수, `Thread Dump`에서 `ApplicationDispatcher.invoke` 호출 위치 확인 |
-| **Connection Pool Exhaustion** | App | forward 대상 Servlet에서 JDBC Connection Pool 사용 시, Worker Thread 점유 상태에서 Connection 대기가 겹쳐 이중 고갈 발생. HikariCP 기준 `connectionTimeout` 초과 시 예외 발생 | HikariCP `HikariPoolMXBean.getActiveConnections()`, `jmx_exporter`, Micrometer `hikaricp.connections.active`, `jstack`에서 `HikariPool.getConnection` 대기 확인 |
-| **JVM Stack Frame** | JVM | forward()는 JVM Thread Stack에 호출 프레임을 누적. 순서: Container Worker Invocation → ServletA.service() → ApplicationDispatcher.forward() → TargetServlet.service(). Recursive Forward 시 Stack Frame 무한 증가로 StackOverflowError 발생 | `jstack`의 Thread Stack Depth, `-Xss` 설정 확인, `java.lang.StackOverflowError` 로그, APM 트레이스의 호출 깊이 |
-| **JVM Heap — Request/Response 객체** | JVM | HttpServletRequest, HttpServletResponse 객체는 Heap에 단일 인스턴스로 존재. forward/include 시 새 객체를 생성하지 않고 동일 참조를 전달. Request Wrapper(RequestFacade, ApplicationHttpRequest) 객체는 forward 시 추가 할당 | `jstat -gc PID`, `jmap -histo PID`, Heap Dump에서 `ApplicationHttpRequest` 인스턴스 수, `jvm.gc.live.data.size` 메트릭 |
-| **TLAB (Thread-Local Allocation Buffer)** | JVM | Worker Thread별로 TLAB에서 소규모 객체(Request Attribute, Wrapper 객체 등)를 빠르게 할당. TLAB 소진 시 Eden 영역에서 재할당. forward/include 요청 빈도가 높을 경우 TLAB Refill 빈도 증가 | `-Xlog:tlab`, `jstat -gcnew PID`의 `TT`(Tenuring Threshold), `perf stat -e jvm:tlab_*` |
-| **GC — Minor GC 압력** | JVM | 각 HTTP 요청마다 Request Attribute 객체, Request Wrapper, 내부 라우팅 중간 객체가 단명 객체로 생성. 요청 처리량 증가 시 Eden 영역 소진 속도 증가, Minor GC 빈도 상승 | `jstat -gcutil PID 1000`, `GC log`의 `[GC pause (young)]`, `jvm.gc.pause` 메트릭, Heap Profiler |
-| **JIT Compilation (C1/C2)** | JVM | ApplicationDispatcher.forward(), TargetServlet.service() 등 반복 호출 메서드는 C1(클라이언트 컴파일러)에서 최적화 후 C2(서버 컴파일러)가 인라이닝 및 루프 최적화 적용. 초기 요청에서 인터프리터 실행으로 Latency 높음 | `-XX:+PrintCompilation`, `jitwatch`, `-XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining`, `async-profiler`의 `itimer` 모드 |
-| **Safepoint** | JVM | GC, 클래스 언로딩, Thread Dump 수집 시 Safepoint 진입 대기 발생. forward 처리 중 Safepoint 대기가 길어지면 전체 Worker Thread가 일시 정지. `Time to Safepoint` 지표가 높을 경우 장기 루프 또는 JNI 구간 확인 | `-XX:+PrintSafepointStatistics`, `-Xlog:safepoint`, JVM 로그의 `Application time` vs `Stop-the-world time`, `jfr` |
-| **ClassLoader / Metaspace** | JVM | forward 대상 Servlet이나 JSP의 클래스 메타데이터가 Metaspace에 로드되어 있어야 실행 가능. JSP 최초 접근 시 Servlet 코드 변환 → javac 컴파일 → ClassLoader 로드 순서로 초기 Latency 급증. 웹 애플리케이션 재배포 시 이전 ClassLoader가 GC 대상이 되지 않으면 Metaspace Leak 발생 | `-XX:MetaspaceSize`, `-XX:MaxMetaspaceSize`, `jcmd PID VM.metaspace`, `jmap -clstats PID`, Heap Dump에서 ClassLoader 참조 확인 |
-| **CPU 캐시 / Cache Line** | Hardware | 동일 Worker Thread가 forward 흐름 전체를 실행하므로 L1/L2 캐시에 코드 및 데이터가 유지됨. 단, Blocking I/O 후 다른 CPU 코어에서 재스케줄 시 Cache Miss 증가. 다수 Worker Thread가 동일 Request Attribute Map을 경합하면 Cache Line Thrashing 발생 가능 | `perf stat -e cache-misses,cache-references`, `perf c2c` (Cache Line 공유 분석), `numactl --hardware` |
-| **NUMA 메모리 접근** | Hardware + Kernel | NUMA 환경에서 Worker Thread가 재스케줄되어 원래 CPU 노드와 다른 노드에서 실행될 경우 Remote Memory 접근 발생. HttpServletRequest, HttpServletResponse 객체가 원래 노드의 메모리에 할당되어 있다면 원격 접근 Latency 증가 | `numastat -p PID`, `perf stat -e node-load-misses,node-store-misses`, `numactl --localalloc`, `/proc/PID/numa_maps` |
-| **TLB / HugePage** | Hardware + Kernel | 요청 처리 중 Heap 객체 접근 시 TLB를 통해 가상-물리 주소 변환. Context Switch 시 TLB Flush 발생하여 다음 요청 초기 Cache Miss 증가. Transparent HugePage(THP) 활성화 시 TLB 엔트리 수 감소로 Miss 완화 가능 | `perf stat -e dTLB-load-misses,dTLB-store-misses`, `/proc/meminfo`의 `AnonHugePages`, `cat /sys/kernel/mm/transparent_hugepage/enabled`, `hugeadm --pool-list` |
-| **CPU Branch Misprediction** | Hardware | ApplicationDispatcher 내부의 forward/include 상태 분기, Request Attribute 존재 여부 분기, Filter Chain 적용 여부 분기 등에서 Branch Misprediction 발생 가능. 고빈도 경로에서 C2 JIT가 분기 예측 최적화 적용 | `perf stat -e branch-misses,branch-instructions`, `async-profiler`의 CPU 핫스팟 분석, `-XX:+PrintCompilation`으로 인라이닝 확인 |
-| **CPU Frequency Scaling (C-state / P-state)** | Hardware + Kernel | 요청 간 유휴 시간에 CPU가 낮은 P-state로 전환. 요청 급증 시 P-state 복귀 지연으로 초기 처리 Latency 증가. C-state 깊이가 깊을수록 복귀 비용 증가 | `cpupower frequency-info`, `turbostat`, `/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq`, `perf stat -e power:cpu_frequency` |
-| **Memory Bandwidth Saturation** | Hardware | 다수 Worker Thread가 동시에 forward 처리하며 Heap 객체를 대량 접근할 경우 메모리 버스 포화. 특히 JSP 응답 버퍼, Request Attribute Map, Filter Chain 객체 반복 생성 시 메모리 대역폭 압박 | `perf stat -e mem-loads,mem-stores`, `pcm-memory` (Intel PCM), `sar -r`, `numastat`의 `numa_miss` |
-| **Blocking I/O — Wait Queue** | Kernel | forward 대상 Servlet 내부에서 JDBC, 외부 HTTP Client, 파일 읽기 등 Blocking I/O 진입 시 `read()` / `connect()` 시스템 콜이 Blocking. task_struct가 `TASK_INTERRUPTIBLE` 상태로 Wait Queue에 진입. I/O 완료 시 IRQ → Wake-up → Runqueue 복귀 | `strace -p PID`의 Blocking 시스템 콜, `iotop`, `/proc/PID/wchan`(대기 중인 Kernel 함수), Off-CPU Flame Graph |
-| **Off-CPU Time** | Kernel + JVM | RequestDispatcher 호출 후 대상 자원의 I/O 대기 시간은 On-CPU가 아닌 Off-CPU Time으로 측정됨. CPU Profiler로는 관찰 불가. forward 체인에서 발생하는 숨겨진 지연 식별에 Off-CPU 분석 필수 | `async-profiler -e wall -t`, `bpftrace`의 `offcputime.bt`, `perf record -e sched:sched_switch`, BCC의 `offcputime` |
-| **IO Scheduler (blk-mq)** | Kernel | forward 대상이 정적 파일이거나 JSP 최초 컴파일 시 Disk I/O 발생. 블록 레이어에서 blk-mq가 I/O 요청을 큐잉하고 스케줄링. SSD 기준 NVMe의 멀티 큐(Multi-Queue) 구조로 병렬 처리 | `iostat -xz 1`, `blktrace`, `/sys/block/sda/queue/scheduler`, `cat /proc/diskstats`, `iotop -o` |
-| **Dirty Page Writeback** | Kernel | forward 처리 중 로그 파일 쓰기, JSP 컴파일 결과 캐시 저장 등이 Dirty Page를 생성. `pdflush` / `kworker`가 주기적으로 Dirty Page를 Disk에 Writeback. 과도한 Dirty Page 누적 시 동기 Writeback으로 I/O Latency 급증 | `/proc/vmstat`의 `nr_dirty`, `sar -B`의 `pgpgin/pgpgout`, `sysctl vm.dirty_ratio`, `iostat`의 쓰기 대기 시간 |
-| **Page Cache & Page Fault** | Kernel | 정적 파일 forward 시 Page Cache에 파일 데이터가 캐시되어 있으면 Disk I/O 없이 처리(Minor Fault). 캐시 미존재 시 `read()` 후 Disk에서 로드(Major Fault). JSP 최초 컴파일 결과도 Page Cache 적용 | `free -m`의 `buff/cache`, `vmstat`의 `pgfault` / `pgmajfault`, `/proc/vmstat`의 `pgpgin`, `fincore`로 파일 Cache 여부 확인 |
-| **mmap — 정적 파일 전달** | App ↔ Kernel | Tomcat DefaultServlet이 정적 파일 전달 시 내부적으로 `sendfile()` 또는 `mmap()` + `write()` 사용 가능. `mmap` 사용 시 Page Fault를 통해 필요한 페이지만 로드. `sendfile()`은 Kernel 내부에서 직접 Socket으로 전송하여 User Space 복사 생략 | `/proc/PID/maps`의 파일 매핑 영역, `strace`의 `sendfile()` 호출, `vmstat`의 `pgfault`, `perf stat -e dTLB-load-misses` |
-| **cgroup / CPU Throttling** | Kernel | Kubernetes 또는 컨테이너 환경에서 Tomcat Worker Thread가 cgroup CPU Quota를 소진하면 Throttling 발생. forward 처리 중 CPU 집약적 작업(JSP 컴파일, 직렬화 등) 시 Quota 소진으로 처리 지연 | `/sys/fs/cgroup/cpu.stat`의 `throttled_usec`, `cat /sys/fs/cgroup/cpu.max`, `kubectl top pod`, `cadvisor`의 `container_cpu_cfs_throttled_seconds_total` |
-| **커널 스케줄러 (CFS)** | Kernel | CFS(Completely Fair Scheduler)가 vruntime 기반으로 Worker Thread들의 CPU 시간을 공정하게 분배. 다수 Worker Thread 경합 시 스케줄 대기 발생. forward 체인 전체가 동일 task_struct에서 실행되므로 스케줄 우선순위가 전체 체인에 영향 | `/proc/schedstat`, `perf sched latency`, `pidstat -u -w`, `vmstat`의 `r`(Runqueue 대기) |
-| **PSI (Pressure Stall Information)** | Kernel | CPU, Memory, I/O 자원 부족 압력을 측정. forward 처리 중 Blocking I/O 전파로 Worker Thread 전체가 대기 상태일 때 `full` PSI 지표 상승. Kubernetes의 자원 부족 조기 감지에 활용 | `/proc/pressure/cpu`, `/proc/pressure/memory`, `/proc/pressure/io`, `sar --all`로 종합 확인 |
-| **시그널 (Signal)** | Kernel → App | 비정상 Recursive Forward로 Worker Thread가 무한 루프에 빠진 경우 `SIGTERM` / `SIGKILL`로 강제 종료. JVM 내부에서 `SIGSEGV`는 HotSpot이 Catch하여 처리(NullPointerException 등 변환). forward 처리 중 Timeout 구현에 `SIGALRM` 또는 Thread interrupt 사용 가능 | `kill -l`, `/proc/PID/status`의 `SigPnd`, `SigBlk`, `strace -e signal`, JVM 로그의 Signal Handler |
-| **Serialization / Deserialization 비용** | App | forward 시 Request Attribute에 복잡한 객체를 담아 전달할 경우, 대상 자원에서 역직렬화 비용 발생 가능. Session에 저장된 객체의 직렬화도 forward 흐름에서 간접 발생. 대형 Mutable 객체 공유 시 Deep Copy 또는 동기화 비용 발생 | `async-profiler`의 CPU Flame Graph에서 직렬화 메서드 확인, Heap Dump에서 중간 직렬화 버퍼 확인 |
-| **Backpressure** | App / Container | 상위 forward 체인이 하위 Servlet의 처리 속도보다 빠르게 요청을 전달하면 Thread Pool 고갈로 자연적 Backpressure 발생. 명시적 Backpressure 구현 없이 forward 체인이 깊어질수록 Thread 점유 기간 증가 | Tomcat `maxThreads` vs 활성 스레드 수, `jstack`의 WAITING 스레드 비율, Response Time P99 증가 추세 |
-| **Circuit Breaker** | App | forward 대상 자원이 외부 의존성(DB, API)에 연결된 경우, 반복 실패 시 Circuit Breaker가 열려 즉각 실패를 반환하여 Worker Thread 고갈 방지. Resilience4j, Hystrix 등 적용 | Resilience4j `CircuitBreaker.getState()`, `resilience4j.circuitbreaker.state` 메트릭, APM의 Circuit Open 이벤트 |
-| **Retry Storm** | App | forward 대상 자원 실패 시 재시도 로직이 포함된 경우, 다수 Worker Thread가 동시에 재시도하면 Retry Storm 발생. 동일 Worker Thread에서 forward 체인이 재시도 루프와 결합될 경우 Thread 점유 시간 기하급수적 증가 | APM의 retry 횟수 메트릭, `jstack`에서 retry sleep 상태 확인, Error Rate 대비 요청 수 비율 |
-| **Response Committed 제약** | Servlet Container | `response.flushBuffer()` 또는 일정 크기 이상 Body 작성 후 forward() 호출 시 응답이 이미 커밋된 상태. Tomcat은 `IllegalStateException` 또는 내부 경고를 발생. 응답 Buffer 크기는 `server.tomcat.max-http-response-header-size` 관련 설정에 의존 | `response.isCommitted()` 로그, Tomcat `catalina.log`의 `IllegalStateException`, APM의 500 에러 추적 |
-| **Filter Chain 재진입** | Servlet Container | forward/include 시 대상 경로에 매핑된 Filter Chain이 재진입될 수 있음. `DispatcherType.FORWARD`, `DispatcherType.INCLUDE`에 매핑된 Filter는 추가 실행. 불필요한 Filter 재진입은 처리 시간 증가 | Servlet 스펙 `DispatcherType` 설정 확인, Filter 내부 로그로 호출 횟수 추적, APM Span의 Filter 구간 확인 |
-| **eBPF Map / 커널 관찰** | Kernel → App | eBPF 프로그램으로 `ApplicationDispatcher.forward()` 진입, Blocking 시스템 콜 발생, Wait Queue 이동 시점을 Kernel 수준에서 무수정 관찰 가능. Worker Thread의 Off-CPU 구간 정밀 측정 | `bpftrace`, `bcc`의 `offcputime`, `Cilium`, `Pixie`, `kubectl trace`, `perf probe`로 JVM 내부 함수 추적 |
+RequestDispatcher는 Java Application 객체이면서 Servlet Container가 제공하는 Servlet API 계층에 속한다.
 
----
+```
+Application Layer
+    └── Servlet / Spring MVC Code
 
-## 계층별 요약
+Servlet Container Layer
+    └── RequestDispatcher 구현체
+        └── Tomcat 기준 ApplicationDispatcher
 
-### Hardware Layer
-- NIC DMA, IRQ, SoftIRQ(NET_RX)로 패킷 수신
-- CPU 캐시(L1/L2/L3), TLB, Branch Predictor, NUMA, Memory Bandwidth가 forward 처리 성능에 영향
-- CPU C-state/P-state 전환 지연이 초기 요청 Latency에 영향
+JVM Layer (Runtime)
+    ├── Heap
+    │   ├── HttpServletRequest
+    │   ├── HttpServletResponse
+    │   └── RequestDispatcher 구현 객체
+    ├── Metaspace
+    │   └── 대상 Servlet / JSP 클래스 메타데이터
+    └── Thread Stack
+        └── Worker Thread Stack Frame
 
-### OS Kernel Layer
-- task_struct는 forward/include 전 과정에서 단일 인스턴스로 유지
-- Blocking I/O 진입 시 Wait Queue 이동, I/O 완료 IRQ 후 Runqueue 복귀
-- CFS Scheduler, cgroup Throttling, PSI, TCP 버퍼(sk_buff), IO Scheduler(blk-mq), Page Cache, Dirty Writeback이 처리 전반에 개입
+OS Kernel Layer
+    ├── task_struct (Worker Thread에 대응하는 커널 실행 단위)
+    ├── Runqueue / Wait Queue
+    ├── VFS (Virtual File System)
+    └── Socket Buffer (sk_buff)
 
-### JVM Runtime Layer
-- Worker Thread가 JVM Thread Stack에 forward 호출 프레임을 누적하며 실행
-- 단명 객체(Request Attribute, Wrapper)의 TLAB 할당, Minor GC 압력 발생
-- JIT(C1/C2) 최적화, Safepoint, Metaspace/ClassLoader가 처리 효율에 영향
+Hardware Layer
+    └── Logical CPU / Physical Core
+        ├── L1 / L2 / L3 Cache
+        ├── TLB (Translation Lookaside Buffer)
+        └── CPU Pipeline
+```
 
-### Application Layer
-- forward/include는 새 Thread를 생성하지 않음 — 동일 Worker Thread, 동일 task_struct
-- Request/Response 객체는 Heap에서 단일 인스턴스로 공유
-- 장애는 Recursive Forward, Response 커밋 후 forward, Blocking I/O 전파, Connection Pool Exhaustion, Filter Chain 재진입 과다에서 발생
+### 핵심 구분
+
+Kernel이 스케줄링하는 대상은 RequestDispatcher 객체가 아니라,
+해당 객체의 메서드를 실행하는 Worker Thread의 `task_struct`다.
+
+RequestDispatcher 자체는 `task_struct` 생성 단위가 아니며,
+기존 Worker Thread의 실행 흐름 위에서 메서드 호출로 처리된다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | Thread Dump, `ApplicationDispatcher.invoke` 호출 스택 |
+| JVM Runtime | JVM Heap Dump, `-XX:+PrintGCDetails`, JFR |
+| OS Kernel | `strace`, `/proc/PID/status`, `pidstat -w`, `vmstat cs` |
+| Hardware | `perf stat -e cache-misses`, `perf stat -e dTLB-load-misses` |
 
 ---
 
-## SRE 핵심 장애 시나리오
+## 2. RequestDispatcher의 생성 및 획득
 
-| 장애 유형 | 계층 | 관찰 방법 |
-|-----------|------|-----------|
-| Worker Thread Pool 고갈 | JVM / Kernel | `jstack` WAITING 스레드 수, Tomcat Active Threads, `/proc/PID/status` Threads |
-| Recursive Forward → StackOverflowError | JVM | `java.lang.StackOverflowError` 로그, APM 호출 깊이 |
-| Blocking I/O 전파 → Off-CPU 증가 | Kernel | Off-CPU Flame Graph, `/proc/PID/wchan`, `strace` Blocking 시스템 콜 |
-| JSP 최초 컴파일 → P99 Latency 급증 | JVM / Kernel | `Metaspace` 증가, `blktrace` Disk I/O, 첫 요청 APM Span 길이 |
-| Response Committed 후 forward | App | `IllegalStateException` 로그, `response.isCommitted()` 확인 |
-| cgroup CPU Throttling | Kernel | `/sys/fs/cgroup/cpu.stat`의 `throttled_usec`, `cadvisor` |
-| TCP Accept Queue 포화 | Kernel | `ss -lnt`의 `Recv-Q`, `netstat -s`의 `TCPBacklogDrop` |
-| Connection Pool Exhaustion | App | HikariCP `activeConnections`, `jstack`에서 Pool 대기 확인 |
+RequestDispatcher는 일반적인 Spring Singleton Bean처럼 애플리케이션 전체에서 하나만 공유되는 객체가 아니다.
+요청 처리 중 특정 경로나 이름을 기준으로 Servlet Container에서 조회하거나 생성한다.
+
+```java
+RequestDispatcher dispatcher =
+        request.getRequestDispatcher("/target");
+```
+
+또는 ServletContext를 통해 이름 기반으로 가져올 수 있다.
+
+```java
+RequestDispatcher dispatcher =
+        getServletContext().getNamedDispatcher("targetServlet");
+```
+
+Tomcat에서는 내부적으로 `ApplicationDispatcher` 계열 객체가 사용된다.
+
+```
+request.getRequestDispatcher("/target")
+    ↓
+Servlet Container
+    ↓
+Path Resolution
+    │   ├── URL Decode
+    │   ├── Context Path 분리
+    │   └── Servlet Mapping 조회
+    ↓
+ApplicationDispatcher 준비
+```
+
+### 경로 해석 단계의 계층별 동작
+
+| 계층 | 동작 메커니즘 |
+|------|--------------|
+| Application | Servlet Mapping 규칙 매칭 (exact, prefix, extension) |
+| JVM Runtime | `ConcurrentHashMap` 기반 Mapping 캐시 조회 |
+| OS Kernel | 일반적으로 System Call 불필요. 메모리 내 조회 |
+| Hardware | L1/L2 Cache 히트 여부에 따라 매핑 조회 비용 결정 |
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | Servlet Container 로그 (`FINE`/`TRACE` 레벨) |
+| JVM Runtime | JFR Method Profiling |
+| OS Kernel | `/proc/PID/syscall` (System Call 발생 여부 확인) |
+
+---
+
+## 3. RequestDispatcher의 핵심 기능
+
+RequestDispatcher는 두 가지 주요 메서드를 제공한다.
+
+- `forward(request, response)`
+- `include(request, response)`
+
+두 메서드는 모두 서버 내부에서 다른 자원을 실행한다는 공통점이 있지만,
+제어권과 응답 처리 방식이 다르다.
+
+---
+
+## 4. forward()
+
+`forward()`는 현재 요청의 제어권을 서버 내부의 다른 자원으로 전달한다.
+
+```
+Servlet A
+    ↓
+RequestDispatcher.forward()
+    ↓
+Servlet B / JSP / Static Resource
+```
+
+### 특징
+
+- 클라이언트 URL은 변경되지 않는다.
+- 서버 내부에서만 대상 자원이 변경된다.
+- 기존 `HttpServletRequest`, `HttpServletResponse` 객체가 그대로 전달된다.
+- 응답이 이미 커밋되기 전에 호출해야 한다.
+- `forward()` 이후에는 현재 Servlet에서 응답을 계속 작성하지 않는 것이 원칙이다.
+
+### forward() 전 계층 실행 흐름
+
+```
+Worker Thread (task_struct Running 상태)
+    ↓
+Servlet A.service()                          ← JVM Stack Frame 추가
+    ↓
+request.getRequestDispatcher("/target")      ← Heap에서 객체 조회
+    ↓
+RequestDispatcher.forward(request, response) ← JVM Stack Frame 추가
+    │
+    ├── Filter Chain 재진입 여부 결정
+    │   └── DispatcherType.FORWARD 판별
+    ├── Request Attribute 설정
+    │   └── javax.servlet.forward.* / jakarta.servlet.forward.*
+    ├── Response Buffer 상태 확인
+    │   └── committed 여부 체크 → IllegalStateException 방지
+    └── Target Servlet 호출
+    ↓
+TargetServlet.service()                      ← JVM Stack Frame 추가
+    ↓
+Response 작성
+```
+
+### 계층별 동작
+
+| 계층 | 동작 메커니즘 |
+|------|--------------|
+| Application | Servlet A → ApplicationDispatcher → Servlet B 메서드 호출 연쇄 |
+| JVM Runtime | Thread Stack에 Frame 누적. Heap의 동일 Request/Response 참조 유지 |
+| OS Kernel | 동적 자원 호출 시 추가 System Call 없음. Blocking I/O 발생 시 `task_struct` Wait Queue 이동 |
+| Hardware | CPU Pipeline 연속 실행. L1/L2 Cache는 동일 Thread 컨텍스트 유지 |
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | Thread Dump (`ApplicationDispatcher.doForward` 호출 위치) |
+| JVM Runtime | JFR Stack Trace, `-Xss` 설정 (Stack 깊이 제한) |
+| OS Kernel | `strace -p <PID>` (System Call 발생 여부), `/proc/PID/wchan` (대기 원인) |
+| Hardware | `perf record -g` (CPU 호출 스택 샘플링) |
+
+---
+
+## 5. include()
+
+`include()`는 다른 자원의 실행 결과를 현재 응답에 포함한다.
+
+```
+Servlet A
+    ↓
+RequestDispatcher.include()
+    ↓
+Servlet B / JSP 실행
+    ↓
+Servlet A로 복귀
+    ↓
+Response 계속 작성
+```
+
+### 특징
+
+- 호출한 Servlet의 실행 흐름으로 다시 돌아온다.
+- 공통 영역, JSP 조각, 내부 컴포넌트 결과를 응답에 포함할 때 사용된다.
+- 기존 Request/Response 객체를 공유한다.
+- 포함된 자원은 응답 상태 코드나 헤더를 변경하는 데 제한이 있다.
+
+### include() 전 계층 실행 흐름
+
+```
+Worker Thread (task_struct Running 상태)
+    ↓
+Servlet A.service()                           ← JVM Stack Frame 유지
+    ↓
+RequestDispatcher.include(request, response)  ← JVM Stack Frame 추가
+    │
+    ├── DispatcherType.INCLUDE 판별
+    ├── Response Wrapper 적용
+    │   └── 상태 코드 / 헤더 변경 차단 (IncludedResponse 래핑)
+    ├── Request Attribute 설정
+    │   └── javax.servlet.include.* / jakarta.servlet.include.*
+    └── IncludedServlet.service() 호출
+    ↓
+IncludedServlet.service()                     ← JVM Stack Frame 추가
+    ↓
+Response Body 일부 작성
+    ↓
+복귀 (Stack Frame 반환)
+    ↓
+Servlet A.service() 계속 실행
+```
+
+### 계층별 동작
+
+| 계층 | 동작 메커니즘 |
+|------|--------------|
+| Application | Servlet A → ApplicationDispatcher → IncludedServlet → 복귀 |
+| JVM Runtime | include 완료 후 Stack Frame 반환. Heap의 동일 Request/Response 참조 공유 |
+| OS Kernel | 동적 자원은 추가 System Call 없음. Response 버퍼 플러시 시 `write()` 발생 |
+| Hardware | 복귀 과정에서 동일 CPU 실행 컨텍스트 유지 |
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | Thread Dump (`ApplicationDispatcher.include` 호출 위치) |
+| JVM Runtime | JFR Method Profiling, Thread Stack 깊이 모니터링 |
+| OS Kernel | `strace` (write 시스템 콜 빈도), `/proc/PID/fdinfo` |
+
+---
+
+## 6. forward()와 include() 비교
+
+| 구분 | forward() | include() |
+|------|-----------|-----------|
+| 목적 | 제어권 전달 | 응답 일부 포함 |
+| 호출 후 흐름 | 대상 자원 중심으로 처리 | 호출한 자원으로 복귀 |
+| URL 변경 | 없음 | 없음 |
+| Request 객체 | 동일 객체 공유 | 동일 객체 공유 |
+| Response 객체 | 동일 객체 공유 | Wrapper로 헤더/상태 변경 제한 |
+| Thread 생성 | 없음 | 없음 |
+| task_struct 생성 | 없음 | 없음 |
+| System Call | 동적 자원: 없음 / 정적 자원: 발생 | 동적 자원: 없음 / 정적 자원: 발생 |
+| JVM Stack 증가 | forward 대상 자원까지 Frame 증가 | include 대상 자원 실행 후 Frame 반환 |
+| 주요 사용 | 내부 라우팅, JSP 전달 | 공통 화면 조각 포함 |
+
+---
+
+## 7. task_struct 관점의 핵심
+
+RequestDispatcher 호출은 Kernel 수준에서 새로운 실행 단위를 만들지 않는다.
+
+다음 작업은 발생하지 않는다.
+
+```
+new Thread()          → Java 수준 Thread 객체 생성 없음
+Thread.start()        → JVM Thread 시작 없음
+pthread_create()      → POSIX Thread 생성 없음
+clone()               → Linux clone() 시스템 콜 없음
+task_struct 생성      → Kernel 실행 단위 추가 없음
+```
+
+실행 흐름은 기존 Worker Thread 안에서 이어진다.
+
+```
+Worker Thread
+    ↓
+Linux task_struct A (상태: TASK_RUNNING)
+    ↓
+Servlet A.service()
+    ↓
+RequestDispatcher.forward()
+    ↓
+TargetServlet.service()
+    ↓
+(모든 과정이 동일한 task_struct A에서 실행)
+```
+
+따라서 RequestDispatcher 자체로 인한 Kernel Thread 생성 비용이나 Context Switch 비용은 발생하지 않는다.
+
+### Blocking I/O 발생 시 task_struct 상태 전이
+
+대상 자원 내부에서 Blocking I/O가 발생하면,
+기존 Worker Thread의 `task_struct`가 Wait Queue로 이동한다.
+
+```
+task_struct 상태 전이:
+    TASK_RUNNING
+        ↓ (Blocking I/O 진입)
+    TASK_INTERRUPTIBLE 또는 TASK_UNINTERRUPTIBLE
+        ↓ (I/O 완료 시 IRQ/SoftIRQ가 Wake-up)
+    TASK_RUNNING (Runqueue 재진입)
+```
+
+이때 CFS(Completely Fair Scheduler)는 해당 `task_struct`를 Runqueue에서 제거하고
+다른 `task_struct`를 CPU에 스케줄링한다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| OS Kernel | `/proc/PID/status` (`State` 필드: S=Sleeping, R=Running), `pidstat -w` (Context Switch 횟수), `perf sched` |
+| OS Kernel | `/proc/PID/wchan` (어떤 Kernel 함수에서 대기 중인지 확인) |
+| Hardware | `perf stat -e context-switches` |
+
+---
+
+## 8. JVM Stack 관점
+
+`forward()` 또는 `include()`는 메서드 호출 흐름으로 이어진다.
+따라서 JVM Stack에는 호출 프레임이 추가된다.
+
+### forward() Stack 구조
+
+```
+Thread Stack (위가 최근 Frame)
+    ├── TargetServlet.service()
+    ├── ApplicationDispatcher.invoke()
+    ├── ApplicationDispatcher.doForward()
+    ├── ApplicationDispatcher.forward()
+    ├── ServletA.service()
+    └── Container Worker Invocation (HttpProcessor 등)
+```
+
+### include() Stack 구조 (include 실행 중)
+
+```
+Thread Stack (위가 최근 Frame)
+    ├── IncludedServlet.service()
+    ├── ApplicationDispatcher.invoke()
+    ├── ApplicationDispatcher.doInclude()
+    ├── ApplicationDispatcher.include()
+    ├── ServletA.service()
+    └── Container Worker Invocation
+```
+
+include 완료 후 IncludedServlet 관련 Frame이 반환되고 Servlet A 실행이 재개된다.
+
+### Stack 깊이와 JIT Compilation
+
+JVM의 JIT Compiler(C1/C2)는 자주 호출되는 메서드 체인을 Inline 최적화할 수 있다.
+RequestDispatcher 내부의 얕은 메서드들은 C2 Compiler에 의해 인라인되어 실제 Stack Frame 생성 비용이 줄어들 수 있다.
+단, 깊은 forward 체인은 Inline 한계를 초과하여 실제 Frame이 누적된다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | Thread Dump (호출 스택 전체 확인) |
+| JVM Runtime | `-Xss` (Stack 크기 설정), `-XX:+PrintCompilation` (JIT 인라인 여부), JFR Method Profiling |
+| JVM Runtime | `-XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining` |
+| OS Kernel | `pstack <PID>` (네이티브 스택 확인) |
+
+---
+
+## 9. Heap 관점
+
+`HttpServletRequest`와 `HttpServletResponse` 객체는 Heap에 존재한다.
+RequestDispatcher는 새로운 요청 객체를 만드는 것이 아니라
+기존 Request/Response 객체를 대상 자원으로 전달한다.
+
+```
+Heap (Young Generation / Eden)
+    ├── HttpServletRequest 객체 (요청 당 1개)
+    ├── HttpServletResponse 객체 (요청 당 1개)
+    ├── RequestDispatcher 구현 객체 (ApplicationDispatcher)
+    ├── Request Wrapper 객체 (forward/include 시 생성)
+    └── Response Wrapper 객체 (include 시 생성)
+
+Thread Stack
+    └── request / response 참조값 보관 (Stack Frame별 로컬 변수)
+```
+
+여러 Stack Frame은 동일한 Request/Response 인스턴스를 참조한다.
+
+### Wrapper 객체 할당과 GC 영향
+
+`include()` 실행 시 Response Wrapper(`ApplicationHttpResponse` 등)가 추가로 생성된다.
+이 객체들은 단명(short-lived) 객체로 Young Generation에 할당되며,
+요청 처리 완료 후 Minor GC 대상이 된다.
+
+과도한 include 호출은 Young Generation Allocation Rate를 높여
+Minor GC 빈도를 증가시킬 수 있다.
+
+### TLAB (Thread-Local Allocation Buffer)
+
+JVM은 각 Thread에 TLAB을 할당하여 Heap 할당 시 동기화 비용을 제거한다.
+RequestDispatcher 내부의 Wrapper 객체 생성도 TLAB에서 이루어진다.
+TLAB가 소진되면 Eden 영역에서 새 TLAB를 할당하며 이 시점에 짧은 동기화가 발생할 수 있다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| JVM Runtime | JVM Heap Dump (`jmap -dump`), JFR Memory Profiling |
+| JVM Runtime | `-XX:+PrintTLAB` (TLAB 할당 통계), GC 로그 (`-Xlog:gc*`) |
+| JVM Runtime | `jstat -gcnew <PID>` (Young Generation 상태) |
+| OS Kernel | `/proc/PID/smaps` (Heap 영역 메모리 매핑 확인) |
+
+---
+
+## 10. Metaspace 관점
+
+대상 Servlet 또는 JSP가 실행되려면 해당 클래스 메타데이터가 JVM에 로드되어 있어야 한다.
+
+```
+TargetServlet.class
+    ↓
+ClassLoader (WebAppClassLoader)
+    ↓
+Metaspace (클래스 메타데이터 저장)
+    ↓
+TargetServlet.service() 실행 가능
+```
+
+JSP의 경우 최초 호출 시 다음 과정이 추가로 발생한다.
+
+```
+JSP 파일
+    ↓
+JspServlet 처리
+    ↓
+Java 소스 코드 생성 (_jsp.java)
+    ↓
+javac / ECJ 컴파일 (CPU / File I/O 발생)
+    ↓
+.class 파일 생성 (File Write System Call)
+    ↓
+ClassLoader 로드
+    ↓
+Metaspace 적재
+    ↓
+JIT Warmup (C1 → C2 단계적 컴파일)
+```
+
+### ClassLoader Leak 위험
+
+Servlet Container가 WebApp을 재배포할 때 WebAppClassLoader가 교체된다.
+이때 이전 ClassLoader가 GC 대상이 되지 못하면 Metaspace에 클래스 메타데이터가 누적된다.
+RequestDispatcher를 통해 자주 호출되는 JSP나 동적 클래스가 많을수록
+ClassLoader Leak 발생 시 Metaspace 고갈 위험이 높아진다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| JVM Runtime | `jcmd <PID> VM.classloader_stats` (ClassLoader 현황) |
+| JVM Runtime | `-XX:MaxMetaspaceSize` (Metaspace 상한 설정), `-Xlog:class+load` |
+| JVM Runtime | JFR Class Loading Event, VisualVM ClassLoader 탭 |
+| OS Kernel | `/proc/PID/maps` (Metaspace 영역 확인) |
+
+---
+
+## 11. User Mode와 Kernel Mode 관점
+
+동적 Servlet으로 `forward`/`include`하는 경우 대부분 JVM 내부 메서드 호출로 처리된다.
+
+```
+User Mode
+    └── Java Method Invocation (System Call 없음)
+        └── CPU Ring 3에서 실행
+```
+
+하지만 대상 자원이 정적 파일이거나, JSP 컴파일, 파일 읽기, 네트워크 응답 쓰기 등이 포함되면
+Kernel과 상호작용한다.
+
+```
+정적 자원 / 파일 I/O / 네트워크 I/O
+    ↓
+System Call (User Mode → Kernel Mode 전환)
+    │   ├── open() / read() / sendfile()
+    │   ├── write() / send()
+    │   └── CPU Ring 3 → Ring 0 전환 (Trap)
+    ↓
+Kernel Mode 실행
+    ↓
+User Mode 복귀
+```
+
+### vDSO (Virtual Dynamic Shared Object)
+
+타임스탬프 조회(`clock_gettime`) 등 일부 Kernel 데이터 접근은 vDSO를 통해
+Mode 전환 없이 User Space에서 직접 읽는다.
+RequestDispatcher 내부의 Latency 측정이나 타임아웃 계산이 이 경로를 사용할 수 있다.
+
+### Mode 전환 비용
+
+User Mode → Kernel Mode 전환은 레지스터 저장, 스택 전환, TLB 고려 등의 비용이 발생한다.
+RequestDispatcher가 정적 자원을 반복 전달하는 구조라면 이 비용이 누적될 수 있다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| OS Kernel | `strace -c -p <PID>` (System Call 종류 및 횟수 집계) |
+| OS Kernel | `perf trace` (System Call 추적), `/proc/PID/syscall` (현재 System Call) |
+| OS Kernel | `mpstat` (`%sys` 항목: Kernel Mode CPU 사용률) |
+| Hardware | `perf stat -e cpu-clock,task-clock` |
+
+---
+
+## 12. 정적 자원으로 전달되는 경우
+
+정적 HTML, 이미지, CSS, JS 파일로 `forward`되는 경우
+Servlet Container는 파일 시스템에서 데이터를 읽어 응답해야 한다.
+
+```
+RequestDispatcher.forward("/static/page.html")
+    ↓
+Container Static Resource Handler (DefaultServlet 등)
+    ↓
+VFS (Virtual File System)
+    ↓
+Page Cache 확인
+    ├── Cache Hit: 메모리에서 읽기 (Minor Page Fault 가능)
+    └── Cache Miss: Disk I/O 발생 (Major Page Fault)
+    ↓
+read() 또는 sendfile() System Call
+    ↓
+Socket Buffer (sk_buff) 적재
+    ↓
+TCP/IP Stack 처리 (SoftIRQ)
+    ↓
+NIC Tx Ring Buffer
+    ↓
+클라이언트 전송
+```
+
+### sendfile()과 Zero-Copy
+
+`sendfile()` System Call은 Kernel 공간에서 파일 데이터를 Socket Buffer로 직접 복사한다.
+User Space 버퍼를 거치지 않으므로 메모리 복사 횟수가 줄어든다.
+Tomcat의 `DefaultServlet`은 조건에 따라 `sendfile()`을 사용한다.
+
+### Page Cache와 Dirty Page Writeback
+
+정적 자원 읽기는 Page Cache를 통해 이루어진다.
+Page Cache Hit 시 Disk I/O 없이 메모리에서 응답 데이터를 읽는다.
+메모리 압박 시 `kswapd`가 Page Cache를 회수하여 이후 요청에서 Cache Miss가 발생할 수 있다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| OS Kernel | `free -m` (buff/cache 항목), `vmstat` (pgfault / pgmajfault) |
+| OS Kernel | `/proc/vmstat` (Page Fault 상세), `cachestat` (BCC tools) |
+| OS Kernel | `strace -e trace=read,sendfile,write -p <PID>` |
+| OS Kernel | `iostat -x` (Disk I/O 대기율 `%await`) |
+| Hardware | `perf stat -e dTLB-load-misses` (Page Cache 매핑 TLB Miss) |
+
+---
+
+## 13. 동적 자원으로 전달되는 경우
+
+다른 Servlet, JSP, Spring Controller 유사 경로로 전달되는 경우
+주된 작업은 JVM 내부 메서드 호출이다.
+
+```
+Servlet A
+    ↓
+RequestDispatcher.forward()
+    ↓
+Filter Chain 재진입 (DispatcherType.FORWARD 필터 적용)
+    ↓
+Servlet B.service()
+    ↓
+(Servlet B 내부 로직 실행)
+```
+
+이 경우 RequestDispatcher 자체는 User Mode에서 실행된다.
+그러나 Servlet B 내부에서 DB, 외부 API, 파일 I/O를 수행하면
+해당 지점에서 System Call과 Blocking이 발생한다.
+
+### JIT Compilation과 Safepoint
+
+JVM의 JIT Compiler(C2)는 자주 실행되는 `forward` 경로를 컴파일하고 최적화한다.
+Safepoint는 JVM이 GC, 클래스 재정의 등을 수행하기 위해 모든 Thread를 안전한 지점에서 정지시키는 메커니즘이다.
+`forward()` 호출 중 Safepoint 요청이 발생하면 해당 Thread는 다음 Safepoint 지점까지 실행 후 일시 정지된다.
+이로 인해 특정 요청에서 예상치 못한 지연이 관찰될 수 있다.
+
+### Serialization / Deserialization 비용
+
+대상 자원으로 전달되는 Request Attribute에 복잡한 객체가 담겨 있고,
+이를 직렬화/역직렬화하는 로직이 포함된 경우 CPU 비용이 발생한다.
+특히 Reflection 기반 직렬화(`ObjectOutputStream`, Jackson 등)는 CPU 집약적이다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | APM (Pinpoint, Jaeger), Span 단위 Latency 측정 |
+| JVM Runtime | `-XX:+PrintSafepointStatistics`, JFR Safepoint Event |
+| JVM Runtime | JFR Method Profiling (CPU 시간 상위 메서드 확인) |
+| OS Kernel | `perf top` (CPU 사용 함수 실시간 확인) |
+
+---
+
+## 14. Blocking I/O 발생 시 흐름
+
+대상 자원 내부에서 Blocking I/O가 발생하면 기존 Worker Thread 전체가 대기 상태가 된다.
+
+```
+Worker Thread / task_struct A (TASK_RUNNING)
+    ↓
+Servlet A.service()
+    ↓
+RequestDispatcher.forward()
+    ↓
+Servlet B.service()
+    ↓
+JDBC Query / Blocking HTTP Client / File I/O
+    ↓
+System Call (read, recv, epoll_wait 등)
+    ↓
+Kernel: task_struct A → Wait Queue (TASK_INTERRUPTIBLE)
+    ↓
+I/O 완료 시 IRQ / SoftIRQ 발생
+    ↓
+IRQ Handler → Wait Queue에서 task_struct A Wake-up
+    ↓
+Runqueue 재진입 → CPU 재할당 → 실행 재개
+```
+
+RequestDispatcher가 별도의 Thread를 생성하지 않았기 때문에,
+호출한 쪽과 대상 자원은 동일한 Worker Thread의 생명주기를 공유한다.
+
+### Connection Pool Exhaustion
+
+Blocking I/O 대기 중인 Worker Thread가 증가하면 Thread Pool 고갈이 발생한다.
+이때 신규 요청을 처리할 Worker Thread가 없어 요청 큐가 쌓이고
+최종적으로 Connection Refused 또는 Request Timeout이 발생한다.
+
+```
+Blocking I/O 증가
+    ↓
+Worker Thread 점유 증가 (Thread Pool 소진)
+    ↓
+신규 요청 수락 불가 (TCP Backlog 소진 가능)
+    ↓
+SYN Queue / Accept Queue 포화
+    ↓
+클라이언트 Connection Timeout
+```
+
+### Off-CPU Time
+
+Blocking I/O로 인해 Thread가 CPU를 사용하지 않는 시간을 Off-CPU Time이라 한다.
+On-CPU Profiling(샘플링 기반)으로는 Off-CPU Time이 관찰되지 않으며,
+별도의 Off-CPU Profiling 도구가 필요하다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | Thread Dump (BLOCKED / WAITING 상태 Thread 확인) |
+| JVM Runtime | JFR Thread State, `jstack` |
+| OS Kernel | `pidstat -w` (Context Switch 횟수), `/proc/PID/wchan` |
+| OS Kernel | `offcputime` (BCC tools, Off-CPU Flame Graph 생성) |
+| OS Kernel | `ss -s` (Socket 상태), `netstat -s` (TCP 통계) |
+| Hardware | `perf stat -e context-switches` |
+
+---
+
+## 15. Blocking 시 자원 상태
+
+| 계층 | 상태 |
+|------|------|
+| Java Thread | Thread Pool에 반환되지 않음 (점유 유지) |
+| JVM Stack | Servlet A, RequestDispatcher, Servlet B 호출 프레임 유지 |
+| JVM Heap | Request / Response 객체 유지 (GC 대상 아님) |
+| OS Kernel | `task_struct`가 Wait Queue로 이동 (TASK_INTERRUPTIBLE) |
+| OS Kernel | Futex 기반 Lock 대기 시 TASK_INTERRUPTIBLE 또는 TASK_UNINTERRUPTIBLE |
+| CPU | 해당 `task_struct`는 CPU 미사용. CFS가 다른 `task_struct` 스케줄링 |
+| Thread Pool | Worker Thread 점유 상태 유지 (신규 요청 처리 불가) |
+| Socket | TCP Receive Buffer (sk_buff) 데이터 대기 가능 |
+
+### TCP Backlog / SYN Queue 영향
+
+Worker Thread가 고갈되면 `accept()`를 호출하는 속도가 저하된다.
+Kernel의 SYN Queue(SYN_RECV 상태 연결 보관)와 Accept Queue(3-way handshake 완료 연결 보관)가 포화되면
+신규 SYN 패킷이 Drop된다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| OS Kernel | `ss -lnt` (Listen Socket 상태, Recv-Q 확인) |
+| OS Kernel | `/proc/net/tcp` (SYN Queue 상태) |
+| OS Kernel | `netstat -s` (`SYNs to LISTEN sockets dropped` 항목) |
+| OS Kernel | `sysctl net.core.somaxconn`, `net.ipv4.tcp_max_syn_backlog` |
+
+---
+
+## 16. RequestDispatcher 단계에서 CPU를 사용하는 작업
+
+RequestDispatcher 실행 중에는 다음 작업이 CPU를 사용한다.
+
+```
+RequestDispatcher
+    ↓
+Path Resolution          (URL 파싱, 컨텍스트 경로 분리)
+    ↓
+Mapping Lookup           (Servlet 매핑 테이블 조회, 해시맵 연산)
+    ↓
+DispatcherType 판별      (FORWARD / INCLUDE / REQUEST 구분)
+    ↓
+Request Attribute 설정   (HashMap put 연산, javax/jakarta.servlet.forward.* 키)
+    ↓
+Response Committed 확인  (버퍼 상태 플래그 체크)
+    ↓
+Filter Chain 재진입      (DispatcherType 기반 필터 목록 재구성)
+    ↓
+Request/Response Wrapper 생성  (Heap 할당, 객체 초기화)
+    ↓
+Target Servlet 호출      (메서드 디스패치)
+    ↓
+JSP 처리 시 JspServlet 실행
+    │   ├── 최초 호출: JSP 컴파일 (CPU 집약적)
+    └── 이후 호출: 컴파일된 Servlet 실행
+```
+
+### CPU Pipeline 관점
+
+RequestDispatcher 내부의 단순한 조건 분기(DispatcherType 체크, committed 플래그 확인)는
+CPU Branch Predictor가 예측 가능한 패턴이면 파이프라인 스톨(Pipeline Stall)이 최소화된다.
+그러나 매핑 테이블 조회에서 캐시 미스가 빈번하면 메모리 접근 지연이 발생한다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| JVM Runtime | JFR Method Profiling (CPU 상위 메서드), `-XX:+PrintCompilation` |
+| OS Kernel | `perf top` (CPU 핫 함수), `perf record -g` |
+| Hardware | `perf stat -e branch-misses` (Branch Misprediction) |
+| Hardware | `perf stat -e cache-misses,cache-references` (L1/L2/L3 Cache Miss) |
+| Hardware | `perf stat -e instructions,cycles` (IPC: Instruction Per Cycle) |
+
+---
+
+## 17. forward 시 Request Attribute
+
+Servlet 스펙은 `forward` 상황에서 내부 경로 정보를 Request Attribute로 보존한다.
+
+| 속성 (javax.servlet) | 속성 (jakarta.servlet) | 의미 |
+|---------------------|----------------------|------|
+| `javax.servlet.forward.request_uri` | `jakarta.servlet.forward.request_uri` | 원본 요청 URI |
+| `javax.servlet.forward.context_path` | `jakarta.servlet.forward.context_path` | 원본 컨텍스트 경로 |
+| `javax.servlet.forward.servlet_path` | `jakarta.servlet.forward.servlet_path` | 원본 Servlet 경로 |
+| `javax.servlet.forward.path_info` | `jakarta.servlet.forward.path_info` | 원본 경로 추가 정보 |
+| `javax.servlet.forward.query_string` | `jakarta.servlet.forward.query_string` | 원본 쿼리 스트링 |
+
+이 속성들은 Heap의 `HttpServletRequest` 객체 내부 `HashMap`에 저장된다.
+대상 자원이 원래 요청 경로를 참조할 때 사용된다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | Request Attribute 덤프 (디버그 로그, Filter에서 Attribute 목록 출력) |
+| JVM Runtime | Heap Dump 후 `HttpServletRequest` 객체 내부 Attribute 맵 확인 |
+
+---
+
+## 18. include 시 Request Attribute
+
+`include` 상황에서도 포함 대상 경로 정보가 Request Attribute로 제공된다.
+
+| 속성 (javax.servlet) | 속성 (jakarta.servlet) | 의미 |
+|---------------------|----------------------|------|
+| `javax.servlet.include.request_uri` | `jakarta.servlet.include.request_uri` | 포함 대상 URI |
+| `javax.servlet.include.context_path` | `jakarta.servlet.include.context_path` | 포함 대상 컨텍스트 경로 |
+| `javax.servlet.include.servlet_path` | `jakarta.servlet.include.servlet_path` | 포함 대상 Servlet 경로 |
+| `javax.servlet.include.path_info` | `jakarta.servlet.include.path_info` | 포함 대상 경로 추가 정보 |
+| `javax.servlet.include.query_string` | `jakarta.servlet.include.query_string` | 포함 대상 쿼리 스트링 |
+
+`include()` 실행 중에는 두 세트의 Attribute가 동시에 존재할 수 있다.
+`javax.servlet.forward.*`와 `javax.servlet.include.*`가 동일 Request 객체에 공존하는 경우,
+중첩된 내부 전달 구조임을 의미한다.
+
+---
+
+## 19. Response Commit 제약
+
+`forward()`는 응답이 커밋되기 전에 호출되어야 한다.
+
+```
+Response Buffer 작성
+    ↓
+Buffer Flush (write() System Call 또는 버퍼 자동 플러시)
+    ↓
+Response Committed (상태 코드 + 헤더 + 일부 Body 전송 확정)
+    ↓
+forward() 호출
+    ↓
+IllegalStateException 발생
+```
+
+### 응답 커밋의 Kernel 수준 의미
+
+Response가 커밋된다는 것은 Kernel의 TCP Send Buffer(Socket Send Buffer)에
+데이터가 기록되어 네트워크로 전송이 시작된 상태다.
+이 시점 이후에는 HTTP 상태 코드나 헤더를 수정할 수 없으며,
+`forward()`도 호출할 수 없다.
+
+```
+Java Response Buffer
+    ↓ (flush)
+Socket Send Buffer (sk_buff)
+    ↓
+TCP Segmentation / IP Fragmentation
+    ↓
+NIC Tx Ring Buffer
+    ↓
+클라이언트로 전송 (응답 커밋 완료)
+```
+
+### Dirty Page Writeback과의 구분
+
+응답 커밋은 네트워크 소켓 전송을 의미하며,
+파일 시스템의 Dirty Page Writeback(수정된 Page Cache를 Disk에 반영하는 과정)과는 별개다.
+정적 자원 서빙 시 Page Cache에서 읽은 데이터를 Socket으로 전달하는 과정이 포함될 수 있다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | `response.isCommitted()` (커밋 여부 확인), 예외 로그 확인 |
+| OS Kernel | `ss -nt` (TCP Socket 상태), `netstat -s` (TCP 전송 통계) |
+| OS Kernel | `/proc/net/sockstat` (Socket 사용 현황) |
+
+---
+
+## 20. Recursive Forward 위험
+
+잘못된 내부 라우팅은 무한 `forward`를 만들 수 있다.
+
+```
+Servlet A
+    ↓ forward("/b")
+Servlet B
+    ↓ forward("/a")
+Servlet A
+    ↓ forward("/b")
+...
+```
+
+### 계층별 영향
+
+```
+JVM Stack Frame 누적
+    ↓
+Thread Stack 소진 (-Xss 한계 초과)
+    ↓
+StackOverflowError (JVM 수준 오류)
+
+또는
+
+Servlet Container 재귀 감지 (Tomcat: MAX_DISPATCH_DEPTH 제한)
+    ↓
+IllegalStateException / 500 Internal Server Error
+```
+
+Tomcat은 내부적으로 디스패치 깊이를 제한하여 무한 재귀를 방지한다.
+기본 제한값을 초과하면 Container 차원에서 오류를 반환한다.
+
+### CPU Pipeline Stall과 재귀
+
+깊은 재귀 호출은 CPU의 Return Stack Buffer(RSB)를 초과하여
+리턴 주소 예측 실패(Branch Misprediction의 일종)를 유발할 수 있다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | 에러 로그 (`StackOverflowError`, `IllegalStateException`) |
+| JVM Runtime | Thread Dump (동일 호출 패턴 반복 확인), `-Xss` 증가로 임시 완화 |
+| OS Kernel | `dmesg` (JVM 크래시 시 코어 덤프 로그) |
+| Hardware | `perf stat -e branch-misses` |
+
+---
+
+## 21. Request Attribute 오염 주의
+
+Request Attribute는 하나의 요청 흐름 안에서 공유된다.
+
+```
+Servlet A
+    ↓ request.setAttribute("user", value)
+    ↓
+RequestDispatcher.forward()
+    ↓
+Servlet B
+    ↓ request.getAttribute("user")
+    ↓ (또는 request.setAttribute("user", anotherValue) → Attribute 덮어쓰기)
+```
+
+### Thread-safety 관점
+
+`HttpServletRequest`는 단일 Thread에서 처리되는 것을 전제로 설계되었다.
+`forward()` / `include()`는 동일 Thread에서 실행되므로 Thread-safety 문제는 없다.
+그러나 Attribute에 담긴 Mutable 객체를 여러 자원이 수정하면 예측 불가능한 상태가 된다.
+특히 Singleton Bean의 필드나 공유 컬렉션 객체를 Attribute로 전달하는 것은 위험하다.
+
+### Attribute 저장의 Heap 영향
+
+`setAttribute()`는 내부적으로 `HashMap.put()`이다.
+키-값 쌍 증가 시 HashMap 리사이즈(rehash)가 발생할 수 있으며,
+이때 새로운 배열 할당으로 Young Generation 압박이 증가한다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | 디버그 로그 (Attribute 키-값 출력), 코드 리뷰 |
+| JVM Runtime | Heap Dump (Request 객체 내부 Attribute Map 크기 확인) |
+| JVM Runtime | JFR Allocation Profiling (HashMap 리사이즈 빈도) |
+
+---
+
+## 22. DispatcherServlet과 RequestDispatcher의 차이
+
+| 구분 | DispatcherServlet | RequestDispatcher |
+|------|-------------------|-------------------|
+| 소속 | Spring MVC | Servlet API / Container |
+| 역할 | 외부 요청을 Controller로 라우팅 | 서버 내부 자원으로 forward / include |
+| 객체 성격 | Singleton Servlet (Spring Bean) | 경로/이름 기반 Dispatcher 객체 |
+| 실행 주체 | Worker Thread | 동일 Worker Thread |
+| Thread 생성 | 없음 | 없음 |
+| task_struct 생성 | 없음 | 없음 |
+| 주요 메서드 | `doDispatch()` | `forward()`, `include()` |
+| 진입점 | 외부 HTTP 요청 (클라이언트 → NIC → TCP Stack → Servlet Container) | 서버 내부 (동일 요청 흐름 안) |
+| Kernel 진입 | Worker Thread의 `task_struct`가 처리 | 동일 `task_struct` 위에서 메서드 호출 |
+| Filter 재진입 | DispatcherType.REQUEST 필터 | DispatcherType.FORWARD / INCLUDE 필터 |
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | Thread Dump (`DispatcherServlet.doDispatch` vs `ApplicationDispatcher.forward`) |
+| OS Kernel | `strace` (DispatcherServlet 진입 시점의 System Call 패턴 확인) |
+
+---
+
+## 23. RequestDispatcher와 Redirect의 차이
+
+`RequestDispatcher.forward()`는 서버 내부 전달이다.
+Redirect는 클라이언트에게 새로운 URL로 다시 요청하라고 응답하는 방식이다.
+
+| 구분 | Forward | Redirect |
+|------|---------|----------|
+| 처리 위치 | 서버 내부 | 클라이언트 왕복 |
+| HTTP 요청 수 | 1회 | 2회 |
+| 브라우저 URL | 변경 없음 | 변경됨 |
+| Request 객체 | 동일 객체 유지 | 새 요청 객체 생성 |
+| Thread | 동일 요청 Thread | 새 요청에서 다시 할당 |
+| task_struct | 동일 task_struct | 새 요청에서 새 task_struct 할당 |
+| System Call | 동적 자원: 없음 | 응답 write() + 새 요청 수신 처리 |
+| Network RTT | 없음 (서버 내부) | 클라이언트 ↔ 서버 왕복 RTT 추가 |
+| TCP 연결 | 유지 | 기존 연결 재사용 또는 신규 연결 |
+| 사용 예 | 내부 JSP 전달, Spring View 렌더링 | 로그인 후 다른 URL 이동 (PRG 패턴) |
+
+```
+Forward:
+Client → Server → Internal Resource
+(단일 TCP 연결, 단일 HTTP 요청)
+
+Redirect:
+Client → Server
+Client ← HTTP 302 (Location 헤더)
+Client → New URL (새 HTTP 요청, TCP 연결 재사용 또는 신규)
+```
+
+### Redirect의 Kernel 수준 흐름
+
+```
+302 응답 write()                   ← System Call
+    ↓
+TCP Send Buffer (sk_buff)
+    ↓
+클라이언트 수신 후 새 요청 전송
+    ↓
+NIC IRQ 발생
+    ↓
+SoftIRQ (TCP/IP Stack 처리)
+    ↓
+Accept Queue에 새 연결 등록
+    ↓
+Worker Thread가 새 요청 수락
+```
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| OS Kernel | `ss -nt` (TIME_WAIT 소켓: Redirect로 인한 소켓 증가 확인) |
+| OS Kernel | `netstat -s` (TCP 연결 통계), `/proc/net/sockstat` |
+| Hardware | Network Latency 측정 (RTT 증가 여부) |
+
+---
+
+## 24. SRE 관점의 장애 포인트
+
+| 장애 유형 | 원인 | 계층별 영향 | 결과 |
+|-----------|------|------------|------|
+| Recursive Forward | A → B → A 반복 | JVM Stack 소진, CPU Branch Misprediction 증가 | StackOverflowError, HTTP 500 |
+| Response Committed Error | forward 전 응답 확정 | Socket Send Buffer에 이미 데이터 전송 | IllegalStateException |
+| Blocking I/O 전파 | Target Resource 내부 Blocking | task_struct Wait Queue 이동, Thread Pool 점유 | Worker Thread 고갈, 요청 큐 포화 |
+| Connection Pool Exhaustion | Blocking Thread 누적으로 Thread Pool 소진 | TCP Backlog / Accept Queue 포화 | Connection Refused, Client Timeout |
+| Attribute 오염 | Request Attribute 이름 충돌, Mutable 객체 공유 | Heap의 동일 객체 수정 | 잘못된 요청 데이터 처리 |
+| JSP 최초 컴파일 | 최초 접근 시 JSP → Java → .class 컴파일 | CPU 집중, File I/O (write System Call), Metaspace 로드 | 첫 요청 Latency 급증 (Cold Start) |
+| ClassLoader Leak | WebApp 재배포 시 이전 ClassLoader 미해제 | Metaspace 누적, GC 대상 제외 | OutOfMemoryError: Metaspace |
+| 과도한 내부 라우팅 | 과도한 forward / include 단계 | JVM Stack Frame 누적, Response Wrapper 객체 Young Gen 압박 | Latency 증가, Minor GC 빈도 상승 |
+| Off-CPU Time 누적 | Blocking I/O 대기 중 CPU 미사용 | task_struct Wait Queue 체류 시간 증가 | Throughput 저하, P99 Latency 상승 |
+| TLB Miss 증가 | 다수 mmap, 과도한 Metaspace 확장 | Page Table Walk 비용 증가 | CPU Cycle 낭비, Latency 증가 |
+
+---
+
+## 25. SRE 관점 주요 지표
+
+| 지표 | 의미 | 관찰 도구 |
+|------|------|-----------|
+| Servlet Execution Time | forward / include 포함 전체 처리 시간 | APM Span, JFR |
+| Active Thread Count | 현재 요청을 처리 중인 Worker Thread 수 | JMX (`ThreadPool.activeCount`), `/metrics` |
+| Waiting Thread Count | Blocking I/O 또는 Lock 대기 Thread 수 | Thread Dump, JFR Thread State |
+| Off-CPU Time | Thread가 CPU를 사용하지 않는 시간 | `offcputime` (BCC), async-profiler |
+| Response Committed Error Count | 잘못된 forward 호출 시점 | 애플리케이션 에러 로그 |
+| StackOverflowError Count | Recursive Forward 가능성 | JVM 에러 로그, APM 예외 집계 |
+| P99 / P999 Latency | 내부 라우팅 지연 포함 사용자 체감 지연 | Prometheus + Grafana, APM |
+| System CPU (`%sys`) | 파일 I/O, Socket I/O 증가 여부 | `mpstat`, `sar` |
+| Minor GC Frequency | Response Wrapper 등 단명 객체 할당 압박 | JFR, `jstat -gcnew` |
+| Metaspace Usage | JSP 컴파일, ClassLoader Leak 누적 | JMX (`MemoryMXBean`), `jcmd VM.native_memory` |
+| JVM Allocation Rate | Request Wrapper, Attribute 객체 생성량 | JFR Allocation Profiling |
+| Context Switch Count | Blocking I/O 발생 시 `task_struct` 전환 빈도 | `vmstat cs`, `pidstat -w` |
+| TCP Backlog Drop | Thread Pool 고갈 시 신규 연결 Drop | `netstat -s` (`SYNs to LISTEN sockets dropped`) |
+| Page Fault (Major) | 정적 자원 Page Cache Miss (Disk I/O 발생) | `vmstat pgmajfault`, `/proc/vmstat` |
+| TLB Miss Rate | Metaspace / mmap 확장으로 TLB 효율 저하 | `perf stat -e dTLB-load-misses` |
+| Thread Dump | ApplicationDispatcher.invoke 호출 위치 확인 | `jstack`, JFR, APM Thread Dump |
+
+---
+
+## 26. Thread Dump에서의 관찰
+
+Tomcat 환경에서는 내부 `forward` / `include` 과정에서 다음과 같은 호출 스택이 보인다.
+
+```
+javax.servlet 환경:
+    org.apache.catalina.core.ApplicationDispatcher.invoke
+    org.apache.catalina.core.ApplicationDispatcher.doForward
+    org.apache.catalina.core.ApplicationDispatcher.forward
+    javax.servlet.RequestDispatcher.forward
+
+jakarta.servlet 환경:
+    org.apache.catalina.core.ApplicationDispatcher.invoke
+    org.apache.catalina.core.ApplicationDispatcher.doForward
+    org.apache.catalina.core.ApplicationDispatcher.forward
+    jakarta.servlet.RequestDispatcher.forward
+```
+
+Thread Dump에서 위 호출이 보이면 현재 요청이 Servlet Container 내부 전달 과정에 있음을 의미한다.
+
+### Thread Dump 분석 시 확인 항목
+
+| 확인 항목 | 의미 |
+|-----------|------|
+| Thread 상태 `RUNNABLE` + `ApplicationDispatcher.invoke` | 정상 실행 중 (CPU 사용) |
+| Thread 상태 `WAITING` + JDBC / HTTP Client | Blocking I/O 대기 중 (Off-CPU) |
+| Thread 상태 `BLOCKED` + `synchronized` | Lock 경합 (Contention) |
+| 동일 Stack 패턴 다수 Thread | 동일 내부 자원에 대한 병렬 요청 집중 |
+| `ApplicationDispatcher.doForward` 깊이 반복 | Recursive Forward 가능성 |
+
+### JVM Safepoint와 Thread Dump
+
+`jstack`으로 Thread Dump를 수집하는 행위 자체가 JVM Safepoint를 트리거한다.
+모든 Thread가 Safepoint에 도달할 때까지 잠시 정지되므로,
+운영 중 빈번한 Thread Dump 수집은 지연을 유발할 수 있다.
+JFR의 Thread State 이벤트는 Safepoint 없이 연속적으로 Thread 상태를 기록한다.
+
+| 계층 | 관찰 도구 / 키워드 |
+|------|-------------------|
+| Application | `jstack <PID>` (Thread Dump), APM Thread Dump 자동 수집 |
+| JVM Runtime | JFR Thread State, `-XX:+PrintSafepointStatistics` (Safepoint 지연 확인) |
+| OS Kernel | `kill -3 <PID>` (SIGQUIT으로 Thread Dump 트리거) |
+
+---
+
+## 27. 전체 흐름 요약
+
+```
+Client Request
+    ↓
+NIC 수신 → IRQ 발생 → SoftIRQ (TCP/IP Stack)
+    ↓
+Tomcat Acceptor Thread (accept() System Call)
+    ↓
+Worker Thread 할당 (Thread Pool)
+    ↓
+Linux task_struct → TASK_RUNNING
+    ↓
+Servlet A / DispatcherServlet
+    ↓
+RequestDispatcher 획득 (Path Resolution, Mapping Lookup)
+    ↓
+forward() 또는 include()
+    │
+    ├── Filter Chain 재진입 (DispatcherType 기반)
+    ├── Request Attribute 설정 (Heap: HashMap.put)
+    ├── Response Buffer 상태 확인
+    └── Target Resource 실행
+    ↓
+동일 Worker Thread 유지
+    ↓
+동일 task_struct 유지
+    ↓
+Response 작성
+    ↓
+Socket Send Buffer (sk_buff) 기록 (write() System Call)
+    ↓
+NIC Tx Ring Buffer → 클라이언트 전송
+```
+
+### 경우별 Kernel 개입 수준
+
+| 시나리오 | Kernel 개입 | System Call |
+|----------|-------------|-------------|
+| 동적 Servlet으로 forward | 없음 (User Mode 유지) | 없음 |
+| 정적 파일로 forward | Page Cache + Socket 쓰기 | `read()` / `sendfile()`, `write()` |
+| JSP 최초 호출 | JSP 컴파일 (파일 I/O) | `open()`, `write()`, `read()` |
+| JDBC Blocking | I/O 대기 | `recv()` 또는 `epoll_wait()` |
+| Blocking I/O 완료 | IRQ → SoftIRQ → Wake-up | (Kernel 내부 처리) |
+
+---
+
+## 28. 핵심 정리
+
+RequestDispatcher는 Servlet Container 내부에서 요청을 다른 자원으로 전달하거나
+다른 자원의 응답 내용을 포함시키는 Servlet API 인터페이스다.
+
+```
+RequestDispatcher
+    ↓
+새 Thread 생성 없음       → Thread Pool 추가 점유 없음
+    ↓
+새 task_struct 생성 없음  → Kernel 스케줄링 단위 추가 없음
+    ↓
+동일 Worker Thread에서 메서드 호출 흐름 유지
+    ↓
+동일 JVM Stack 위에서 Frame 누적
+    ↓
+동일 Heap의 Request / Response 객체 참조
+```
+
+`forward()`는 제어권을 대상 자원으로 넘기는 내부 전달이고,
+`include()`는 대상 자원의 결과를 현재 응답에 포함한 뒤 원래 흐름으로 복귀하는 방식이다.
+
+동적 자원으로 전달될 때는 대부분 User Mode의 JVM 메서드 호출로 처리되지만,
+정적 자원, 파일 I/O, JSP 최초 컴파일, 외부 I/O가 포함되면
+System Call과 Kernel Mode 전환이 발생한다.
+
+### SRE 관점 핵심 결론
+
+RequestDispatcher 자체의 비용은 경로 해석, 매핑 조회, Request Attribute 처리,
+Response Wrapper 생성, Filter Chain 재진입, Target Resource 실행 비용으로 구성된다.
+
+장애는 RequestDispatcher 자체보다 다음 원인에서 발생한다.
+
+| 원인 | 계층 | 핵심 지표 |
+|------|------|-----------|
+| Target Resource 내부 Blocking I/O | OS Kernel (Wait Queue), Thread Pool | Waiting Thread Count, Off-CPU Time |
+| Recursive Forward | JVM Stack, CPU Branch Predictor | StackOverflowError Count, P99 Latency |
+| Response Commit 이후 forward | Socket Send Buffer | IllegalStateException Count |
+| JSP Cold Start (최초 컴파일) | CPU, File I/O, Metaspace | P99 Latency (첫 요청), System CPU |
+| ClassLoader Leak | JVM Metaspace | Metaspace Usage, OOME |
+| Connection Pool Exhaustion | TCP Backlog, Accept Queue | TCP SYN Drop, Active Thread Count |
+| Off-CPU Time 누적 | task_struct Wait Queue 체류 | Off-CPU Flame Graph, Throughput 저하 |
 
 *이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
