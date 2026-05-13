@@ -494,18 +494,76 @@ Thread-per-request
     │    │         ├── Accept Queue 초과 시 → OS가 신규 TCP 연결 거부
     │    │         └── 클라이언트 관점: Connection Refused 발생
     │    │
-    │    └── [Java Servlet 표준 (Jakarta EE) 기반 수동 처리 영역]
-    │         └── Request Dispatcher (URL 라우팅 및 서블릿 연결) 
-    │             ├── 할당된 Worker Thread가 Dispatcher 호출
-    │             ├── 요청 URL 분석 → 담당 Servlet / Controller 식별
-    │             │    ├── (예시) GET /api/order → OrderServlet
-    │             │    └── (예시) POST /api/pay  → PaymentController
-    │             ├── HttpServletRequest / HttpServletResponse 객체 생성
-    │             ├── Forward: 제어권을 대상 Servlet으로 완전히 이전
-    │             │    └── 클라이언트는 서버 내부 이동을 인지하지 못함 (URL 변경 없음)
-    │             ├── Include: 대상 컴포넌트 실행 후 제어권 원래 Servlet으로 반환
-    │             │    └── 응답 페이지 조립 시 사용 (header, footer 포함 등)
-    │             └── 대상 Servlet에 Request / Response 객체 전달 → 비즈니스 로직 진입
+    │    ├──▶ [Java Servlet 표준 (Jakarta EE) 기반 수동 처리 영역]
+    │    │     └── Request Dispatcher (URL 라우팅 및 서블릿 연결) 
+    │    │         ├── 할당된 Worker Thread가 Dispatcher 호출
+    │    │         ├── 요청 URL 분석 → 담당 Servlet / Controller 식별
+    │    │         │    ├── (예시) GET /api/order → OrderServlet
+    │    │         │    └── (예시) POST /api/pay  → PaymentController
+    │    │         ├── HttpServletRequest / HttpServletResponse 객체 생성
+    │    │         ├── Forward: 제어권을 대상 Servlet으로 완전히 이전
+    │    │         │    └── 클라이언트는 서버 내부 이동을 인지하지 못함 (URL 변경 없음)
+    │    │         ├── Include: 대상 컴포넌트 실행 후 제어권 원래 Servlet으로 반환
+    │    │         │    └── 응답 페이지 조립 시 사용 (header, footer 포함 등)
+    │    │         └── 대상 Servlet에 Request / Response 객체 전달 → 비즈니스 로직 진입
+    │    │
+    │    └──▶ [Spring Framework Layer: DispatcherServlet 영역]
+    │         └── DispatcherServlet (Front Controller 패턴 기반 중앙 요청 처리)
+    │              │    Worker Thread가 DispatcherServlet.doService() 진입
+    │              │    Heap의 Singleton 객체를 다수의 Worker Thread가 공유 실행
+    │              │
+    │              ├── 1. HandlerMapping (자동 라우팅)
+    │              │    ├── 요청 URL / HTTP Method → @RequestMapping 어노테이션 탐색
+    │              │    ├── RequestMappingHandlerMapping이 적합한 Controller 메서드 식별
+    │              │    ├── 매핑 결과를 HandlerExecutionChain 객체로 반환
+    │              │    │    └── (Handler 본체 + 적용할 Interceptor 목록 포함)
+    │              │    └── 매핑 실패 시 → 404 Not Found 응답 즉시 반환
+    │              │
+    │              ├── 2. HandlerAdapter + Argument Resolver (자동 바인딩)
+    │              │    ├── HandlerAdapter가 식별된 Controller 메서드 호출 방식 결정
+    │              │    │    └── RequestMappingHandlerAdapter가 @Controller 메서드 실행 담당
+    │              │    ├── Argument Resolver가 HTTP 데이터 → Java 객체 자동 변환
+    │              │    │    ├── @RequestParam  → Query String / Form 파라미터 바인딩
+    │              │    │    ├── @PathVariable  → URL 경로 변수 추출 및 타입 변환
+    │              │    │    ├── @RequestBody   → HTTP Body JSON → Jackson 역직렬화 → Java 객체
+    │              │    │    ├── @RequestHeader → HTTP 헤더 값 추출
+    │              │    │    └── @ModelAttribute → Form 데이터 → Java 객체 필드 매핑
+    │              │    └── 변환 실패 시 → 400 Bad Request / MethodArgumentNotValidException 발생
+    │              │
+    │              ├── 3. Interceptor (공통 처리 - preHandle)
+    │              │    ├── HandlerExecutionChain의 Interceptor 목록 순서대로 실행
+    │              │    ├── preHandle(): Controller 실행 이전 공통 처리 수행
+    │              │    │    ├── 인증(Authentication): 요청자 신원 확인 (JWT 토큰 검증 등)
+    │              │    │    ├── 인가(Authorization): 요청 권한 검증
+    │              │    │    ├── 요청 로깅: 요청 URI, Method, 파라미터 기록
+    │              │    │    └── MDC 설정: 요청 추적 ID(Trace ID) Thread Local에 주입
+    │              │    └── preHandle() 반환값 false 시 → Controller 실행 중단 및 응답 종료
+    │              │
+    │              ├── 4. Controller / Service 실행 (비즈니스 로직 위임)
+    │              │    ├── HandlerAdapter가 Controller 메서드 Reflection 기반으로 호출
+    │              │    ├── Controller → Service → Repository 계층 순서로 실행 흐름 위임
+    │              │    ├── Service: 트랜잭션 처리, 비즈니스 규칙 실행
+    │              │    ├── Repository: DB 쿼리 실행 (JDBC / JPA)
+    │              │    │    └── Blocking I/O 발생 시 → task_struct Wait Queue 이동
+    │              │    │         └── (Thread Pool 점유 유지 → 유령 점유 상태 진입)
+    │              │    └── 처리 결과를 ModelAndView 또는 @ResponseBody 객체로 반환
+    │              │
+    │              ├── 5. Interceptor (공통 처리 - postHandle / afterCompletion)
+    │              │    ├── postHandle(): Controller 실행 직후 / View 렌더링 이전 실행
+    │              │    │    └── 응답 데이터 후처리, 공통 Model 데이터 추가
+    │              │    └── afterCompletion(): View 렌더링 완료 후 항상 실행
+    │              │         ├── 요청 처리 시간 측정 및 로깅
+    │              │         ├── MDC 컨텍스트 정리 (Thread Local 데이터 제거)
+    │              │         └── 예외 발생 여부와 무관하게 반드시 실행
+    │              │
+    │              └── 6. MessageConverter (결과 변환 및 응답 직렬화)
+    │                   ├── @ResponseBody 또는 @RestController 감지 시 View 렌더링 생략
+    │                   ├── 반환 객체 타입과 요청 Accept 헤더 기반으로 변환기 자동 선택
+    │                   │    ├── MappingJackson2HttpMessageConverter → Java 객체 → JSON 직렬화
+    │                   │    ├── StringHttpMessageConverter          → String → text/plain 반환
+    │                   │    └── ByteArrayHttpMessageConverter       → byte[] → 바이너리 응답
+    │                   ├── 직렬화 결과를 HttpServletResponse의 OutputStream에 기록
+    │                   └── HTTP 상태 코드, Content-Type 헤더 설정 후 응답 완료
     │
     ├── Java Thread.start() (또는 Pool 할당)
     │    ├── java.lang.Thread 객체 생성
