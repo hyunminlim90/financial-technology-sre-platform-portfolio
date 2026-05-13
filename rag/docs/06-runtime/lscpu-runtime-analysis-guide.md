@@ -641,6 +641,8 @@ Thread-per-request
          CPU Saturation → Throughput 붕괴
 ```
 
+[DispatcherServlet이란](../20-deep-dive/lscpu-runtime-analysis-guide/dispatcher-servlet-jvm-memory-and-task-struct.md)
+
 Spring WebFlux / Netty 구조:
 
 ```text
