@@ -494,7 +494,7 @@ Thread-per-request
     │    │         ├── Accept Queue 초과 시 → OS가 신규 TCP 연결 거부
     │    │         └── 클라이언트 관점: Connection Refused 발생
     │    │
-    │    └── Request Dispatcher (URL 라우팅 및 서블릿 연결)
+    │    └── [Java Servlet 표준 (Jakarta EE) 기반 수동 처리 영역] - Request Dispatcher (URL 라우팅 및 서블릿 연결) 
     │         ├── 할당된 Worker Thread가 Dispatcher 호출
     │         ├── 요청 URL 분석 → 담당 Servlet / Controller 식별
     │         │    ├── (예시) GET /api/order → OrderServlet
@@ -640,6 +640,8 @@ Thread-per-request
              ↓
          CPU Saturation → Throughput 붕괴
 ```
+
+Java Servlet 표준(J2EE/Jakarta EE) 기반의 수동 처리 방식
 
 [DispatcherServlet이란](../20-deep-dive/lscpu-runtime-analysis-guide/dispatcher-servlet-jvm-memory-and-task-struct.md)
 
