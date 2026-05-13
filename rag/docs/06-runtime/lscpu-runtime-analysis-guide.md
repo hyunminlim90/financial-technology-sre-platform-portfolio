@@ -488,6 +488,17 @@ Thread-per-request
     │    ├── Thread Pool 조회
     │    │    ├── Idle Thread 존재 시 → 해당 Thread 할당
     │    │    ├── Idle Thread 없을 시 → 신규 Thread 생성 시도
+    │    │    │
+    │    │    │   ※ [물리적 비용 연결] 이 시도는 단순 객체 생성이 아닌 커널 자원 소모 작업
+    │    │    │      → Java Thread.start() 호출
+    │    │    │        → JVM Native pthread_create()
+    │    │    │          → System Call clone() (User Mode → Kernel Mode 전환)
+    │    │    │            → task_struct 생성 + Kernel Stack 할당 + CFS Red-Black Tree 등록
+    │    │    │      → SRE 관점: Max Thread 설정이 과도하면 비즈니스 로직 실행 전에
+    │    │    │        커널 레벨 오버헤드(sy CPU 급증, Kernel Stack 메모리 파편화)로
+    │    │    │        서버 자원이 먼저 소진될 수 있음
+    │    │    │      ↓ 상세 흐름은 하단 'Java Thread.start() ~ task_struct 생성' 섹션 참조
+    │    │    │
     │    │    ├── 요청 1개당 Thread 1개 전담 할당 (Thread-per-request 모델)
     │    │    └── Thread Pool 완전 고갈 시
     │    │         ├── TCP Backlog Queue (OS 레벨 Accept Queue)에 연결 적체
