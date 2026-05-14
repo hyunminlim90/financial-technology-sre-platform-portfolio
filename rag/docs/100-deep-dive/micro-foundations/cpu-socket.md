@@ -22,7 +22,12 @@ CPU Socket은 메인보드(Mainboard) 위에서 CPU 패키지와 전기적으로
 | PGA (Pin Grid Array) | CPU 쪽에 핀 존재 |
 | BGA (Ball Grid Array) | 메인보드에 납땜 고정 |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+마더보드(Motherboard) [[M]](../../100-deep-dive/micro-foundations/motherboard.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
