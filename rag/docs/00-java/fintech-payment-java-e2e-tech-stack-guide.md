@@ -2,9 +2,9 @@
 
 > 정독: 0회
 > 
-> 관점: SRE / Platform Engineering / Payment Reliability
-> 범위: Hardware → OS Kernel → JVM Runtime → Concurrency → Network/Data Integration → Observability → 운영 전략
-> 목적: 결제 시스템의 신뢰성, 정합성, 성능, 장애 분석 능력을 확보하기 위한 Java 기술 스택을 계층별로 정리한다.
+> 관점: SRE / Platform Engineering / Payment Reliability </br>
+> 범위: Hardware → OS Kernel → JVM Runtime → Concurrency → Network/Data Integration → Observability → 운영 전략 </br>
+> 목적: 결제 시스템의 신뢰성, 정합성, 성능, 장애 분석 능력을 확보하기 위한 Java 기술 스택을 계층별로 정리한다. </br>
 
 ---
 
