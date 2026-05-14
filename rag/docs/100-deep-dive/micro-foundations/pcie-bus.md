@@ -23,7 +23,12 @@
 | Accelerator | GPU / FPGA |
 | Memory Extension | CXL Device |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+GPU(Graphics Processing Unit) [[M]](../../100-deep-dive/micro-foundations/gpu.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
