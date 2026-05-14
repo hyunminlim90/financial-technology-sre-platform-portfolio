@@ -38,7 +38,7 @@
 <details>
 <summary>Deep Dive</summary></br>
 
-PCIe(Peripheral Component Interconnect Express) [[M]](../../100-deep-dive/micro-foundations/pcie.md)
+PCIe(Peripheral Component Interconnect Express) [[M]](../../100-deep-dive/micro-foundations/pcie.md)  
 Power Delivery(전력 전달 계층) [[M]](../../100-deep-dive/micro-foundations/power-delivery.md)
 
 </details></br>
