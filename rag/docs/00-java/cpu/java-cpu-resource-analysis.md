@@ -21,9 +21,7 @@
 | CPU Architecture | `lscpu \| grep Architecture` | x86_64 vs ARM(Graviton). JIT Intrinsics 지원 범위 차이. Graviton은 AES, CRC32 명령어 지원 여부 확인 필요 |
 
 <details>
-<summary>Deep Dive</summary>
-
-</br>
+<summary>Deep Dive</summary></br>
 
 CPU Socket [[M]](../../100-deep-dive/micro-foundations/cpu-socket.md) [C]
 
