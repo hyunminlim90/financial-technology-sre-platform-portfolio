@@ -7,15 +7,13 @@
 > 범위: Hardware → OS Kernel → JVM Runtime → Framework → Application  </br>
 > 목적: Java 기반 결제 시스템에서 CPU 자원이 실제로 소비되는 경로를 계층별로 분석하고, 병목 감지·튜닝·장애 대응 역량을 확보한다.  </br>
 
----
-
 ## 1. 물리/가상 CPU 스펙 확인 지표
 
 ### 1.1 물리 서버 CPU 구조
 
 | 항목 | 확인 명령어 | SRE 분석 포인트 |
 |------|-----------|--------------|
-| Socket / Physical Core / Logical Core | `lscpu` | HT(Hyperthreading) 활성화 여부 확인. HT 활성화 시 L1/L2 캐시를 2개 논리 코어가 공유 → 결제 처리 로직 집약 시 Cache Miss 증가 |
+| Socket / Physical Core / Logical Core | `lscpu` | HT/SMT 활성화 여부 확인. 활성화 시 L1/L2 캐시를 2개 논리 코어가 공유 → 결제 처리 로직 집약 시 Cache Miss 증가 |
 | L1 / L2 / L3 캐시 크기 | `lscpu -C` | L3 캐시가 클수록 Context Switch 시 데이터 재로드 비용 감소. 결제 Hot Path 데이터(환율, 한도)가 캐시에 상주 가능 여부 판단 |
 | NUMA 구성 | `numactl -H` | 멀티 소켓 서버에서 JVM Heap이 원격 NUMA 노드 메모리를 참조하면 메모리 접근 지연 2~4배 증가. `numastat`으로 Remote Access 비율 확인 |
 | CPU Topology | `lstopo` | NIC와 CPU 소켓 간의 PCIe 버스 위치 확인. NIC와 다른 소켓의 CPU가 IRQ 처리 시 NUMA Remote 접근 발생 |
