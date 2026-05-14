@@ -24,7 +24,7 @@ CPU / Memory  ↔  고속 주변 장치 (NIC / NVMe / GPU)
 | RAID Controller | 스토리지 제어 |
 
 <details>
-<summary></summary></br>
+<summary>Deep Dive</summary></br>
 
 High-Speed Serial Interconnect(고속 직렬 인터커넥트) [[M]](../../100-deep-dive/micro-foundations/high-speed-serial-interconnect.md)
 
