@@ -18,7 +18,15 @@
 | 데이터 분석 | 대규모 병렬 수치 계산 |
 | 병렬 수치 계산 | 정산 / 리스크 분석 |
 
----
+
+<details>
+<summary>Deep Dive</summary></br>
+
+Graphics(그래픽) [[M]](../../100-deep-dive/micro-foundations/graphics.md)
+
+</details></br>
+
+
 
 ## 2. 시스템 어디에서 등장하는가
 
