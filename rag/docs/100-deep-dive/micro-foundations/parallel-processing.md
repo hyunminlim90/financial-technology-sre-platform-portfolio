@@ -15,7 +15,12 @@ Latency 감소  +  Throughput 증가
 
 > **시간 문제를 추가 연산 자원(Core / Thread / Node)으로 해결하는 구조**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Computing Unit (연산 장치) [[M]](../../100-deep-dive/micro-foundations/computing-unit.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
