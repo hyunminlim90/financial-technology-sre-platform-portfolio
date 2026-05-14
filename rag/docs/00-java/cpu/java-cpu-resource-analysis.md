@@ -20,6 +20,13 @@
 | CPU 주파수 / Turbo | `cpupower frequency-info` | P-state 상태 확인. 저부하 상태에서 주파수 다운스케일 후 트래픽 급증 시 첫 응답 지연 |
 | CPU Architecture | `lscpu \| grep Architecture` | x86_64 vs ARM(Graviton). JIT Intrinsics 지원 범위 차이. Graviton은 AES, CRC32 명령어 지원 여부 확인 필요 |
 
+<details>
+<summary>Deep Dive</summary>
+
+CPU Socket [[M]](../../100-deep-dive/micro-foundations/cpu-socket.md) [C]
+
+</details>
+
 ### 1.2 NUMA 메모리 접근 구조
 
 ```text
