@@ -21,7 +21,7 @@
 <details>
 <summary>Deep Dive</summary></br>
 
-Parallel Processing(병렬 처리) [[M]](../../100-deep-dive/micro-foundations/parallel-processing.md)
+Parallel Processing(병렬 처리) [[M]](../../100-deep-dive/micro-foundations/parallel-processing.md)  
 Graphics(그래픽) [[M]](../../100-deep-dive/micro-foundations/graphics.md)
 
 </details></br>
