@@ -23,6 +23,8 @@
 <details>
 <summary>Deep Dive</summary>
 
+</br>
+
 CPU Socket [[M]](../../100-deep-dive/micro-foundations/cpu-socket.md) [C]
 
 </details>
