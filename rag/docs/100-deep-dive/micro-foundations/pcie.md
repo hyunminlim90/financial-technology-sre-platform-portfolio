@@ -23,7 +23,12 @@ CPU / Memory  ↔  고속 주변 장치 (NIC / NVMe / GPU)
 | FPGA | 특수 연산 가속 |
 | RAID Controller | 스토리지 제어 |
 
----
+<details>
+<summary></summary></br>
+
+High-Speed Serial Interconnect(고속 직렬 인터커넥트) [[M]](../../100-deep-dive/micro-foundations/high-speed-serial-interconnect.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
