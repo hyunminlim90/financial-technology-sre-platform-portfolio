@@ -27,7 +27,7 @@
 
 CPU Socket [[M]](../../100-deep-dive/micro-foundations/cpu-socket.md) [C]
 
-</details>
+</details></br>
 
 ### 1.2 NUMA 메모리 접근 구조
 
