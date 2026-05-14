@@ -2,10 +2,10 @@
 # FinTech 결제 시스템 SRE 관점 — CPU 자원 E2E 분석
 
 > 정독: 0회
-
-> 관점: SRE / Platform Engineering / Payment Reliability
-> 범위: Hardware → OS Kernel → JVM Runtime → Framework → Application
-> 목적: Java 기반 결제 시스템에서 CPU 자원이 실제로 소비되는 경로를 계층별로 분석하고, 병목 감지·튜닝·장애 대응 역량을 확보한다.
+> 
+> 관점: SRE / Platform Engineering / Payment Reliability  </br>
+> 범위: Hardware → OS Kernel → JVM Runtime → Framework → Application  </br>
+> 목적: Java 기반 결제 시스템에서 CPU 자원이 실제로 소비되는 경로를 계층별로 분석하고, 병목 감지·튜닝·장애 대응 역량을 확보한다.  </br>
 
 ---
 
