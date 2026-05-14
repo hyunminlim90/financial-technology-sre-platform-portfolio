@@ -50,7 +50,12 @@ CPU  ↔  PCIe x16  ↔  GPU / FPGA
 Socket 0  ↔  UPI / Infinity Fabric Lane  ↔  Socket 1
 ```
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+PCIe NIC(PCI Express Network Interface Card) [[M]](../../100-deep-dive/micro-foundations/pcie-nic.md)
+
+</details></br>
 
 ## 3. 어떤 자원에 가장 영향이 큰가
 
