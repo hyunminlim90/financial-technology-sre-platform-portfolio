@@ -35,7 +35,13 @@
 
 > **핵심 정의**: 모든 하드웨어 자원 간 데이터 흐름의 **물리적 연결 계층**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+PCIe(Peripheral Component Interconnect Express) [[M]](../../100-deep-dive/micro-foundations/pcie.md)
+Power Delivery(전력 전달 계층) [[M]](../../100-deep-dive/micro-foundations/power-delivery.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
