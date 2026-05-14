@@ -21,7 +21,12 @@
 
 > **고대역폭 + 저지연 + 신호 안정성 확보**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Lane(레인) [[M]](../../100-deep-dive/micro-foundations/lane.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
