@@ -1286,3 +1286,5 @@ SRE Incident Response (장애 분석 모델, Chaos Engineering, SBOM)
 | 설계 원칙 | 성능보다 정합성, 멱등성, 복구 가능성이 우선 |
 
 결제 시스템의 Java 기술 스택은 단순한 프레임워크 선택 문제가 아니라, Hardware, OS Kernel, JVM Runtime, Concurrency, I/O, Network, Observability, Security가 연결된 E2E 신뢰성 설계 문제다.
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
