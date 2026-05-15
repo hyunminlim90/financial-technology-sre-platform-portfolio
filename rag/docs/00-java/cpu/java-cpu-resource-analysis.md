@@ -24,7 +24,7 @@
 <summary>Deep Dive</summary></br>
 
 Physical(물리) [[M]](../../100-deep-dive/micro-foundations/physical.md) [[C]](../../100-deep-dive/core-foundations/00-java/physical.md)  
-Virtual(가상) [[M]](../../100-deep-dive/micro-foundations/virtual.md) [[C]](../../100-deep-dive/core-foundations/00-java/virtual.md)
+Virtual(가상) [[M]](../../100-deep-dive/micro-foundations/virtual.md) [[C]](../../100-deep-dive/core-foundations/00-java/virtual.md)  
 CPU Socket [[M]](../../100-deep-dive/micro-foundations/cpu-socket.md) [[C]](../../100-deep-dive/core-foundations/00-java/cpu-socket.md)
 
 </details></br>
