@@ -27,7 +27,8 @@ CPU/GPU/Runtime 입장에서는 계산 대상, 판단 대상, 처리 대상이 �
 <details>
 <summary>Deep Dive</summary></br>
 
-System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+연산 (Operation / Computation) [[M]](../../100-deep-dive/micro-foundations/computation-operation.md)
 
 </details></br>
 
