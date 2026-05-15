@@ -28,7 +28,12 @@
 | Deterministic | 같은 입력 → 같은 결과 |
 | Avalanche Effect | 입력 일부 변경 시 결과 완전 변경 |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+SHA-256(Secure Hash Algorithm 256-bit) [[M]](../../100-deep-dive/micro-foundations/sha-256.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
