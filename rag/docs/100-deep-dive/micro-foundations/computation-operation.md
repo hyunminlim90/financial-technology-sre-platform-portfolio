@@ -23,7 +23,12 @@
 
 즉, **컴퓨터가 실제로 일을 수행하는 행위 자체**가 연산이다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Input Data(입력 데이터) [[M]](../../100-deep-dive/micro-foundations/input-data.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
