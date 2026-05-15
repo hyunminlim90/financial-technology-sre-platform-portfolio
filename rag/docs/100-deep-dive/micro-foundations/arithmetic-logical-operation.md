@@ -20,7 +20,12 @@
 
 > **대표 목적**: 값 계산
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+ALU(Arithmetic Logic Unit, 산술 논리 장치) [[M]](../../100-deep-dive/micro-foundations/arithmetic-logic-unit.md)
+
+</details></br>
 
 ### 논리 연산 (Logical Operation)
 
