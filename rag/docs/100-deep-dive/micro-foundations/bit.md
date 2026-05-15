@@ -18,8 +18,6 @@
 
 현대 컴퓨터 시스템의 CPU 연산, 메모리 저장, 네트워크 전송, 디스크 기록 모두 결국 **비트 단위로 동작**한다.
 
----
-
 ## 2. 시스템 어디에서 등장하는가
 
 비트는 사실상 **시스템 전체의 기초 단위**이다.
@@ -62,7 +60,12 @@
 - CPU affinity
 - NUMA mask
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Register(레지스터) [[M]](../../100-deep-dive/micro-foundations/register.md)
+
+</details></br>
 
 ## 3. 어떤 자원(CPU/Memory/Network/Disk)에 가장 영향이 큰가
 
