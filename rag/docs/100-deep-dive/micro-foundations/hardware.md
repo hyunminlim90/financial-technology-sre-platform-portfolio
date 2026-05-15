@@ -13,7 +13,12 @@
 
 소프트웨어가 **무엇을 할지 결정하는 논리**라면, 하드웨어는 **그 논리를 실제 전기 신호로 수행하는 물리 계층**이다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
