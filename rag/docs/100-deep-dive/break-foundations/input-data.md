@@ -24,7 +24,12 @@ CPU/GPU/Runtime 입장에서는 계산 대상, 판단 대상, 처리 대상이 �
 
 즉, **연산 이전 단계에 존재하는 모든 원재료**가 입력 데이터다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
