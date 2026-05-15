@@ -18,6 +18,13 @@
 
 현대 컴퓨터 시스템의 CPU 연산, 메모리 저장, 네트워크 전송, 디스크 기록 모두 결국 **비트 단위로 동작**한다.
 
+<details>
+<summary>Deep Dive</summary></br>
+
+연산(Operation/Computation) [[M]](../../100-deep-dive/micro-foundations/computation-operation.md)
+
+</details></br>
+
 ## 2. 시스템 어디에서 등장하는가
 
 비트는 사실상 **시스템 전체의 기초 단위**이다.
