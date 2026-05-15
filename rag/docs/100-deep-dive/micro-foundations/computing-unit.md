@@ -16,7 +16,12 @@
 
 > **실제 연산을 수행하는 물리적 실행 주체**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Arithmetic/Logical Operation(산술/논리 연산) [[M]](../../100-deep-dive/micro-foundations/arithmetic-logical-operation.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
