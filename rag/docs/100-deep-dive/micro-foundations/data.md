@@ -31,7 +31,12 @@
 | 로그 | Event Log |
 | AI/FDS | Feature Vector |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
