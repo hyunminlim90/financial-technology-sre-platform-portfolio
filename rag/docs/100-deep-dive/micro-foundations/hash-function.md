@@ -1,5 +1,5 @@
 # Hash Function (해시 함수)
-> FinTech 결제 시스템 SRE 관점 Micro Foundations
+## FinTech 결제 시스템 SRE 관점 Micro Foundations
 
 > 정독: 0회
 
