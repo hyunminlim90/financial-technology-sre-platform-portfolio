@@ -61,7 +61,12 @@ GPU 내부에도 대량의 ALU 존재
  → 행렬 연산 수행 → Fraud Detection Inference
 ```
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Hash Function (해시 함수) [[M]](../../100-deep-dive/micro-foundations/hash-function.md)
+
+</details></br>
 
 ## 3. 어떤 자원에 가장 영향이 큰가
 
