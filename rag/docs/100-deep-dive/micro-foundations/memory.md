@@ -13,7 +13,12 @@
 
 즉 메모리는 **연산 장치(CPU/GPU)가 작업하기 위한 데이터 보관 공간**이다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
