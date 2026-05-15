@@ -22,7 +22,12 @@ Input → Processing → Output → Feedback
 결제 요청 → 승인/검증 처리 → 결제 결과 → 로그/모니터링/재시도
 ```
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Hardware(하드웨어) [[M]](../../100-deep-dive/micro-foundations/hardware.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
