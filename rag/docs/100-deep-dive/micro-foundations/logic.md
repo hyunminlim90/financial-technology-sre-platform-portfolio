@@ -25,7 +25,12 @@ THEN approve_payment
 
 컴퓨터 시스템 대부분은 **산술 연산 + 논리 연산 + 조건 분기** 조합으로 로직을 구성한다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
