@@ -30,7 +30,12 @@
 - MD5 *(보안용 비권장)*
 - SHA-1 *(보안용 비권장)*
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+단방향 함수(One-way Function) [[M]](../../100-deep-dive/micro-foundations/one-way-function.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
