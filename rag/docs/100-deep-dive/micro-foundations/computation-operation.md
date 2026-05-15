@@ -26,7 +26,7 @@
 <details>
 <summary>Deep Dive</summary></br>
 
-Input Data(입력 데이터) [[M]](../../100-deep-dive/micro-foundations/input-data.md) [B]  
+Input Data(입력 데이터) [[B]](../../100-deep-dive/break-foundations/input-data.md)  
 Algorithm(알고리즘) [[M]](../../100-deep-dive/micro-foundations/algorithm.md)
 
 </details></br>
