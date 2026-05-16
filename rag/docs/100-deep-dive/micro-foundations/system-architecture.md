@@ -28,7 +28,17 @@
 
 > **핵심:** 시스템 아키텍처는 **시스템의 생존 방식 자체**를 설계한다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+System Component(시스템 컴포넌트) [[M]](../../100-deep-dive/micro-foundations/system-component.md)  
+Deployment Topology(배치 토폴로지) [[M]](../../100-deep-dive/micro-foundations/deployment-topology.md)  
+Connector(커넥터) [[M]](../../100-deep-dive/micro-foundations/connector.md)  
+Constraints(제약 조건) [[M]](../../100-deep-dive/micro-foundations/constraints.md)  
+Interaction Pattern [[M]](../../100-deep-dive/micro-foundations/interaction-pattern.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
