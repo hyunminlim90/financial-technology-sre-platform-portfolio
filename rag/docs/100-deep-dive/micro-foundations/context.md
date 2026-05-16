@@ -43,7 +43,13 @@ requestId = abc123
 
 > **Context는 시스템의 "현재 실행 배경"이다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Task(작업) [[M]](../../100-deep-dive/micro-foundations/task.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
