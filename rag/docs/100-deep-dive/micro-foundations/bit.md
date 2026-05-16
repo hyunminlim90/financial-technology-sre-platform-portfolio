@@ -22,7 +22,8 @@
 <summary>Deep Dive</summary></br>
 
 연산(Operation/Computation) [[M]](../../100-deep-dive/micro-foundations/computation-operation.md)  
-메모리(Memory) [[M]](../../100-deep-dive/micro-foundations/memory.md)
+메모리(Memory) [[M]](../../100-deep-dive/micro-foundations/memory.md)  
+네트워크(Network) [[M]](../../100-deep-dive/micro-foundations/network.md)
 
 </details></br>
 
