@@ -26,7 +26,14 @@ Constraints(제약 조건)는:
 
 > **Constraints는 시스템 붕괴를 막는 보호 경계이다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+Stability(안정성) [[M]](../../100-deep-dive/micro-foundations/stability.md)  
+Integrity(무결성) [[M]](../../100-deep-dive/micro-foundations/integrity.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
