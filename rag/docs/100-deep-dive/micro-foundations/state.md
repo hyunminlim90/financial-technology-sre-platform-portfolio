@@ -21,7 +21,15 @@ State(상태)는:
 
 > **State는 시스템의 "현재 기억"이다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+Memory(기억) [[M]](../../100-deep-dive/micro-foundations/memory.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Context(컨텍스트) [[M]](../../100-deep-dive/micro-foundations/context.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
