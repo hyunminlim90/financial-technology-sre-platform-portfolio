@@ -21,7 +21,12 @@
 
 > **핵심:** Instruction Cycle은 **컴퓨터가 실제로 움직이는 최하단 실행 메커니즘**이다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
