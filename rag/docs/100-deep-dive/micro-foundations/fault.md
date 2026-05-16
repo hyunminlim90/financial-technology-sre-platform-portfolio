@@ -24,7 +24,16 @@ Fault(결함)는:
 
 > **Fault는 시스템 내부에 잠복한 문제의 씨앗이다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+Design Fault(설계 결함) [[M]](../../100-deep-dive/micro-foundations/design-fault.md)  
+Implementation Fault(구현 결함) [[M]](../../100-deep-dive/micro-foundations/implementation-fault.md)  
+Physical Fault(물리적 결함) [[M]](../../100-deep-dive/micro-foundations/physical-fault.md)  
+State(상태) [[M]](../../100-deep-dive/micro-foundations/state.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
