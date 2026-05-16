@@ -17,6 +17,7 @@
 <summary>Deep Dive</summary></br>
 
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
 
 </details></br>
 
