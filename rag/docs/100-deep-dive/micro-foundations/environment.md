@@ -31,7 +31,16 @@ Environment(환경)은:
 
 같은 것들이 모두 포함된다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Task(작업) [[M]](../../100-deep-dive/micro-foundations/task.md)  
+Physical(물리) [[M]](../../100-deep-dive/micro-foundations/physical.md)  
+Virtual(가상) [[M]](../../100-deep-dive/micro-foundations/virtual.md)  
+Constraints(제약 조건) [[M]](../../100-deep-dive/micro-foundations/constraints.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
