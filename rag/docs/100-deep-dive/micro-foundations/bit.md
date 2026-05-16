@@ -76,6 +76,7 @@
 System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
 Register(레지스터) [[M]](../../100-deep-dive/micro-foundations/register.md)  
 ALU(Arithmetic Logic Unit) [[M]](../../100-deep-dive/micro-foundations/arithmetic-logic-unit.md)  
+Instruction Cycle(명령어 사이클) [[M]](../../100-deep-dive/micro-foundations/instruction-cycle.md)
 
 </details></br>
 
