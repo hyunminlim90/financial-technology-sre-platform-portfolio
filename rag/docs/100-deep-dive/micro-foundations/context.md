@@ -49,6 +49,7 @@ requestId = abc123
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 Task(작업) [[M]](../../100-deep-dive/micro-foundations/task.md)  
 Environment(환경) [[M]](../../100-deep-dive/micro-foundations/environment.md)  
+Condition(조건) [[M]](../../100-deep-dive/micro-foundations/condition.md)  
 
 </details></br>
 
