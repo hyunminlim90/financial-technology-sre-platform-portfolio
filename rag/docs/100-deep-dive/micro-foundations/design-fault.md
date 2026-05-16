@@ -36,6 +36,8 @@ System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)
 System Architecture(시스템 구조) [[M]](../../100-deep-dive/micro-foundations/system-architecture.md)  
 Data Flow(데이터 흐름) [[M]](../../100-deep-dive/micro-foundations/data-flow.md)  
 Constraints(제약 조건) [[M]](../../100-deep-dive/micro-foundations/constraints.md)  
+Communication Mechanism(통신 메커니즘) [[M]](../../100-deep-dive/micro-foundations/communication-mechanism.md)  
+Interaction Fault(인터랙션 결함) [[M]](../../100-deep-dive/micro-foundations/interaction-fault.md)
 
 </details></br>
 
