@@ -24,7 +24,8 @@
 <details>
 <summary>Deep Dive</summary></br>
 
-Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)
+Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
+Instruction Fetch(명령어 인출) [[M]](../../100-deep-dive/micro-foundations/instruction-fetch.md)  
 
 </details></br>
 
