@@ -30,7 +30,16 @@ Stability(안정성)는:
 
 > **Stability는 시스템이 스스로 붕괴를 억제하는 능력이다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+Fault(결함) [[M]](../../100-deep-dive/micro-foundations/fault.md)  
+Load(부하) [[M]](../../100-deep-dive/micro-foundations/load.md)  
+Error(오류) [[M]](../../100-deep-dive/micro-foundations/error.md)  
+Spike(충격) [[M]](../../100-deep-dive/micro-foundations/spike.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
