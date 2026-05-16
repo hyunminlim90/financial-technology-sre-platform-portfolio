@@ -24,7 +24,12 @@ Communication(통신)은:
 
 > **Communication은 "시스템 간 의미 전달 행위"이다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+상태(State) [[M]](../../100-deep-dive/micro-foundations/state.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
