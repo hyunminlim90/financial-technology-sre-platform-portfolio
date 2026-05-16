@@ -27,6 +27,8 @@ Communication(통신)은:
 <details>
 <summary>Deep Dive</summary></br>
 
+시스템(System) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+데이터(Data) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 상태(State) [[M]](../../100-deep-dive/micro-foundations/state.md)  
 
 </details></br>
