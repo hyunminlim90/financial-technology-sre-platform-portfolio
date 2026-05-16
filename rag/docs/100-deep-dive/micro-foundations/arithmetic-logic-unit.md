@@ -5,7 +5,7 @@
 
 ## 1. 이 기술이 무엇인가
 
-**ALU(Arithmetic Logic Unit)** 는 CPU 내부에서 실제 산술 계산과 논리 판단을 수행하는 **실행 회로**이다.
+> **ALU(Arithmetic Logic Unit)** 는 CPU 내부에서 실제 산술 계산과 논리 판단을 수행하는 **실행 회로**이다.
 
 ```
 CPU가 "무엇을 할지" 결정한다면,
