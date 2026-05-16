@@ -28,7 +28,13 @@ Fetch 단계에서는 명령어를 가져오기만 했다. 아직 CPU는 다음�
 
 > **핵심:** Decode는 **추상적인 기계어 비트를 실제 CPU 제어 행동으로 번역하는 단계**다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
+Control Signal(제어 신호) [[M]](../../100-deep-dive/micro-foundations/control-signal.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
