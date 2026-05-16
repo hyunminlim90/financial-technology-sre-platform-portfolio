@@ -23,7 +23,8 @@
 
 연산(Operation/Computation) [[M]](../../100-deep-dive/micro-foundations/computation-operation.md)  
 메모리(Memory) [[M]](../../100-deep-dive/micro-foundations/memory.md)  
-네트워크(Network) [[M]](../../100-deep-dive/micro-foundations/network.md)
+네트워크(Network) [[M]](../../100-deep-dive/micro-foundations/network.md)  
+디스크(Secondary Storage) [[M]](../../100-deep-dive/micro-foundations/secondary-storage.md)
 
 </details></br>
 
