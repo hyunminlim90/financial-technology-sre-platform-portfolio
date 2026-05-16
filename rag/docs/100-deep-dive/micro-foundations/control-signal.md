@@ -19,7 +19,12 @@ Instruction Decode 단계에서 생성되며, **CPU 내부 데이터 흐름과 �
 
 > **핵심:** Control Signal은 **CPU 내부 트랜지스터와 데이터 경로를 실제로 작동시키는 하드웨어 지휘 체계**다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data Path(데이터 경로) [[M]](../../100-deep-dive/micro-foundations/data-path.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
