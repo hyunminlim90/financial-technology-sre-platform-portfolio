@@ -18,6 +18,10 @@
 
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
+Data Retention(데이터 보존) [[M]](../../100-deep-dive/micro-foundations/data-retention.md)  
+Data Fetch(데이터 페칭) [[M]](../../100-deep-dive/micro-foundations/data-fetch.md)  
+Data Update(데이터 갱신) [[M]](../../100-deep-dive/micro-foundations/data-update.md)  
+Data Transmission(데이터 전송) [[M]](../../100-deep-dive/micro-foundations/data-transmission.md)  
 
 </details></br>
 
