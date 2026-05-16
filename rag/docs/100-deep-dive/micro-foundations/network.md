@@ -23,7 +23,14 @@
 
 > **네트워크 = "시스템 사이의 데이터 이동 공간"**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Communication(통신) [[M]](../../100-deep-dive/micro-foundations/communication.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
