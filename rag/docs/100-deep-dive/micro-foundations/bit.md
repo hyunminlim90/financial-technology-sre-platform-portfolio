@@ -73,7 +73,9 @@
 <details>
 <summary>Deep Dive</summary></br>
 
-Register(레지스터) [[M]](../../100-deep-dive/micro-foundations/register.md)
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+Register(레지스터) [[M]](../../100-deep-dive/micro-foundations/register.md)  
+ALU(Arithmetic Logic Unit) [[M]](../../100-deep-dive/micro-foundations/arithmetic-logic-unit.md)  
 
 </details></br>
 
