@@ -29,7 +29,15 @@ Design Fault(설계 결함)는:
 
 > **Bug는 코드 한 줄 문제일 수 있지만, Design Fault는 시스템 뼈대 자체의 문제이다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+System Architecture(시스템 구조) [[M]](../../100-deep-dive/micro-foundations/system-architecture.md)  
+Data Flow(데이터 흐름) [[M]](../../100-deep-dive/micro-foundations/data-flow.md)  
+Constraints(제약 조건) [[M]](../../100-deep-dive/micro-foundations/constraints.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
