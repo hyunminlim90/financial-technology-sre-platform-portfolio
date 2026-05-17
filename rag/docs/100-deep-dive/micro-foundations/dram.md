@@ -30,7 +30,8 @@ Computer(컴퓨터) [[M]](../../100-deep-dive/micro-foundations/computer.md)
 System(시스템) [[M]](../../100-deep-dive/micro-foundations/)  
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 Computer Program(컴퓨터 프로그램) [[M]](../../100-deep-dive/micro-foundations/computer-program.md)  
-
+Process Context(프로세스 컨텍스트) [[M]](../../100-deep-dive/micro-foundations/process-context.md)  
+Main Memory(주기억장치) [[M]](../../100-deep-dive/micro-foundations/main-memory.md)
 
 </details></br>
 
