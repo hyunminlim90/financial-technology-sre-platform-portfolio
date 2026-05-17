@@ -28,6 +28,8 @@ Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.m
 Instruction Fetch(명령어 인출) [[M]](../../100-deep-dive/micro-foundations/instruction-fetch.md)  
 Instruction Decode(명령어 해독) [[M]](../../100-deep-dive/micro-foundations/instruction-decode.md)  
 Execute(실행) [[M]](../../100-deep-dive/micro-foundations/execute.md)  
+Write Back(라이트백) [[M]](../../100-deep-dive/micro-foundations/write-back.md)  
+Store(메모리 저장) [[M]](../../100-deep-dive/micro-foundations/store.md)
 
 </details></br>
 
