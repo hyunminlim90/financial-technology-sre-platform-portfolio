@@ -22,7 +22,7 @@ CPU Flags는:
 <summary>Deep Dive</summary></br>
 
 Condition Code(조건 코드) [[M]](../../100-deep-dive/micro-foundations/condition-code.md)  
-
+Bit Marking(비트 마킹) [[M]](../../100-deep-dive/micro-foundations/bit-marking.md)
 
 </details></br>
 
