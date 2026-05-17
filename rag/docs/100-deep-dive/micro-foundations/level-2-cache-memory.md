@@ -14,6 +14,8 @@ L2 캐시는:
 <summary>Deep Dive</summary></br>
 
 Memory Hierarchy(메모리 계층 구조) [[M]](../../100-deep-dive/micro-foundations/memory-hierarchy.md)  
+Level 1 Cache Memory(L1 Cache) [[M]](../../100-deep-dive/micro-foundations/level-1-cache-memory.md)  
+Dynamic Random Access Memory(DRAM) [[M]](../../100-deep-dive/micro-foundations/dram.md)  
 
 </details></br>
 
