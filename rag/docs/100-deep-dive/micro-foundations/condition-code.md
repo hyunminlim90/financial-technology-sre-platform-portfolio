@@ -20,7 +20,12 @@ Condition Code는:
 
 > **핵심:** Condition Code는 직전 연산 결과의 상태를 의미하는 **하드웨어 판별 신호**이다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Status Signals(상태 신호) [[M]](../../100-deep-dive/micro-foundations/status-signals.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
