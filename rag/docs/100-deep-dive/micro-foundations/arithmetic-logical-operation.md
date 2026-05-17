@@ -5,7 +5,7 @@
 
 ## 1. 이 기술이 무엇인가
 
-**산술 연산(Arithmetic Operation)** 과 **논리 연산(Logical Operation)** 은 CPU / GPU 내부 연산 장치(ALU)가 수행하는 **가장 기본적인 실행 단위**이다.
+> **산술 연산(Arithmetic Operation)** 과 **논리 연산(Logical Operation)** 은 CPU / GPU 내부 연산 장치(ALU)가 수행하는 **가장 기본적인 실행 단위**이다.
 
 ### 산술 연산 (Arithmetic Operation)
 

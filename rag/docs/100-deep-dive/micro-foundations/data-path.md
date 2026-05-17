@@ -21,7 +21,13 @@ CPU 내부에서 데이터를 읽고 → ALU로 보내고 → 연산하고 → �
 
 > **핵심:** Data Path는 **CPU 내부 비트 데이터가 실제로 흐르는 물리적 도로망**이다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data Transfer(데이터 전송) [[M]](../../100-deep-dive/micro-foundations/data-transfer.md)  
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
