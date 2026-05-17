@@ -26,7 +26,15 @@ Storage
 | **Program** | 정적인 파일 — 아직 실행되지 않은 명령어 묶음 |
 | **Process** | 실행 중인 프로그램 — OS가 메모리에 올려 실행 중인 상태 |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Computer(컴퓨터) [[M]](../../100-deep-dive/micro-foundations/computer.md)  
+Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
