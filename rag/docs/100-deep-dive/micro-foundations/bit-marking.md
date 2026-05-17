@@ -23,6 +23,8 @@ Bit Marking은:
 <summary>Deep Dive</summary></br>
 
 Bit Slot(비트 슬롯) [[M]](../../100-deep-dive/micro-foundations/bit-slot.md)  
+Set(세트) [[M]](../../100-deep-dive/micro-foundations/set.md)  
+Clear(클리어) [[M]](../../100-deep-dive/micro-foundations/clear.md)
 
 </details></br>
 
