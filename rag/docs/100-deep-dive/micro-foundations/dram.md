@@ -26,7 +26,11 @@ DRAM은 물리적으로 **1 Transistor + 1 Capacitor (1T1C Cell)** 구조를 기
 <details>
 <summary>Deep Dive</summary></br>
 
-System(시스템) [[M]](../../100-deep-dive/micro-foundations/)
+Computer(컴퓨터) [[M]](../../100-deep-dive/micro-foundations/computer.md)  
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Computer Program(컴퓨터 프로그램) [[M]](../../100-deep-dive/micro-foundations/computer-program.md)  
+
 
 </details></br>
 
