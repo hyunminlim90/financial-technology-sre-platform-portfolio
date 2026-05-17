@@ -54,6 +54,13 @@ CPU Flags [[M]](../../100-deep-dive/micro-foundations/cpu-flags.md)
 - Cache Line
 - Page
 
+<details>
+<summary>Deep Dive</summary></br>
+
+DRAM Memory Cell(DRAM 메모리 셀) [[M]](../../100-deep-dive/micro-foundations/dram-memory-cell.md)  
+
+</details></br>
+
 ### Network
 - Ethernet Frame
 - TCP/IP Packet
