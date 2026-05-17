@@ -38,6 +38,17 @@
 - 명령어 실행
 - CPU Flags
 
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
+Register(레지스터) [[M]](../../100-deep-dive/micro-foundations/register.md)  
+ALU(Arithmetic Logic Unit) [[M]](../../100-deep-dive/micro-foundations/arithmetic-logic-unit.md)  
+Instruction Cycle(명령어 사이클) [[M]](../../100-deep-dive/micro-foundations/instruction-cycle.md)  
+CPU Flags [[M]](../../100-deep-dive/micro-foundations/cpu-flags.md)
+
+</details></br>
+
 ### Memory
 - DRAM Cell
 - Cache Line
@@ -69,17 +80,6 @@
 - cgroup bitmap
 - CPU affinity
 - NUMA mask
-
-<details>
-<summary>Deep Dive</summary></br>
-
-System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
-Register(레지스터) [[M]](../../100-deep-dive/micro-foundations/register.md)  
-ALU(Arithmetic Logic Unit) [[M]](../../100-deep-dive/micro-foundations/arithmetic-logic-unit.md)  
-Instruction Cycle(명령어 사이클) [[M]](../../100-deep-dive/micro-foundations/instruction-cycle.md)  
-CPU Flags [[M]](../../100-deep-dive/micro-foundations/cpu-flags.md)
-
-</details></br>
 
 ## 3. 어떤 자원(CPU/Memory/Network/Disk)에 가장 영향이 큰가
 
