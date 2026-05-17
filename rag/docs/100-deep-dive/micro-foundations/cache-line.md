@@ -15,7 +15,12 @@
 
 > **현대 CPU 대부분: Cache Line Size = 64 Bytes**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Cache Memory(캐시 메모리) [[M]](../../100-deep-dive/micro-foundations/cache-memory.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
