@@ -14,7 +14,14 @@
 
 > **Cache Memory = CPU 앞단의 초고속 임시 보관소**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
+Dynamic Random Access Memory(DRAM) [[M]](../../100-deep-dive/micro-foundations/dram.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
