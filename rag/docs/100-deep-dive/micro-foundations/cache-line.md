@@ -22,6 +22,12 @@ Cache Memory(캐시 메모리) [[M]](../../100-deep-dive/micro-foundations/cache
 Level 1 Cache Memory(L1 Cache) [[M]](../../100-deep-dive/micro-foundations/level-1-cache-memory.md)  
 Level 2 Cache Memory(L2 Cache) [[M]](../../100-deep-dive/micro-foundations/level-2-cache-memory.md)  
 Level 3 Cache Memory(L3 Cache) [[M]](../../100-deep-dive/micro-foundations/level-3-cache-memory.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Cache Transfer(캐시 전송) [[M]](../../100-deep-dive/micro-foundations/cache-transfer.md)  
+Cache Line Fill(캐시 라인 채우기) [[M]](../../100-deep-dive/micro-foundations/cache-line-fill.md)  
+Cache Eviction(캐시 이출) [[M]](../../100-deep-dive/micro-foundations/cache-eviction.md)  
+Cache Flush(캐시 플러시) [[M]](../../100-deep-dive/micro-foundations/cache-flush.md)  
+Write Back(라이트백) [[M]](../../100-deep-dive/micro-foundations/write-back.md)  
 
 </details></br>
 
