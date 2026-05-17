@@ -19,7 +19,8 @@
 <summary>Deep Dive</summary></br>
 
 Input Data(입력 데이터) [[M]](../../100-deep-dive/micro-foundations/input-data.md)  
-
+Program(프로그램) [[M]](../../100-deep-dive/micro-foundations/program.md)  
+Control Flow(제어 흐름) [[M]](../../100-deep-dive/micro-foundations/control-flow.md)  
 
 </details></br>
 
