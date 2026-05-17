@@ -23,7 +23,12 @@ DRAM은 물리적으로 **1 Transistor + 1 Capacitor (1T1C Cell)** 구조를 기
 
 > 전하는 시간이 지나면 누설되므로, DRAM Controller가 지속적으로 **Refresh 사이클**을 수행해야 데이터가 유지됩니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+System(시스템) [[M]](../../100-deep-dive/micro-foundations/)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
