@@ -21,6 +21,7 @@
 Input Data(입력 데이터) [[M]](../../100-deep-dive/micro-foundations/input-data.md)  
 Program(프로그램) [[M]](../../100-deep-dive/micro-foundations/program.md)  
 Control Flow(제어 흐름) [[M]](../../100-deep-dive/micro-foundations/control-flow.md)  
+Data Processing(데이터 처리) [[M]](../../100-deep-dive/micro-foundations/data-processing.md)  
 
 </details></br>
 
