@@ -32,7 +32,7 @@ Storage
 Computer(컴퓨터) [[M]](../../100-deep-dive/micro-foundations/computer.md)  
 Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
-
+Executable File(실행 파일) [[M]](../../100-deep-dive/micro-foundations/executable-file.md)
 
 </details></br>
 
