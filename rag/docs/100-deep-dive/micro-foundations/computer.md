@@ -1,6 +1,8 @@
 # Computer
 ## 1. 컴퓨터란 무엇인가
 
+> 정독: 0회
+
 컴퓨터(Computer)는:
 
 > 입력(Input)된 데이터를 프로그램 제어 흐름에 따라 연산·처리하고, 결과를 저장(Store) 및 출력(Output)하는 **디지털 전자 제어 시스템**
@@ -22,6 +24,8 @@ Input Data(입력 데이터) [[M]](../../100-deep-dive/micro-foundations/input-d
 Program(프로그램) [[M]](../../100-deep-dive/micro-foundations/program.md)  
 Control Flow(제어 흐름) [[M]](../../100-deep-dive/micro-foundations/control-flow.md)  
 Data Processing(데이터 처리) [[M]](../../100-deep-dive/micro-foundations/data-processing.md)  
+Data Storage(데이터 저장) [[M]](../../100-deep-dive/micro-foundations/data-storage.md)  
+Data Output(데이터 출력) [[M]](../../100-deep-dive/micro-foundations/data-output.md)
 
 </details></br>
 
