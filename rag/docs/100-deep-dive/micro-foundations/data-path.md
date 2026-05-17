@@ -24,8 +24,10 @@ CPU 내부에서 데이터를 읽고 → ALU로 보내고 → 연산하고 → �
 <details>
 <summary>Deep Dive</summary></br>
 
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 Data Transfer(데이터 전송) [[M]](../../100-deep-dive/micro-foundations/data-transfer.md)  
-
+Arithmetic Logical Operation(산술논리연산) [[M]](../../100-deep-dive/micro-foundations/arithmetic-logical-operation.md)  
+Register Storage(레지스터 저장) [[M]](../../100-deep-dive/micro-foundations/register-storage.md)
 
 </details></br>
 
