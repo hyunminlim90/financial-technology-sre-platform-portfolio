@@ -16,7 +16,13 @@ CPU가 연산할 때 필요한 명령어와 데이터를:
 > **쉽게 말하면:**
 > "CPU가 지금 당장 사용할 데이터를 가장 가까운 곳에 미리 두는 초고속 메모리"
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Processing Core(프로세싱 코어) [[M]](../../100-deep-dive/micro-foundations/processing-core.md)  
+Cache Memory(캐시 메모리) [[M]](../../100-deep-dive/micro-foundations/cache-memory.md)  
+
+</details></br>
 
 ## 1. 이 기술이 무엇인가
 
