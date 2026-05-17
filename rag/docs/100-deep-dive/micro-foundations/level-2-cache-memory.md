@@ -10,7 +10,12 @@ L2 캐시는:
 
 "L1 캐시에 없는 데이터를 DRAM까지 내려가기 전에 한 번 더 찾아보는 고속 중간 창고"
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Memory Hierarchy(메모리 계층 구조) [[M]](../../100-deep-dive/micro-foundations/memory-hierarchy.md)  
+
+</details></br>
 
 ## 1. 이 기술이 무엇인가
 
