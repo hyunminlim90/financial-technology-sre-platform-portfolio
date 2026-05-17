@@ -5,7 +5,9 @@
 
 ## 1. 이 기술이 무엇인가
 
-> Instruction Cycle Loop는 **CPU가 명령어를 계속 읽고 실행하는 하드웨어 영구 실행 루프**
+Instruction Cycle Loop는:
+
+> **CPU가 명령어를 계속 읽고 실행하는 하드웨어 영구 실행 루프**
 
 즉 CPU는 전원이 켜진 순간부터 다음 과정을 끝없이 반복한다:
 
