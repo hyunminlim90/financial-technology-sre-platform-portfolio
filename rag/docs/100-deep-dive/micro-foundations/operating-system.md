@@ -19,6 +19,7 @@ Application Software(애플리케이션 소프트웨어) [[M]](../../100-deep-di
 End User(엔드 유저) [[M]](../../100-deep-dive/micro-foundations/end-user.md)  
 Runtime Environment(런타임 환경) [[M]](../../100-deep-dive/micro-foundations/runtime-environment.md)  
 User Space(유저 공간) [[M]](../../100-deep-dive/micro-foundations/user-space.md)  
+System Software(시스템 소프트웨어) [[M]](../../100-deep-dive/micro-foundations/system-software.md)  
 
 </details></br>
 
