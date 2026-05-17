@@ -15,7 +15,13 @@
 
 > 컴퓨터의 본질은 **"명령어와 데이터를 읽고 계속 상태를 변경하는 기계"** 에 가깝습니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Input Data(입력 데이터) [[M]](../../100-deep-dive/micro-foundations/input-data.md)  
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
