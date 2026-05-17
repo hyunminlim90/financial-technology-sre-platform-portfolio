@@ -32,7 +32,15 @@ Process
 | **Program** | 실행 전 정적 계획 |
 | **Process** | 실행 중인 동적 상태 |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
+Constraints(제약 조건) [[M]](../../100-deep-dive/micro-foundations/constraints.md)  
+Control Flow(제어 흐름) [[M]](../../100-deep-dive/micro-foundations/control-flow.md)  
+Executable File(실행 파일) [[M]](../../100-deep-dive/micro-foundations/executable-file.md)
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
