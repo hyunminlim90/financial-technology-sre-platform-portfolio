@@ -28,6 +28,7 @@ Cache Line Fill(캐시 라인 채우기) [[M]](../../100-deep-dive/micro-foundat
 Cache Eviction(캐시 이출) [[M]](../../100-deep-dive/micro-foundations/cache-eviction.md)  
 Cache Flush(캐시 플러시) [[M]](../../100-deep-dive/micro-foundations/cache-flush.md)  
 Write Back(라이트백) [[M]](../../100-deep-dive/micro-foundations/write-back.md)  
+Hardware(하드웨어) [[M]](../../100-deep-dive/micro-foundations/hardware.md)  
 
 </details></br>
 
