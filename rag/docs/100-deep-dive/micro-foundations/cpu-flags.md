@@ -18,7 +18,13 @@ CPU Flags는:
 
 > **핵심:** CPU Flags는 "방금 연산 결과가 어땠는가"를 기억하는 **하드웨어 상태 원장**이다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Condition Code(조건 코드) [[M]](../../100-deep-dive/micro-foundations/condition-code.md)  
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
