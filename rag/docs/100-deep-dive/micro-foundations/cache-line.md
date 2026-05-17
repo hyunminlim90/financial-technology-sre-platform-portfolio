@@ -19,6 +19,9 @@
 <summary>Deep Dive</summary></br>
 
 Cache Memory(캐시 메모리) [[M]](../../100-deep-dive/micro-foundations/cache-memory.md)  
+Level 1 Cache Memory(L1 Cache) [[M]](../../100-deep-dive/micro-foundations/level-1-cache-memory.md)  
+Level 2 Cache Memory(L2 Cache) [[M]](../../100-deep-dive/micro-foundations/level-2-cache-memory.md)  
+Level 3 Cache Memory(L3 Cache) [[M]](../../100-deep-dive/micro-foundations/level-3-cache-memory.md)  
 
 </details></br>
 
