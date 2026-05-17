@@ -23,7 +23,7 @@ CPU Flags는:
 
 Condition Code(조건 코드) [[M]](../../100-deep-dive/micro-foundations/condition-code.md)  
 Bit Marking(비트 마킹) [[M]](../../100-deep-dive/micro-foundations/bit-marking.md)  
-Status Register(상태 레지스터) [[M]](../../100-deep-dive/micro-foundations/status-register.md)
+=Status Register(상태 레지스터) [[M]](../../100-deep-dive/micro-foundations/status-register.md)
 
 </details></br>
 
