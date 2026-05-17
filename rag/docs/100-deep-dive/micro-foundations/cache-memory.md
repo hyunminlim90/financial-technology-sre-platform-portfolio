@@ -20,6 +20,7 @@
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
 Dynamic Random Access Memory(DRAM) [[M]](../../100-deep-dive/micro-foundations/dram.md)  
+Static Random Access Memory(SRAM) [[M]](../../100-deep-dive/micro-foundations/sram.md)
 
 </details></br>
 
