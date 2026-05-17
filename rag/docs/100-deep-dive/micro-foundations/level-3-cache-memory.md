@@ -10,7 +10,12 @@ L3 캐시는:
 
 "DRAM까지 내려가기 전에 CPU 전체가 마지막으로 확인하는 거대한 공동 캐시 창고"
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Processing Core(프로세싱 코어) [[M]](../../100-deep-dive/micro-foundations/processing-core.md)  
+
+</details></br>
 
 ## 1. 이 기술이 무엇인가
 
