@@ -27,6 +27,7 @@
 Instruction(명령어) [[M]](../../100-deep-dive/micro-foundations/instruction.md)  
 Instruction Fetch(명령어 인출) [[M]](../../100-deep-dive/micro-foundations/instruction-fetch.md)  
 Instruction Decode(명령어 해독) [[M]](../../100-deep-dive/micro-foundations/instruction-decode.md)  
+Execute(실행) [[M]](../../100-deep-dive/micro-foundations/execute.md)  
 
 </details></br>
 
