@@ -9,7 +9,18 @@
 **쉽게 말하면:**
 "CPU, DRAM, SSD, NIC 같은 물리 하드웨어를 실제로 지휘하는 중앙 관리자"
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Computer(컴퓨터) [[M]](../../100-deep-dive/micro-foundations/computer.md)  
+Hardware(하드웨어) [[M]](../../100-deep-dive/micro-foundations/hardware.md)  
+Resource Management(자원 관리) [[M]](../../100-deep-dive/micro-foundations/resource-management.md)  
+Application Software(애플리케이션 소프트웨어) [[M]](../../100-deep-dive/micro-foundations/application-software.md)  
+End User(엔드 유저) [[M]](../../100-deep-dive/micro-foundations/end-user.md)  
+Runtime Environment(런타임 환경) [[M]](../../100-deep-dive/micro-foundations/runtime-environment.md)  
+User Space(유저 공간) [[M]](../../100-deep-dive/micro-foundations/user-space.md)  
+
+</details></br>
 
 ## 1. 이 기술이 무엇인가
 
