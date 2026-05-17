@@ -59,6 +59,7 @@ CPU Flags [[M]](../../100-deep-dive/micro-foundations/cpu-flags.md)
 
 DRAM Memory Cell(DRAM 메모리 셀) [[M]](../../100-deep-dive/micro-foundations/dram-memory-cell.md)  
 Cache Line(캐시 라인) [[M]](../../100-deep-dive/micro-foundations/cache-line.md)  
+Virtual Page(가상 페이지) [[M]](../../100-deep-dive/micro-foundations/virtual-page.md)  
 
 </details></br>
 
