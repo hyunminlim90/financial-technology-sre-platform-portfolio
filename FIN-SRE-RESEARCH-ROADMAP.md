@@ -21,7 +21,7 @@
 → Alert Pipeline
 → AI Agent
 → RAG/docs
-→ Scenario / Runbook / Policy 기반 판단
+→ Scenario / Runbook / Improvements / Preventive Designs / Policy 기반 판단
 → Human Approval
 → 장애 조치 권고 보고서
 → Postmortem 축적
@@ -60,6 +60,8 @@ AI는 판단 보조, 위험 분석, 장애 조치 권고, 근거 제시, rollbac
 - runbook
 - rollback
 - verification
+- improvements
+- preventive-designs
 
 ### 4. RAG/docs 단독 판단 금지
 
@@ -78,6 +80,7 @@ scenario + runbook + policy + postmortem + metrics + evidence
 ```
 Stack Entry
 → Micro Foundations
+→ Core Foundations
 → Concept Graph Expansion
 ```
 
@@ -254,6 +257,63 @@ rag/docs → scenarios → runbooks → postmortems 지식 계층 연구
 
 ---
 
+## 박사 논문 연구 주제 프레이밍
+
+### 구현 vs 연구의 차이
+
+박사학위는 "플랫폼을 만들었다"만으로는 성립하지 않는다. 반드시 다음이 있어야 한다.
+
+```
+새로운 모델
++ 실험
++ 측정 지표
++ 기존 방식 대비 개선 증명
+```
+
+| 단순 구현 | 박사 연구 |
+|----------|----------|
+| 금융권 SRE AI Agent 플랫폼을 만들었다 | 금융권 결제 시스템에서 장애 지식 계층과 Human-in-the-loop AI 판단 구조가 장애 대응 정확도, 대응 시간, 재발 방지에 어떤 효과를 주는지 검증했다 |
+
+---
+
+### 가능성 높은 박사 논문 주제
+
+**방향 1**
+
+```
+금융권 결제 시스템을 위한
+Knowledge-Governed Human-in-the-loop AIOps 플랫폼 연구
+```
+
+**방향 2**
+
+```
+결제 시스템 장애 대응을 위한
+RAG 기반 운영 지식 계층화와 정책 기반 AI 권고 모델
+```
+
+---
+
+### 핵심 연구 질문
+
+**RQ1. 지식 계층의 효과**
+
+> RAG/docs만 사용하는 AI보다 scenarios / runbooks / postmortems 계층을 함께 사용하는 AI가 장애 대응 권고 정확도가 더 높은가?
+
+**RQ2. Policy Guardrail의 효과**
+
+> 장애 조치 권고에 rollback / verification / policy guardrail을 강제하면 위험한 권고 비율이 줄어드는가?
+
+**RQ3. Postmortem 축적의 효과**
+
+> Postmortem 축적이 반복 장애 대응 시간을 단축시키는가?
+
+**RQ4. 금융 안전성 차단 효과**
+
+> 결제 시스템에서 idempotency, duplicate payment, consistency risk를 AI 권고 단계에서 얼마나 효과적으로 차단하는가?
+
+---
+
 ## 학은제 → 석사 → 박사 로드맵
 
 ### 1단계 — 현재
@@ -261,6 +321,7 @@ rag/docs → scenarios → runbooks → postmortems 지식 계층 연구
 최우선: 현재 학습 구조 유지.
 
 - micro-foundations 확장
+- core-foundations 확장
 - concept graph 강화
 - 플랫폼 지속 구축
 - 장애 유형 축적
@@ -315,7 +376,7 @@ Research Engineer    Platform Research       Technical Advisory
 
 ## 최종 결론
 
-현재 방향은 단순 웹개발 포트폴리오가 아니라, **운영 안정성 기반 FinTech AI Ops / SRE 연구 플랫폼** 방향.
+현재 방향은 **운영 안정성 기반 FinTech AI Ops / SRE 연구 플랫폼** 방향.
 
 앞으로 중요한 것은 **새 stack 추가**보다:
 
