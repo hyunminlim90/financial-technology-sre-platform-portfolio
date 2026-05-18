@@ -14,22 +14,12 @@ public class RollbackRequiredPolicyRule implements PolicyRule {
 
 	@Override
 	public Mono<PolicyEvaluationResult> evaluate(ActionCommand command, EvidenceContext evidence) {
-		if (command == null || command.rollback() == null) {
+		if (command == null || !command.hasRollback()) {
 			return Mono.just(PolicyEvaluationResult.deny(List.of(
 					new PolicyViolation(
 							"POLICY_ROLLBACK_REQUIRED",
 							PolicySeverity.BLOCKING,
 							"Rollback 없는 ActionCommand는 허용되지 않습니다."
-					)
-			)));
-		}
-
-		if (command.rollback().description() == null || command.rollback().description().isBlank()) {
-			return Mono.just(PolicyEvaluationResult.deny(List.of(
-					new PolicyViolation(
-							"POLICY_ROLLBACK_DESCRIPTION_REQUIRED",
-							PolicySeverity.BLOCKING,
-							"Rollback 설명이 비어 있습니다."
 					)
 			)));
 		}

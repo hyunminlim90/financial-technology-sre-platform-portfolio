@@ -66,7 +66,7 @@ class RunbookCandidateActionFactoryTest {
 	private RunbookLoader runbookLoader() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
-		return new RunbookLoader(objectMapper);
+		return new RunbookLoader(objectMapper, new RunbookConditionMatcher());
 	}
 
 	private EvidenceContext contextWith(EvidenceSignal... signals) {

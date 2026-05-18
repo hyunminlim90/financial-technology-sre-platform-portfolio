@@ -16,7 +16,7 @@ public class PolicyEngine {
 	private final List<PolicyRule> rules;
 
 	public PolicyEngine(List<PolicyRule> rules) {
-		this.rules = rules;
+		this.rules = rules == null ? List.of() : List.copyOf(rules);
 	}
 
 	public Mono<PolicyEvaluationResult> evaluate(
@@ -24,18 +24,18 @@ public class PolicyEngine {
 			EvidenceContext evidence
 	) {
 		return Flux.fromIterable(rules)
-				.flatMap(rule -> rule.evaluate(command, evidence))
+				.concatMap(rule -> rule.evaluate(command, evidence))
 				.flatMapIterable(PolicyEvaluationResult::violations)
 				.collectList()
 				.map(violations -> {
-					boolean hasBlocking = violations.stream()
+					boolean denied = violations.stream()
 							.anyMatch(violation -> violation.severity() == PolicySeverity.BLOCKING);
 
-					if (hasBlocking) {
+					if (denied) {
 						return PolicyEvaluationResult.deny(violations);
 					}
 
-					return new PolicyEvaluationResult(true, violations);
+					return PolicyEvaluationResult.allow();
 				});
 	}
 }

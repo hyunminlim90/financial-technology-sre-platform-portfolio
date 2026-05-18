@@ -22,6 +22,16 @@ public class PaymentSafetyPolicyRule implements PolicyRule {
 			return Mono.just(PolicyEvaluationResult.allow());
 		}
 
+		if (command.isPaymentDomain()
+				&& command.paymentSafety() != null
+				&& command.paymentSafety().unsafe()) {
+			violations.add(new PolicyViolation(
+					"PAYMENT_SAFETY_POLICY_UNSAFE",
+					PolicySeverity.BLOCKING,
+					"결제 도메인 Action은 idempotency/state transition/duplicate execution safety를 만족해야 합니다."
+			));
+		}
+
 		boolean paymentDomain = "payment".equalsIgnoreCase(command.target().domain())
 				|| "payment-service".equalsIgnoreCase(command.target().service())
 				|| (command.target().service() != null && command.target().service().contains("payment"));
@@ -67,7 +77,7 @@ public class PaymentSafetyPolicyRule implements PolicyRule {
 
 		return Mono.just(hasBlocking
 				? PolicyEvaluationResult.deny(violations)
-				: new PolicyEvaluationResult(true, violations));
+				: new PolicyEvaluationResult(PolicyDecision.ALLOW, violations));
 	}
 
 	private boolean hasPaymentSafetyVerification(ActionCommand command) {

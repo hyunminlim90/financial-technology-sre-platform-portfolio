@@ -1,6 +1,16 @@
 spring:
   application:
     name: agent-server
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration
+      - org.springframework.boot.data.r2dbc.autoconfigure.R2dbcRepositoriesAutoConfiguration
+  profiles:
+    active: local
+  data:
+    r2dbc:
+      repositories:
+        enabled: false
   lifecycle:
     timeout-per-shutdown-phase: 20s
 
@@ -14,6 +24,8 @@ management:
       exposure:
         include: health,info,metrics,prometheus
   endpoint:
+    prometheus:
+      enabled: true
     health:
       probes:
         enabled: true
@@ -32,6 +44,9 @@ management:
     metrics:
       export:
         enabled: true
+  metrics:
+    tags:
+      application: agent-server
 
 logging:
   pattern:
@@ -46,6 +61,20 @@ observability:
     base-url: http://jaeger-query.observability.svc.cluster.local:16686
 
 agent:
+  admin:
+    knowledge:
+      enabled: false
+      allowed-root-paths:
+        - /workspace/fin-tech-sre-platform-portfolio
+        - /opt/fin-sre/portfolio
+  alert:
+    deduplication:
+      enabled: true
+      window: 5m
+    rate-limit:
+      enabled: true
+      window: 1m
+      max-recommendations-per-window: 10
   embedding:
     provider: stub
     base-url: http://localhost:11434
@@ -58,15 +87,25 @@ agent:
     api-key: ${OPENAI_API_KEY:}
     model: gpt-4o-mini
   knowledge:
+    embedding:
+      local:
+        enabled: false
+        base-url: http://localhost:8081
+        model: bge-m3
+        timeout: 2s
+        max-retries: 1
     search:
       client: vector
     vector:
       adapter: qdrant
     qdrant:
+      enabled: false
       base-url: ${QDRANT_BASE_URL:http://qdrant.qdrant.svc.cluster.local:6333}
-      collection: ${QDRANT_COLLECTION:sre-knowledge}
+      collection: ${QDRANT_COLLECTION:fin-sre-knowledge}
       api-key: ${QDRANT_API_KEY:}
+      timeout: ${QDRANT_TIMEOUT:800ms}
       limit: ${QDRANT_SEARCH_LIMIT:10}
+      max-retries: ${QDRANT_MAX_RETRIES:1}
       score-threshold: ${QDRANT_SCORE_THRESHOLD:0.7}
   observability:
     prometheus-base-url: http://localhost:9090
@@ -75,6 +114,70 @@ agent:
   rag:
     top-k: 5
     knowledge-index: sre-knowledge
+  internal:
+    security:
+      enabled: false
+      require-header: true
+      header-name: X-FIN-SRE-INTERNAL
+      header-value:
+      protected-paths:
+        - /internal/admin/
+        - /internal/alerts/
+        - /internal/recommendations/
+        - /internal/incidents/
+        - /internal/execution-plans/
+        - /internal/execution-results/
+        - /internal/verification-results/
+        - /internal/postmortem-drafts/
+        - /internal/learning-candidates/
+        - /internal/knowledge-promotion-plans/
+        - /internal/knowledge-updates/
+        - /internal/governance/
+  governance:
+    detail:
+      resilience:
+        enabled: false
+        fail-open-detail: true
+        partial-response-enabled: true
+        component-query-timeout-ms: 1500
+    timeline:
+      aggregation:
+        mode: RUNTIME_FAN_OUT
+      resilience:
+        enabled: false
+        partial-timeline-enabled: true
+        fail-open-read-only: true
+        component-query-timeout-ms: 1500
+    search:
+      resilience:
+        enabled: false
+        partial-search-enabled: true
+        fail-open-search: true
+        component-query-timeout-ms: 1500
+    query:
+      resilience:
+        enabled: false
+        optimized-query-timeout-ms: 1500
+        fallback-enabled: true
+        fail-open-dashboard: true
+    retention:
+      enabled: false
+      delete-enabled: false
+      hot-retention-days: 90
+      archive-retention-days: 365
   llm:
     model: gpt-5.4-mini
     temperature: 0.2
+---
+spring:
+  config:
+    activate:
+      on-profile: r2dbc
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
+  r2dbc:
+    url: r2dbc:postgresql://postgres:5432/fin_sre
+    username: fin_sre
+    password: ${FIN_SRE_DB_PASSWORD:}

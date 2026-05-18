@@ -21,6 +21,7 @@ import com.fintech.sre.agent.knowledge.rag.KnowledgeSearchClient;
 import com.fintech.sre.agent.knowledge.rag.KnowledgeSearchRequest;
 import com.fintech.sre.agent.model.common.IncidentContext;
 import com.fintech.sre.agent.model.request.IncidentAnalyzeRequest;
+import com.fintech.sre.agent.model.request.IncidentRecommendationRequest;
 import com.fintech.sre.agent.model.response.IncidentRecommendationResponse;
 import com.fintech.sre.agent.observability.ObservabilityQueryService;
 import com.fintech.sre.agent.rag.RagRetrievalService;
@@ -120,7 +121,7 @@ public class IncidentRecommendationService {
 				? null
 				: envelope.input().knowledgeContext().primaryRunbookId();
 
-		return evidenceContextProvider.provide(response.incidentId())
+		return evidenceContextProvider.build(IncidentRecommendationRequest.from(envelope.input().incidentContext()))
 				.flatMapMany(evidenceContext -> Flux.fromIterable(response.recommendedActions())
 						.flatMap(action -> actionLogService.recordRecommendation(
 								response.incidentId(),

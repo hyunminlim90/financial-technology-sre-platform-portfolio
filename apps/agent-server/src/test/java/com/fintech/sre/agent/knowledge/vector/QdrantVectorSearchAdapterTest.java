@@ -19,7 +19,7 @@ import com.fintech.sre.agent.embedding.EmbeddingRequest;
 import com.fintech.sre.agent.embedding.EmbeddingResponse;
 import com.fintech.sre.agent.knowledge.rag.KnowledgeLayer;
 import com.fintech.sre.agent.knowledge.vector.qdrant.QdrantPayloadMapper;
-import com.fintech.sre.agent.knowledge.vector.qdrant.QdrantProperties;
+import com.fintech.sre.agent.knowledge.vector.qdrant.VectorQdrantProperties;
 
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -82,7 +82,7 @@ class QdrantVectorSearchAdapterTest {
 
 		QdrantVectorSearchAdapter adapter = new QdrantVectorSearchAdapter(
 				webClient,
-				new QdrantProperties("http://localhost:6333", "sre-knowledge", "secret", 10, 0.7),
+				new VectorQdrantProperties("http://localhost:6333", "sre-knowledge", "secret", 10, 0.7),
 				new QdrantPayloadMapper(),
 				embeddingPort
 		);

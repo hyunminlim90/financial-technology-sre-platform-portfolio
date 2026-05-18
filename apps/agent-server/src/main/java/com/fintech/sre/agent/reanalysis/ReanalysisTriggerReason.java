@@ -1,0 +1,18 @@
+package com.fintech.sre.agent.reanalysis;
+
+public enum ReanalysisTriggerReason {
+
+	NOT_VERIFIED,
+
+	REGRESSION_DETECTED,
+
+	INCIDENT_REOPENED,
+
+	INCIDENT_ESCALATED,
+
+	NEW_ALERT_ATTACHED,
+
+	NEW_SYMPTOM_DETECTED,
+
+	STABILIZATION_FAILED
+}

@@ -2,120 +2,176 @@ package com.fintech.sre.agent.decision;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fintech.sre.agent.action.ActionCommand;
+import com.fintech.sre.agent.action.ActionTarget;
 import com.fintech.sre.agent.action.ActionType;
-import com.fintech.sre.agent.evidence.Evidence;
-import com.fintech.sre.agent.evidence.EvidenceConfidence;
+import com.fintech.sre.agent.action.RollbackCommand;
+import com.fintech.sre.agent.action.VerificationCommand;
+import com.fintech.sre.agent.decision.generator.CandidateGenerationSource;
+import com.fintech.sre.agent.decision.generator.CandidateGenerator;
 import com.fintech.sre.agent.evidence.EvidenceContext;
-import com.fintech.sre.agent.evidence.EvidenceLayer;
-import com.fintech.sre.agent.evidence.EvidenceQueryStatus;
-import com.fintech.sre.agent.evidence.EvidenceSeverity;
 import com.fintech.sre.agent.evidence.EvidenceSignal;
-import com.fintech.sre.agent.evidence.EvidenceSource;
-import com.fintech.sre.agent.evidence.EvidenceStatus;
-import com.fintech.sre.agent.knowledge.rag.KnowledgeContext;
-import com.fintech.sre.agent.knowledge.rag.KnowledgeDocument;
-import com.fintech.sre.agent.knowledge.rag.KnowledgeLayer;
-import com.fintech.sre.agent.model.common.IncidentContext;
-import com.fintech.sre.agent.runbook.RunbookCandidateActionFactory;
-import com.fintech.sre.agent.runbook.RunbookConditionMatcher;
-import com.fintech.sre.agent.runbook.RunbookLoader;
-import com.fintech.sre.agent.runbook.RunbookActionMapper;
+import com.fintech.sre.agent.model.common.ConfidenceLevel;
+import com.fintech.sre.agent.model.request.IncidentRecommendationRequest;
+
+import reactor.core.publisher.Mono;
 
 class RunbookCandidateSelectorTest {
 
 	@Test
-	void shouldCreateEvidenceBasedActionsFromLatencyAndErrorSignals() {
-		RunbookCandidateSelector selector = new RunbookCandidateSelector(new RunbookCandidateActionFactory(
-				runbookLoader(),
-				new RunbookConditionMatcher(),
-				new RunbookActionMapper()
-		));
+	void shouldPreferNonFallbackCandidatesAndKeepSource() {
+		CandidateGenerator localGenerator = new CandidateGenerator() {
+			@Override
+			public CandidateGenerationSource source() {
+				return CandidateGenerationSource.LOCAL_BOOTSTRAP_RUNBOOK;
+			}
 
-		DecisionInput input = new DecisionInput(
-				IncidentContext.builder()
-						.incidentId("INC-EVIDENCE-1")
-						.alertName("CheckoutHighLatency")
-						.service("payment-service")
-						.environment("prod")
-						.build(),
-				null,
-				knowledgeContext(),
-				List.of()
-		);
+			@Override
+			public Mono<List<DecisionCandidate>> generate(IncidentRecommendationRequest request, EvidenceContext evidenceContext) {
+				return Mono.just(List.of(candidate("LOCAL-RATE-LIMIT", ActionType.RATE_LIMIT, 0.5d, source())));
+			}
+		};
 
-		DecisionCandidate candidate = selector.select(
-						input,
-						new MatchedScenario("LATENCY_AND_TIMEOUT", "PAYMENTS", "Payment latency", "scenario", null, null),
-						contextWith(EvidenceSignal.P99_LATENCY_HIGH, EvidenceSignal.ERROR_RATE_HIGH)
-				)
-				.block();
+		CandidateGenerator fallbackGenerator = new CandidateGenerator() {
+			@Override
+			public CandidateGenerationSource source() {
+				return CandidateGenerationSource.FALLBACK_NO_ACTION;
+			}
 
-		assertThat(candidate).isNotNull();
-		assertThat(candidate.recommendedActions()).extracting(action -> action.command().type())
-				.contains(ActionType.SCALE_OUT, ActionType.RATE_LIMIT);
+			@Override
+			public Mono<List<DecisionCandidate>> generate(IncidentRecommendationRequest request, EvidenceContext evidenceContext) {
+				return Mono.just(List.of(
+						DecisionCandidate.noAction(
+								request,
+								evidenceContext,
+								"NO_MATCH",
+								"no candidate"
+						).withCandidateGenerationSource(source())
+				));
+			}
+		};
+
+		RunbookCandidateSelector selector = new RunbookCandidateSelector(List.of(localGenerator, fallbackGenerator));
+
+		List<DecisionCandidate> candidates = selector.select(request(), evidence()).block();
+
+		assertThat(candidates).hasSize(1);
+		assertThat(candidates.get(0).candidateGenerationSource())
+				.isEqualTo(CandidateGenerationSource.LOCAL_BOOTSTRAP_RUNBOOK);
+		assertThat(candidates.get(0).actionCommand().type()).isEqualTo(ActionType.RATE_LIMIT);
 	}
 
-	private RunbookLoader runbookLoader() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new JavaTimeModule());
-		return new RunbookLoader(objectMapper);
+	@Test
+	void shouldReturnFallbackWhenNoNonFallbackCandidateExists() {
+		CandidateGenerator fallbackGenerator = new CandidateGenerator() {
+			@Override
+			public CandidateGenerationSource source() {
+				return CandidateGenerationSource.FALLBACK_NO_ACTION;
+			}
+
+			@Override
+			public Mono<List<DecisionCandidate>> generate(IncidentRecommendationRequest request, EvidenceContext evidenceContext) {
+				return Mono.just(List.of(
+						DecisionCandidate.noAction(
+								request,
+								evidenceContext,
+								"NO_MATCH",
+								"no candidate"
+						).withCandidateGenerationSource(source())
+				));
+			}
+		};
+
+		RunbookCandidateSelector selector = new RunbookCandidateSelector(List.of(fallbackGenerator));
+
+		List<DecisionCandidate> candidates = selector.select(request(), evidence()).block();
+
+		assertThat(candidates).hasSize(1);
+		assertThat(candidates.get(0).candidateGenerationSource())
+				.isEqualTo(CandidateGenerationSource.FALLBACK_NO_ACTION);
+		assertThat(candidates.get(0).recommendedActions()).isEmpty();
 	}
 
-	private EvidenceContext contextWith(EvidenceSignal... signals) {
-		List<Evidence> evidences = java.util.Arrays.stream(signals)
-				.map(signal -> new Evidence(
-						EvidenceLayer.APPLICATION,
-						signal,
-						1,
-						1,
-						Duration.ofMinutes(5),
-						EvidenceSource.PROMETHEUS,
-						EvidenceSeverity.WARNING,
-						EvidenceConfidence.HIGH,
-						EvidenceStatus.PRESENT,
-						signal.name()
+	private DecisionCandidate candidate(
+			String title,
+			ActionType actionType,
+			double confidence,
+			CandidateGenerationSource source
+	) {
+		ConfidenceLevel confidenceLevel = confidence >= 1.0d
+				? ConfidenceLevel.HIGH
+				: confidence >= 0.5d ? ConfidenceLevel.MEDIUM : ConfidenceLevel.LOW;
+
+		CandidateAction action = CandidateAction.builder()
+				.step(1)
+				.action(title)
+				.command(new ActionCommand(
+						title.toLowerCase(),
+						actionType,
+						new ActionTarget("payment", "payment-service", "policy", "rate-limit", "prod"),
+						true,
+						new RollbackCommand("rollback"),
+						List.of(new VerificationCommand("payment.consistency", "stable", "check consistency"))
 				))
-				.toList();
+				.expectedEffect("effect")
+				.risk("risk")
+				.rollbackPlan("rollback")
+				.verification(List.of("verify"))
+				.requiresHumanApproval(true)
+				.source(ActionSource.RUNBOOK)
+				.riskLevel(ActionRiskLevel.MEDIUM)
+				.build();
 
-		return new EvidenceContext(
+		return DecisionCandidate.builder()
+				.scenario(new MatchedScenario(
+						"LATENCY",
+						"payment",
+						title,
+						"title",
+						com.fintech.sre.agent.model.common.Severity.SEV_2,
+						com.fintech.sre.agent.model.common.ImpactScope.PARTIAL
+				))
+				.candidateActions(List.of(action))
+				.recommendedActions(List.of(action))
+				.alternativeActions(List.of())
+				.forbiddenActions(List.of())
+				.mostLikelyCauses(List.of("cause"))
+				.reasoningNotes(List.of("reason"))
+				.confidenceLevel(confidenceLevel)
+				.evidenceContext(evidence())
+				.candidateGenerationSource(source)
+				.build();
+	}
+
+	private IncidentRecommendationRequest request() {
+		return new IncidentRecommendationRequest(
 				"INC-EVIDENCE-1",
+				"CheckoutHighLatency",
 				"payment-service",
 				"prod",
-				evidences,
-				java.util.Map.of("domain", "payment"),
-				EvidenceQueryStatus.SUCCESS,
-				EvidenceQueryStatus.SUCCESS,
-				EvidenceQueryStatus.SUCCESS
+				"SEV_2",
+				Instant.parse("2026-05-02T00:00:00Z"),
+				Map.of("domain", "payment"),
+				null,
+				List.of(),
+				List.of(),
+				null,
+				"latency spike"
 		);
 	}
 
-	private KnowledgeContext knowledgeContext() {
-		return new KnowledgeContext(
-				List.of(new KnowledgeDocument(
-						"scenario-payment-high-latency",
-						KnowledgeLayer.SCENARIO,
-						"scenarios/payment-api/high-latency.md",
-						"Payment API High Latency",
-						"scenario snippet",
-						java.util.Map.of("domain", "payment")
-				)),
-				List.of(new KnowledgeDocument(
-						"runbook-payment-high-latency",
-						KnowledgeLayer.RUNBOOK,
-						"runbooks/payment-api/high-latency.md",
-						"Payment API High Latency Runbook",
-						"runbook snippet",
-						java.util.Map.of("domain", "payment")
-				)),
-				List.of(),
-				List.of(),
+	private EvidenceContext evidence() {
+		return new EvidenceContext(
+				"INC-EVIDENCE-1",
+				List.of(EvidenceSignal.P99_LATENCY_HIGH, EvidenceSignal.ERROR_RATE_HIGH),
+				List.of("scenario/payment-latency-spike"),
+				List.of("runbook/payment-latency-mitigation"),
 				List.of(),
 				List.of(),
 				List.of(),

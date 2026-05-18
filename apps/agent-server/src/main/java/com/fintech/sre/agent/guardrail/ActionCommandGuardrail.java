@@ -45,6 +45,12 @@ public class ActionCommandGuardrail implements Guardrail {
 						"Human approval 없는 action 금지"
 				));
 			}
+			if (command.isHighRiskOrAbove() && !command.requiresHumanApproval()) {
+				return Mono.error(new GuardrailViolationException(
+						"HIGH_RISK_HUMAN_APPROVAL_REQUIRED",
+						"HIGH 이상 위험 Action은 Human approval 없이는 추천할 수 없습니다"
+				));
+			}
 			if (command.rollback() == null) {
 				return Mono.error(new GuardrailViolationException(
 						"MISSING_ROLLBACK",
@@ -55,6 +61,14 @@ public class ActionCommandGuardrail implements Guardrail {
 				return Mono.error(new GuardrailViolationException(
 						"MISSING_VERIFICATION",
 						"Verification 없는 action 금지"
+				));
+			}
+			if (command.isPaymentDomain()
+					&& command.paymentSafety() != null
+					&& command.paymentSafety().unsafe()) {
+				return Mono.error(new GuardrailViolationException(
+						"UNSAFE_PAYMENT_ACTION",
+						"결제 도메인 Action은 payment safety 조건을 만족해야 합니다"
 				));
 			}
 			if (!hasSupportingEvidence(response, command)) {

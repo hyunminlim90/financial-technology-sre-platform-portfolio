@@ -14,7 +14,7 @@ public class VerificationRequiredPolicyRule implements PolicyRule {
 
 	@Override
 	public Mono<PolicyEvaluationResult> evaluate(ActionCommand command, EvidenceContext evidence) {
-		if (command == null || command.verifications() == null || command.verifications().isEmpty()) {
+		if (command == null || !command.hasVerification()) {
 			return Mono.just(PolicyEvaluationResult.deny(List.of(
 					new PolicyViolation(
 							"POLICY_VERIFICATION_REQUIRED",

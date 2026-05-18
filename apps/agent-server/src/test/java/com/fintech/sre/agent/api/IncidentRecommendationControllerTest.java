@@ -63,9 +63,9 @@ class IncidentRecommendationControllerTest {
 				.jsonPath("$.confidenceLevel").isEqualTo("HIGH")
 				.jsonPath("$.recommendedActions.length()").isEqualTo(1)
 				.jsonPath("$.recommendedActions[0].rollbackPlan").exists()
-				.jsonPath("$.recommendedActions[0].verification.length()").isEqualTo(1)
+				.jsonPath("$.recommendedActions[0].verification.length()").isEqualTo(3)
 				.jsonPath("$.recommendedActions[0].command.type").isEqualTo("RATE_LIMIT")
-				.jsonPath("$.forbiddenActions.length()").isEqualTo(1);
+				.jsonPath("$.forbiddenActions.length()").isEqualTo(0);
 	}
 
 	@Test

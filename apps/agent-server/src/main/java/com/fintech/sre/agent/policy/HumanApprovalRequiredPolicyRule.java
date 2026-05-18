@@ -34,6 +34,16 @@ public class HumanApprovalRequiredPolicyRule implements PolicyRule {
 			)));
 		}
 
+		if (command.isHighRiskOrAbove() && !command.requiresHumanApproval()) {
+			return Mono.just(PolicyEvaluationResult.deny(List.of(
+					new PolicyViolation(
+							"POLICY_HIGH_RISK_HUMAN_APPROVAL_REQUIRED",
+							PolicySeverity.BLOCKING,
+							"HIGH 이상 위험 Action은 반드시 Human approval이 필요합니다."
+					)
+			)));
+		}
+
 		return Mono.just(PolicyEvaluationResult.allow());
 	}
 }

@@ -1,0 +1,23 @@
+package com.fintech.sre.agent.persistence.r2dbc;
+
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
+
+import reactor.core.publisher.Flux;
+
+@Repository
+@Profile("r2dbc")
+public interface KnowledgePromotionPlanR2dbcRepository
+		extends ReactiveCrudRepository<KnowledgePromotionPlanEntity, String> {
+
+	Flux<KnowledgePromotionPlanEntity> findByLearningCandidateIdOrderByCreatedAtDesc(
+			String learningCandidateId
+	);
+
+	Flux<KnowledgePromotionPlanEntity> findByIncidentIdOrderByCreatedAtDesc(
+			String incidentId
+	);
+
+	Flux<KnowledgePromotionPlanEntity> findTop500ByOrderByCreatedAtDesc();
+}

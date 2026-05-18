@@ -11,9 +11,9 @@ import com.fintech.sre.agent.embedding.EmbeddingPort;
 import com.fintech.sre.agent.embedding.EmbeddingRequest;
 import com.fintech.sre.agent.knowledge.rag.KnowledgeLayer;
 import com.fintech.sre.agent.knowledge.vector.qdrant.QdrantPayloadMapper;
-import com.fintech.sre.agent.knowledge.vector.qdrant.QdrantProperties;
 import com.fintech.sre.agent.knowledge.vector.qdrant.QdrantSearchRequest;
 import com.fintech.sre.agent.knowledge.vector.qdrant.QdrantSearchResponse;
+import com.fintech.sre.agent.knowledge.vector.qdrant.VectorQdrantProperties;
 
 import reactor.core.publisher.Mono;
 
@@ -25,13 +25,13 @@ import reactor.core.publisher.Mono;
 public class QdrantVectorSearchAdapter implements VectorSearchPort {
 
 	private final WebClient qdrantWebClient;
-	private final QdrantProperties properties;
+	private final VectorQdrantProperties properties;
 	private final QdrantPayloadMapper payloadMapper;
 	private final EmbeddingPort embeddingPort;
 
 	public QdrantVectorSearchAdapter(
 			WebClient qdrantWebClient,
-			QdrantProperties properties,
+			VectorQdrantProperties properties,
 			QdrantPayloadMapper payloadMapper,
 			EmbeddingPort embeddingPort
 	) {

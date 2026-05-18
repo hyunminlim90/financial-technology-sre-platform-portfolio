@@ -22,6 +22,43 @@ public record IncidentRecommendationResponse(
 		List<ForbiddenAction> forbiddenActions,
 		ConfidenceLevel confidenceLevel,
 		Boolean humanApprovalRequired,
-		ReferencedKnowledge referencedKnowledge
+		ReferencedKnowledge referencedKnowledge,
+		PolicyDecisionView policyDecision,
+		List<PolicyViolationView> policyViolations,
+		String guardrailDecision,
+		String blockedReason,
+		EvidenceSummaryView evidenceSummary
 ) {
+	public IncidentRecommendationResponse(
+			String incidentId,
+			String status,
+			IncidentSummary incidentSummary,
+			List<MostLikelyCause> mostLikelyCauses,
+			Evidence evidence,
+			List<RecommendedAction> recommendedActions,
+			List<AlternativeAction> alternativeActions,
+			List<ForbiddenAction> forbiddenActions,
+			ConfidenceLevel confidenceLevel,
+			Boolean humanApprovalRequired,
+			ReferencedKnowledge referencedKnowledge
+	) {
+		this(
+				incidentId,
+				status,
+				incidentSummary,
+				mostLikelyCauses,
+				evidence,
+				recommendedActions,
+				alternativeActions,
+				forbiddenActions,
+				confidenceLevel,
+				humanApprovalRequired,
+				referencedKnowledge,
+				null,
+				List.of(),
+				null,
+				null,
+				null
+		);
+	}
 }

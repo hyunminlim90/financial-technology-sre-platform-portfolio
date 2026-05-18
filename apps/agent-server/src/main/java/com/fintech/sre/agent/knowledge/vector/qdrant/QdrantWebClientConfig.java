@@ -6,11 +6,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-@EnableConfigurationProperties(QdrantProperties.class)
+@EnableConfigurationProperties(VectorQdrantProperties.class)
 public class QdrantWebClientConfig {
 
 	@Bean
-	public WebClient qdrantWebClient(QdrantProperties properties) {
+	public WebClient qdrantWebClient(VectorQdrantProperties properties) {
 		WebClient.Builder builder = WebClient.builder()
 				.baseUrl(properties.baseUrl());
 

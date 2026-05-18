@@ -1,6 +1,5 @@
 package com.fintech.sre.agent.evidence;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,140 +12,29 @@ public class EvidenceNormalizer {
 
 	public EvidenceContext normalize(List<String> rawSignals) {
 		if (rawSignals == null || rawSignals.isEmpty()) {
-			return new EvidenceContext(
-					null,
-					null,
-					null,
-					List.of(),
-					java.util.Map.of(),
-					EvidenceQueryStatus.SUCCESS,
-					EvidenceQueryStatus.SUCCESS,
-					EvidenceQueryStatus.SUCCESS
-			);
+			return EvidenceContext.empty(null);
 		}
 
-		List<Evidence> evidences = new ArrayList<>();
-
+		List<EvidenceSignal> signals = new ArrayList<>();
 		for (String signal : rawSignals) {
-			switch (signal) {
-				case "DB_POOL_SATURATED", "DB_POOL_PENDING_HIGH" -> evidences.add(new Evidence(
-						EvidenceLayer.DATABASE,
-						EvidenceSignal.DB_POOL_PENDING_HIGH,
-						1,
-						1,
-						Duration.ofMinutes(5),
-						EvidenceSource.PROMETHEUS,
-						EvidenceSeverity.CRITICAL,
-						EvidenceConfidence.HIGH,
-						EvidenceStatus.PRESENT,
-						"Database connection pool pending is high"
-				));
-				case "REBALANCE_STORM" -> evidences.add(new Evidence(
-						EvidenceLayer.QUEUE,
-						EvidenceSignal.KAFKA_REBALANCE_STORM,
-						1,
-						1,
-						Duration.ofMinutes(5),
-						EvidenceSource.PROMETHEUS,
-						EvidenceSeverity.CRITICAL,
-						EvidenceConfidence.HIGH,
-						EvidenceStatus.PRESENT,
-						"Kafka consumer rebalance storm detected"
-				));
-				case "RETRY_STORM" -> evidences.add(new Evidence(
-						EvidenceLayer.APPLICATION,
-						EvidenceSignal.RETRY_STORM,
-						1,
-						1,
-						Duration.ofMinutes(5),
-						EvidenceSource.PROMETHEUS,
-						EvidenceSeverity.CRITICAL,
-						EvidenceConfidence.HIGH,
-						EvidenceStatus.PRESENT,
-						"Retry storm detected"
-				));
-				case "RETRY_RATE_HIGH" -> evidences.add(new Evidence(
-						EvidenceLayer.APPLICATION,
-						EvidenceSignal.RETRY_RATE_HIGH,
-						1,
-						1,
-						Duration.ofMinutes(5),
-						EvidenceSource.PROMETHEUS,
-						EvidenceSeverity.WARNING,
-						EvidenceConfidence.HIGH,
-						EvidenceStatus.PRESENT,
-						"Retry rate is elevated"
-				));
-				case "TRAFFIC_SPIKE" -> evidences.add(new Evidence(
-						EvidenceLayer.EDGE,
-						EvidenceSignal.TRAFFIC_SPIKE,
-						1,
-						1,
-						Duration.ofMinutes(5),
-						EvidenceSource.PROMETHEUS,
-						EvidenceSeverity.WARNING,
-						EvidenceConfidence.MEDIUM,
-						EvidenceStatus.PRESENT,
-						"Traffic spike detected"
-				));
-				case "KAFKA_CONSUMER_LAG_HIGH" -> evidences.add(new Evidence(
-						EvidenceLayer.QUEUE,
-						EvidenceSignal.KAFKA_CONSUMER_LAG_HIGH,
-						5000,
-						1000,
-						Duration.ofMinutes(5),
-						EvidenceSource.PROMETHEUS,
-						EvidenceSeverity.WARNING,
-						EvidenceConfidence.HIGH,
-						EvidenceStatus.PRESENT,
-						"Kafka consumer lag high"
-				));
-				case "OBSERVABILITY_SOURCE_DOWN" -> evidences.add(new Evidence(
-						EvidenceLayer.UNKNOWN,
-						EvidenceSignal.OBSERVABILITY_SOURCE_DOWN,
-						1,
-						1,
-						Duration.ofMinutes(1),
-						EvidenceSource.UNKNOWN,
-						EvidenceSeverity.WARNING,
-						EvidenceConfidence.MEDIUM,
-						EvidenceStatus.PRESENT,
-						"Observability source degraded"
-				));
-				default -> evidences.add(new Evidence(
-						EvidenceLayer.UNKNOWN,
-						EvidenceSignal.UNKNOWN,
-						0,
-						0,
-						Duration.ZERO,
-						EvidenceSource.UNKNOWN,
-						EvidenceSeverity.INFO,
-						EvidenceConfidence.LOW,
-						EvidenceStatus.UNKNOWN,
-						"Unknown raw signal: " + signal
-				));
-			}
+			signals.add(normalizeSignal(signal));
 		}
-
-		EvidenceQueryStatus queryStatus = rawSignals.contains("OBSERVABILITY_SOURCE_DOWN")
-				? EvidenceQueryStatus.FAILED
-				: EvidenceQueryStatus.SUCCESS;
 
 		return new EvidenceContext(
 				null,
-				null,
-				null,
-				evidences,
-				java.util.Map.of(),
-				queryStatus,
-				queryStatus,
-				queryStatus
+				signals.stream().distinct().toList(),
+				List.of(),
+				List.of(),
+				List.of(),
+				List.of(),
+				List.of(),
+				List.of()
 		);
 	}
 
 	public EvidenceContext normalize(IncidentContext incidentContext) {
 		if (incidentContext == null) {
-			return normalize(List.of());
+			return EvidenceContext.empty(null);
 		}
 
 		List<String> rawSignals = new ArrayList<>();
@@ -196,13 +84,13 @@ public class EvidenceNormalizer {
 		EvidenceContext normalized = normalize(rawSignals.stream().distinct().toList());
 		return new EvidenceContext(
 				incidentContext.incidentId(),
-				incidentContext.service(),
-				incidentContext.environment(),
-				normalized.evidences(),
-				incidentContext.labels() == null ? java.util.Map.of() : incidentContext.labels(),
-				normalized.prometheusStatus(),
-				normalized.lokiStatus(),
-				normalized.jaegerStatus()
+				normalized.signals(),
+				List.of(),
+				List.of(),
+				List.of(),
+				List.of(),
+				List.of(),
+				List.of()
 		);
 	}
 
@@ -214,37 +102,47 @@ public class EvidenceNormalizer {
 			return primary;
 		}
 
-		List<Evidence> merged = new ArrayList<>();
-		merged.addAll(primary.evidences());
-		merged.addAll(secondary.evidences());
-
-		java.util.LinkedHashMap<String, String> mergedTags = new java.util.LinkedHashMap<>();
-		if (primary.tags() != null) {
-			mergedTags.putAll(primary.tags());
-		}
-		if (secondary.tags() != null) {
-			mergedTags.putAll(secondary.tags());
-		}
+		List<EvidenceSignal> mergedSignals = new ArrayList<>();
+		mergedSignals.addAll(primary.signals());
+		mergedSignals.addAll(secondary.signals());
 
 		return new EvidenceContext(
 				secondary.incidentId() != null ? secondary.incidentId() : primary.incidentId(),
-				secondary.service() != null ? secondary.service() : primary.service(),
-				secondary.environment() != null ? secondary.environment() : primary.environment(),
-				merged.stream().distinct().toList(),
-				mergedTags,
-				worst(primary.prometheusStatus(), secondary.prometheusStatus()),
-				worst(primary.lokiStatus(), secondary.lokiStatus()),
-				worst(primary.jaegerStatus(), secondary.jaegerStatus())
+				mergedSignals.stream().distinct().toList(),
+				mergeIds(primary.matchedScenarioIds(), secondary.matchedScenarioIds()),
+				mergeIds(primary.matchedRunbookIds(), secondary.matchedRunbookIds()),
+				mergeIds(primary.matchedPostmortemIds(), secondary.matchedPostmortemIds()),
+				mergeIds(primary.matchedImprovementIds(), secondary.matchedImprovementIds()),
+				mergeIds(primary.matchedPreventiveDesignIds(), secondary.matchedPreventiveDesignIds()),
+				mergeIds(primary.ragDocumentIds(), secondary.ragDocumentIds())
 		);
 	}
 
-	private EvidenceQueryStatus worst(EvidenceQueryStatus left, EvidenceQueryStatus right) {
-		if (left == EvidenceQueryStatus.FAILED || right == EvidenceQueryStatus.FAILED) {
-			return EvidenceQueryStatus.FAILED;
+	private List<String> mergeIds(List<String> left, List<String> right) {
+		List<String> merged = new ArrayList<>();
+		if (left != null) {
+			merged.addAll(left);
 		}
-		if (left == EvidenceQueryStatus.PARTIAL_SUCCESS || right == EvidenceQueryStatus.PARTIAL_SUCCESS) {
-			return EvidenceQueryStatus.PARTIAL_SUCCESS;
+		if (right != null) {
+			merged.addAll(right);
 		}
-		return EvidenceQueryStatus.SUCCESS;
+		return merged.stream().distinct().toList();
+	}
+
+	private EvidenceSignal normalizeSignal(String signal) {
+		return switch (signal) {
+			case "DB_POOL_SATURATED", "DB_POOL_PENDING_HIGH" -> EvidenceSignal.DB_POOL_PENDING_HIGH;
+			case "REBALANCE_STORM" -> EvidenceSignal.KAFKA_REBALANCE_STORM;
+			case "RETRY_STORM" -> EvidenceSignal.RETRY_STORM;
+			case "RETRY_RATE_HIGH" -> EvidenceSignal.RETRY_RATE_HIGH;
+			case "TRAFFIC_SPIKE" -> EvidenceSignal.TRAFFIC_SPIKE;
+			case "KAFKA_CONSUMER_LAG_HIGH" -> EvidenceSignal.KAFKA_CONSUMER_LAG_HIGH;
+			case "OBSERVABILITY_SOURCE_DOWN" -> EvidenceSignal.OBSERVABILITY_SOURCE_DOWN;
+			case "P99_LATENCY_HIGH" -> EvidenceSignal.P99_LATENCY_HIGH;
+			case "ERROR_RATE_HIGH" -> EvidenceSignal.ERROR_RATE_HIGH;
+			case "REDIS_TIMEOUT_HIGH" -> EvidenceSignal.REDIS_TIMEOUT_HIGH;
+			case "PAYMENT_DUPLICATE_ATTEMPT" -> EvidenceSignal.PAYMENT_DUPLICATE_ATTEMPT;
+			default -> EvidenceSignal.UNKNOWN;
+		};
 	}
 }
