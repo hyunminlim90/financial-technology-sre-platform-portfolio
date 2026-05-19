@@ -23,7 +23,12 @@ Virtual Address (VA)
 > 소프트웨어는 **Virtual Address** 사용  
 > 하드웨어는 **Physical Address** 사용
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Physical Memory Cell Location(물리적 메모리 셀 위치) [[M]](../../100-deep-dive/micro-foundations/physical-memory-cell-location.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
