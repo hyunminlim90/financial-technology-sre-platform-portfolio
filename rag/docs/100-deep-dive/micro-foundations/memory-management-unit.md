@@ -11,7 +11,12 @@
 
 현대 컴퓨터에서는 **CPU가 메모리에 접근할 때 거의 반드시 MMU를 거친다**고 보면 됩니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Virtual Address(가상 주소) [[M]]()
+
+</details></br>
 
 ## 1. 이 기술이 무엇인가
 
