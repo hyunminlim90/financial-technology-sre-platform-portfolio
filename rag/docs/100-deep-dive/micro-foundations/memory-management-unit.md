@@ -14,7 +14,7 @@
 <details>
 <summary>Deep Dive</summary></br>
 
-Virtual Address(가상 주소) [[M]]()
+Virtual Address(가상 주소) [[M]](../../100-deep-dive/micro-foundations/virtual-address.md)  
 
 </details></br>
 
