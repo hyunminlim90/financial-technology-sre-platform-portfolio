@@ -233,8 +233,8 @@ AI는 장애 기간 동안 발생한 모든 Alert를 기록하지 않는다.
 #### 원칙
 
 ```text
-Alert는 “나열”이 아니라
-“장애 흐름을 설명하기 위한 도구”이다
+Alert는 "나열"이 아니라
+"장애 흐름을 설명하기 위한 도구"이다
 ```
 
 ---
@@ -552,7 +552,7 @@ AI:
 - 분석
 - 초안 작성
 
-Human:
+H:
 - 검증
 - 판단
 - 개선 설계
@@ -567,3 +567,172 @@ Human:
 ```
 
 이 문서는 RAG Learning Knowledge 생성의 핵심 프로토콜이다.
+
+---
+
+## Systems-Math Analysis Rule
+
+Postmortem은 가능한 경우 관련 Systems-Math 문서를 연결해야 한다.
+
+예:
+
+```yaml
+related_systems_math:
+  - systems-math/retry-amplification.md
+```
+
+Systems-Math는:
+
+- queue saturation
+- retry amplification
+- tail latency
+- failure propagation
+
+등의 운영 현상을 정량적으로 설명한다.
+
+---
+
+## Experiment Feedback Rule
+
+Postmortem은 관련 Experiment 결과를 연결할 수 있다.
+
+예:
+
+```yaml
+related_experiments:
+  - experiments/redis-timeout-recovery-validation.md
+```
+
+Experiment 결과는:
+
+- rollback effectiveness
+- recovery time
+- verification effectiveness
+- recommendation safety
+
+평가에 사용된다.
+
+---
+
+## Recommendation Accuracy Rule
+
+Postmortem은 AI Recommendation의 정확도를 평가해야 한다.
+
+포함 항목:
+
+- recommended action
+- executed action
+- outcome
+- unintended side effect
+- rollback effectiveness
+
+원칙:
+
+```text
+AI Recommendation은 항상 옳다고 가정하지 않는다.
+```
+
+---
+
+## Degraded Observability Rule
+
+partial observability,
+missing metrics,
+trace sampling loss 상황에서는:
+
+Postmortem은 certainty limitation을 명시해야 한다.
+
+```text
+Unknown을 추정으로 대체해서는 안 된다.
+```
+
+---
+
+## Governance Timeline Integration
+
+다음 이벤트들은 append-only governance timeline으로 기록될 수 있다.
+
+- alert
+- recommendation
+- approval
+- execution result
+- rollback
+- verification
+- incident resolution
+- postmortem generation
+
+Timeline은:
+
+- auditability
+- replay compatibility
+- operational governance
+
+용도로 사용된다.
+
+---
+
+## Evidence Correlation Rule
+
+Postmortem은 반드시:
+
+- metrics
+- logs
+- traces
+- deployment events
+- scaling events
+
+간의 correlation 기반으로 작성되어야 한다.
+
+```text
+단일 metric만으로 root cause를 확정하지 않는다.
+```
+
+---
+
+## Learning Boundary Rule
+
+Postmortem은 학습 문서이다.
+
+```text
+Postmortem 단독으로:
+운영 Action을 직접 생성해서는 안 된다.
+```
+
+운영 Recommendation은 반드시:
+
+```text
+Scenario
+→ Runbook
+→ Improvement
+→ Preventive Design
+```
+
+기반으로 생성되어야 한다.
+
+---
+
+## Research Dataset Rule
+
+Postmortem은 다음 연구 데이터셋 생성에 사용될 수 있다.
+
+- incident timeline
+- recovery time
+- rollback effectiveness
+- recommendation accuracy
+- propagation pattern
+- SLO recovery metrics
+
+```text
+이 데이터셋은 Reliability Engineering 연구에 사용될 수 있다.
+```
+
+---
+
+## Non-Goals
+
+Postmortem은 다음을 목표로 하지 않는다.
+
+- blame assignment
+- automatic remediation
+- LLM-only root cause confirmation
+- human bypass
