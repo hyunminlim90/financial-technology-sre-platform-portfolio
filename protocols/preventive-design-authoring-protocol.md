@@ -304,3 +304,175 @@ preventive-designs/kafka-consumer-lag-backpressure-control.md
 
 > 가장 좋은 장애 대응은 대응하지 않는 것이다.  
 > → **구조적으로 장애를 제거하라.**
+
+---
+
+## Systems-Math Structural Rule
+
+Preventive Design은 관련 Systems-Math 문서를 연결할 수 있다.
+
+예:
+
+```yaml
+related_systems_math:
+  - systems-math/retry-amplification.md
+```
+
+Systems-Math는:
+
+- queue saturation
+- retry amplification
+- tail latency
+- cascading failure
+- backpressure propagation
+
+등의 운영 현상을 정량적으로 설명한다.
+
+```text
+Preventive Design은:
+정량 분석 기반 구조 변경을 목표로 한다.
+```
+
+---
+
+## Experiment Validation Rule
+
+Preventive Design은 관련 Experiment 결과를 연결할 수 있다.
+
+예:
+
+```yaml
+related_experiments:
+  - experiments/payment-idempotency-fallback-validation.md
+```
+
+Experiment 결과는:
+
+- rollback effectiveness
+- recovery time
+- architecture resilience
+- failure isolation effectiveness
+
+평가에 사용된다.
+
+---
+
+## Failure Isolation Rule
+
+Preventive Design은 가능한 경우:
+
+- blast radius reduction
+- fault isolation
+- dependency isolation
+- graceful degradation
+
+전략을 포함해야 한다.
+
+```text
+원칙:
+
+부분 장애가 전체 장애로 확산되는 것을 방지한다.
+```
+
+---
+
+## Resilience Pattern Rule
+
+Preventive Design은 다음 resilience pattern을 사용할 수 있다.
+
+- backpressure
+- circuit breaker
+- bulkhead
+- fallback
+- timeout isolation
+- idempotency guard
+- retry budget
+- dead letter queue
+
+```text
+선택 이유와 trade-off를 설명해야 한다.
+```
+
+---
+
+## Governance Timeline Rule
+
+다음 이벤트들은 append-only governance timeline으로 기록될 수 있다.
+
+- architecture recommendation
+- preventive-design adoption
+- migration execution
+- rollback
+- verification
+- resilience validation
+
+Timeline은:
+
+- auditability
+- replay compatibility
+- architecture governance
+
+용도로 사용된다.
+
+---
+
+## SLO-Aware Rule
+
+Preventive Design은 다음 SLO 영향을 설명해야 한다.
+
+- latency
+- availability
+- durability
+- recovery time
+- error budget consumption
+
+```text
+구조 변경은:
+SLO 기반으로 평가되어야 한다.
+```
+
+---
+
+## Degraded Mode Rule
+
+Preventive Design은 dependency failure 상황에서:
+
+- degraded read-only mode
+- fallback mode
+- partial availability
+
+전략을 정의할 수 있다.
+
+```text
+원칙:
+
+완전 장애보다 제한적 서비스 지속을 우선할 수 있다.
+```
+
+---
+
+## Research Validation Rule
+
+Preventive Design은 다음 연구 항목 평가에 사용될 수 있다.
+
+- recovery time reduction
+- retry amplification reduction
+- queue stabilization
+- blast radius reduction
+- recommendation safety improvement
+
+```text
+이 데이터는 Reliability Engineering 연구에 사용될 수 있다.
+```
+
+---
+
+## Non-Goals
+
+Preventive Design은 다음을 목표로 하지 않는다.
+
+- uncontrolled automation
+- destructive remediation
+- human bypass
+- performance-only optimization
+- architecture without rollback
