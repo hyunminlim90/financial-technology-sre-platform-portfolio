@@ -15,6 +15,7 @@
 <summary>Deep Dive</summary></br>
 
 Virtual Address(가상 주소) [[M]](../../100-deep-dive/micro-foundations/virtual-address.md)  
+Physical Address(물리 주소) [[M]](../../100-deep-dive/micro-foundations/physical-address.md)  
 
 </details></br>
 
