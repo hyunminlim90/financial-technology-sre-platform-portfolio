@@ -1,12 +1,15 @@
 # Virtual Address (가상 주소, VA)
-
 ## 1. 가상 주소(Virtual Address, VA)란 무엇인가
 
-가상 주소(Virtual Address, VA)는 실행 중인 프로세스가 바라보는 **논리적인 메모리 주소**입니다.
+> 정독: 0회
+
+가상 주소(Virtual Address, VA)는:
+
+> 실행 중인 프로세스가 바라보는 **논리적인 메모리 주소**
 
 즉 프로그램은 실제 DRAM의 물리 위치를 직접 다루지 않고:
 
-> "나만의 독립된 메모리 공간"
+"나만의 독립된 메모리 공간"
 
 이 존재한다고 착각하며 동작합니다.
 
@@ -248,3 +251,7 @@ kubectl describe pod
 | Swap In/Out | 디스크 메모리 교체 |
 | OOM Count | 메모리 부족 |
 | Cache Miss | 메모리 계층 병목 |
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
