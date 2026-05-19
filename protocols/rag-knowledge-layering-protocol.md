@@ -15,8 +15,8 @@ RAG는 다음 5개의 Primary Knowledge Source로 구성된다.
 
 특징:
 
-* 표준화된 장애 정의 및 대응 절차
-* 거의 수정하지 않음
+- 표준화된 장애 정의 및 대응 절차
+- 거의 수정하지 않음
 
 ---
 
@@ -27,8 +27,8 @@ RAG는 다음 5개의 Primary Knowledge Source로 구성된다.
 
 특징:
 
-* 장애 경험 기반으로 지속적으로 추가
-* 기존 문서를 수정하지 않고 누적
+- 장애 경험 기반으로 지속적으로 추가
+- 기존 문서를 수정하지 않고 누적
 
 ---
 
@@ -38,13 +38,13 @@ RAG는 다음 5개의 Primary Knowledge Source로 구성된다.
 
 다음 경우에만 수정 가능:
 
-* 완전히 잘못된 내용
-* 치명적인 오류
-* 시스템 구조 변경 (예: Kafka → SQS)
+- 완전히 잘못된 내용
+- 치명적인 오류
+- 시스템 구조 변경 (예: Kafka → SQS)
 
 그 외:
 
-```text
+```
 수정 ❌
 추가 ✔
 ```
@@ -92,34 +92,13 @@ Primary Knowledge = 판단 기준
 rag/docs          = 이해 보조
 ```
 
-### 예시
-
-```
-Redis timeout 발생
-
-Primary:
-- scenarios/redis/timeout.md
-- runbooks/redis/timeout.md
-- improvements/redis-timeout-idempotency-hardening.md
-- preventive-designs/redis-timeout-idempotency-fallback.md
-- postmortems/redis-timeout-*.md
-
-Secondary:
-- rag/docs/redis/redis-latency-internals.md
-
-최종 판단:
-Primary Knowledge를 기준으로 Action을 결정하고,
-rag/docs는 Redis latency 원리 해석에만 사용한다.
-```
-
 ### Safety Rule
 
-`rag/docs/`의 일반 기술 설명이 `runbooks/`, `improvements/`, `preventive-designs/`의 안전 제약과 충돌할 경우,  
-반드시 **운영 문서의 안전 제약을 우선**한다.
+`rag/docs/`의 일반 기술 설명이 `runbooks/`, `improvements/`, `preventive-designs/`의 안전 제약과 충돌할 경우, 반드시 **운영 문서의 안전 제약을 우선**한다.
 
 ### 한 줄 핵심
 
-> **5개 문서 (scenarios,runbooks,improvements,preventive-designs,postmortems) = 판단 기준**  
+> **5개 문서 (scenarios, runbooks, improvements, preventive-designs, postmortems) = 판단 기준**
 > **rag/docs = 기술 이해 보조**
 
 ### 3.2 Missing Primary Knowledge Rule
@@ -149,7 +128,7 @@ No Scenario → No Action
 
 예:
 
-```text
+```
 Runbook:
 → scale-out 가능
 
@@ -196,7 +175,7 @@ Low Confidence → No Risky Action
 
 모든 문서는 사람이 작성하고 검증한다.
 
-```text
+```
 AI:
 - 초안 생성
 - 분석 보조
@@ -212,7 +191,7 @@ Human:
 
 ## 6. 핵심 원칙
 
-```text
+```
 Runbook은 "정답"
 Postmortem은 "경험"
 Improvement는 "진화"
@@ -222,15 +201,13 @@ Improvement는 "진화"
 
 ## 7. Repository Path Mapping
 
-RAG Knowledge Source는 실제 프로젝트에서 다음 경로와 매핑된다.
-
-| Knowledge Source                | Repository Path                        | 역할                   |
-| ------------------------------- | -------------------------------------- | -------------------- |
-| Scenario                        | `scenarios/`                           | 장애 상황 정의             |
-| Runbook                         | `runbooks/`                            | 표준 대응 절차             |
-| Postmortem                      | `postmortems/`                         | 이전 장애 사례             |
-| Improvement / Preventive Design | `improvements/`, `preventive-designs/` | 재발 방지 및 예방 설계        |
-| Protocol                        | `protocols/`                           | RAG 해석 규칙 및 문서 운영 원칙 |
+| Knowledge Source | Repository Path | 역할 |
+|------|------|------|
+| Scenario | `scenarios/` | 장애 상황 정의 |
+| Runbook | `runbooks/` | 표준 대응 절차 |
+| Postmortem | `postmortems/` | 이전 장애 사례 |
+| Improvement / Preventive Design | `improvements/`, `preventive-designs/` | 재발 방지 및 예방 설계 |
+| Protocol | `protocols/` | RAG 해석 규칙 및 문서 운영 원칙 |
 
 ---
 
@@ -238,7 +215,7 @@ RAG Knowledge Source는 실제 프로젝트에서 다음 경로와 매핑된다.
 
 AI Agent는 장애 분석 시 다음 우선순위로 문서를 검색한다.
 
-```text
+```
 1. protocols/             → 해석 규칙 확인
 2. scenarios/             → 장애 유형 식별
 3. runbooks/              → 표준 대응 절차 확인
@@ -247,24 +224,19 @@ AI Agent는 장애 분석 시 다음 우선순위로 문서를 검색한다.
 6. preventive-designs/    → 예방 설계 확인
 ```
 
-AI Agent는 `runbooks/`의 내용을 기본 대응 기준으로 삼되,
-`postmortems/`, `improvements/`, `preventive-designs/`에서 더 안전한 제약 조건이 발견되면
-최종 권장안에 반드시 반영한다.
+AI Agent는 `runbooks/`의 내용을 기본 대응 기준으로 삼되, `postmortems/`, `improvements/`, `preventive-designs/`에서 더 안전한 제약 조건이 발견되면 최종 권장안에 반드시 반영한다.
 
 ---
 
 ## 9. Document Metadata & Linking Rule
 
-RAG 문서는 파일명만으로 연결하지 않는다.  
-모든 Knowledge Source 문서는 다음 기준으로 연결한다.
+RAG 문서는 파일명만으로 연결하지 않는다. 모든 Knowledge Source 문서는 다음 기준으로 연결한다.
 
 1. repository path
 2. filename
 3. document title
 4. front matter metadata
 5. body keywords
-
----
 
 ### 9.1 Required Front Matter
 
@@ -296,8 +268,6 @@ tags:
 ---
 ```
 
----
-
 ### 9.2 Naming Rule
 
 파일명은 가능한 한 다음 패턴을 따른다.
@@ -313,7 +283,7 @@ scenarios/<domain>/<failure-mode>.md
 runbooks/<domain>/<failure-mode>.md
 ```
 
-**예:**
+예:
 
 ```
 scenarios/redis/timeout.md
@@ -322,26 +292,18 @@ preventive-designs/redis-timeout-idempotency-fallback.md
 improvements/redis-timeout-idempotency-hardening.md
 ```
 
----
-
 ### 9.3 Linking Rule
 
 새 문서를 추가할 때는 관련 문서를 명시적으로 연결해야 한다.
 
-**예:**
-
 ```yaml
 related_scenarios:
   - scenarios/redis/timeout.md
-
 related_runbooks:
   - runbooks/redis/timeout.md
-
 related_preventive_designs:
   - preventive-designs/redis-timeout-idempotency-fallback.md
 ```
-
----
 
 ### 9.4 Retrieval Rule
 
@@ -355,13 +317,9 @@ AI Agent는 장애 분석 시 다음 순서로 문서를 연결한다.
 
 > 파일명만으로 연관성을 판단하지 않는다.
 
----
-
 ### 9.5 Safety Rule
 
 `runbooks/`의 대응 절차보다 `postmortems/`, `improvements/`, `preventive-designs/`에서 더 안전한 제약 조건이 발견되면 최종 권장안에 반드시 반영한다.
-
-**예:**
 
 | 출처 | 내용 |
 |------|------|
@@ -370,11 +328,7 @@ AI Agent는 장애 분석 시 다음 순서로 문서를 연결한다.
 | Preventive Design | downstream 상태 확인 전 scale-out 금지 |
 | **Final Recommendation** | scale-out 보류 → external provider latency와 DB connection pool pending 먼저 확인 |
 
----
-
 ### 9.6 Knowledge Priority Rule
-
-동일한 상황에서 Knowledge Source 간 내용이 충돌할 경우 다음 우선순위를 따른다.
 
 | 우선순위 | Knowledge Source | 특성 |
 |------|------|------|
@@ -383,15 +337,7 @@ AI Agent는 장애 분석 시 다음 순서로 문서를 연결한다.
 | 3 | Runbook | 기본 대응 |
 | 4 | Scenario | 장애 정의 |
 
----
-
-### 원칙
-
 > 더 안전한 방향이 항상 우선된다.
-
----
-
-### 예시
 
 | 출처 | 내용 |
 |------|------|
@@ -400,36 +346,19 @@ AI Agent는 장애 분석 시 다음 순서로 문서를 연결한다.
 | Improvement | downstream 확인 전 scale-out 금지 |
 | **최종** | **scale-out 금지** |
 
----
-
 ### 9.7 Time Awareness Rule
 
 Learning Knowledge는 시간 순서에 따라 중요도가 달라진다.
 
 > 최신 Postmortem / Improvement가 더 높은 우선순위를 가진다.
 
----
-
-#### 적용 기준
-
-- `updated_at`
-- `created_at`
-
----
-
-### 원칙
+적용 기준: `updated_at` / `created_at`
 
 > 최근 장애 경험이 더 현실적인 판단 기준이다.
-
----
 
 ### 9.8 Context Matching Rule
 
 AI Agent는 단순 키워드 매칭이 아닌 컨텍스트 기반으로 문서를 선택한다.
-
----
-
-### 주요 컨텍스트
 
 | 컨텍스트 | 예시 |
 |------|------|
@@ -438,38 +367,23 @@ AI Agent는 단순 키워드 매칭이 아닌 컨텍스트 기반으로 문서�
 | `traffic pattern` | spike, steady |
 | `failure scope` | partial, global |
 
----
-
-### 원칙
-
 > 동일 `failure_mode`라도 컨텍스트가 다르면 다른 판단을 할 수 있다.
 
 ---
 
-### 10. Human Override Rule
+## 10. Human Override Rule
 
 AI Agent의 모든 권장 사항은 참고용이며 최종 판단은 사람이 수행한다.
 
-### 원칙
-
 > `AI Recommendation ≠ Final Decision`
 
-### 적용 범위
+적용 범위: 결제 관련 변경 / 데이터 변경 / 트래픽 제어 / scale-out / scale-in
 
-- 결제 관련 변경
-- 데이터 변경
-- 트래픽 제어
-- scale-out / scale-in
+**Human Approval Required**
 
-### 필수
+### 10.1 Execution Responsibility Rule
 
-> **Human Approval Required**
-
-#### 10.1 Execution Responsibility Rule
-
-AI Agent는 인프라 및 시스템 변경을 직접 수행하지 않는다.
-
-모든 실행은 반드시 Human이 수행한다.
+AI Agent는 인프라 및 시스템 변경을 직접 수행하지 않는다. 모든 실행은 반드시 Human이 수행한다.
 
 AI는 다음만 제공한다:
 
@@ -496,13 +410,13 @@ AI Recommendation ≠ Execution
 
 ---
 
-### 11. Postmortem-Driven Learning Rule
+## 11. Postmortem-Driven Learning Rule
 
 본 시스템은 Postmortem 중심으로 학습한다.
 
 ### 11.1 Core Principle
 
-```text
+```
 Scenario / Runbook은 수정하지 않는다
 Postmortem은 계속 추가한다
 AI는 두 데이터를 비교하여 판단한다
@@ -510,25 +424,23 @@ AI는 두 데이터를 비교하여 판단한다
 
 ### 11.2 Document Update Policy
 
-| 문서 유형               | 수정 여부 | 정책                     |
-| ------------------- | ----- | ---------------------- |
-| scenarios/          | ❌     | 절대 수정 금지 (예외적 상황 제외)   |
-| runbooks/           | ❌     | 절대 수정 금지 (예외적 상황 제외)   |
-| improvements/       | ❌     | 기존 문서 수정 금지, 신규 문서 추가  |
-| preventive-designs/ | ❌     | 기존 문서 수정 금지, 신규 문서 추가  |
-| postmortems/        | ❌     | 장애 발생 시 지속적으로 신규 문서 추가 |
+| 문서 유형 | 수정 여부 | 정책 |
+|------|------|------|
+| scenarios/ | ❌ | 절대 수정 금지 (예외적 상황 제외) |
+| runbooks/ | ❌ | 절대 수정 금지 (예외적 상황 제외) |
+| improvements/ | ❌ | 기존 문서 수정 금지, 신규 문서 추가 |
+| preventive-designs/ | ❌ | 기존 문서 수정 금지, 신규 문서 추가 |
+| postmortems/ | ❌ | 장애 발생 시 지속적으로 신규 문서 추가 |
 
 ### 11.3 Postmortem Naming Rule
 
-Postmortem 파일명은 다음 규칙을 따른다.
-
-```text
+```
 <failure-mode>-<core-issue>-<date>.md
 ```
 
 예:
 
-```text
+```
 redis-timeout-scaleout-failure-2026-05-01.md
 db-connection-pool-leak-2026-05-03.md
 kafka-consumer-lag-rebalance-2026-05-05.md
@@ -538,23 +450,16 @@ kafka-consumer-lag-rebalance-2026-05-05.md
 
 모든 Postmortem 문서는 반드시 다음을 포함해야 한다.
 
-```yaml
-failure_mode
-domain
-related_scenarios
-related_runbooks
-related_improvements
-related_preventive_designs
-tags
+```
+failure_mode / domain / related_scenarios / related_runbooks
+related_improvements / related_preventive_designs / tags
 ```
 
 이 조건을 만족해야 RAG에서 자동으로 연결된다.
 
 ### 11.5 Learning Mechanism
 
-AI는 장애 분석 시 다음 방식으로 학습한다.
-
-```text
+```
 1. Scenario → 장애 정의 확인
 2. Runbook → 기본 대응 확인
 3. Postmortem → 과거 실패 사례 확인
@@ -564,22 +469,21 @@ AI는 장애 분석 시 다음 방식으로 학습한다.
 
 ### 11.6 Decision Override Rule
 
-```text
+```
 Postmortem / Improvement / Preventive Design이
 Runbook보다 더 안전한 제약을 제시할 경우
-
 → 반드시 해당 제약을 우선 적용한다
 ```
 
 ### 11.7 Safety Rule
 
-```text
+```
 검증되지 않은 Postmortem은 RAG에 포함하지 않는다
 ```
 
 ### 11.8 System Behavior Summary
 
-```text
+```
 Runbook은 바뀌지 않는다
 Postmortem은 쌓인다
 AI는 경험을 기반으로 더 안전한 판단을 한다
@@ -587,33 +491,33 @@ AI는 경험을 기반으로 더 안전한 판단을 한다
 
 ### 11.9 Ultimate Goal
 
-```text
+```
 장애 대응 시스템 → 학습 시스템 → 사고 예방 시스템
 ```
 
 ---
 
-### 12. Action & Rollback Pair Rule
+## 12. Action & Rollback Pair Rule
 
 AI Agent는 모든 대응 권장 시 반드시 다음을 함께 제공해야 한다.
 
-```text
+```
 1. Recommended Action (권장 조치)
 2. Expected Effect (기대 효과)
 3. Risk (리스크)
 4. Rollback Plan (되돌리는 방법)
 ```
 
-#### 12.1 Rule
+### 12.1 Rule
 
-```text
+```
 모든 Action에는 반드시 Rollback이 존재해야 한다
 Rollback이 없는 Action은 권장하지 않는다
 ```
 
-#### 12.2 Example
+### 12.2 Example
 
-```text
+```
 [Action]
 payment-api scale-out
 
@@ -628,11 +532,11 @@ DB connection pool saturation 가능
 - HPA 비활성화
 ```
 
-#### 12.3 High-Risk Action Policy
+### 12.3 High-Risk Action Policy
 
 다음 Action은 반드시 Rollback 포함:
 
-```text
+```
 - scale-out / scale-in
 - retry 정책 변경
 - timeout 변경
@@ -640,49 +544,128 @@ DB connection pool saturation 가능
 - DB / cache 설정 변경
 ```
 
-#### 12.4 AI Safety Rule
+### 12.4 AI Safety Rule
 
-```text
+```
 Rollback이 정의되지 않은 경우
 → AI는 해당 Action을 권장하지 않는다
 ```
 
-#### 12.5 Verification Rule
+### 12.5 Verification Rule
 
 AI Agent는 각 Action에 대해 반드시 검증 방법을 함께 제공해야 한다.
 
-#### 검증 항목
+검증 항목:
 
 - 어떤 metric을 확인해야 하는가
 - 정상 상태의 기준은 무엇인가
 - 얼마나 기다려야 하는가
 
-#### Example
-
-```text
+```
 [Verification]
 - API latency p95 < 300ms 확인
 - error rate < 1% 확인
 - 2~3분 관찰
 ```
 
-#### 12.6 Action Sequencing Rule
+### 12.6 Action Sequencing Rule
 
 AI Agent는 여러 Action을 제시할 경우 실행 순서를 명확히 정의해야 한다.
 
-```text
-- Step 1 → Step 2 → Step 3
-- 병렬 실행 가능 여부 명시
-Example
+```
+Step 1 → Step 2 → Step 3
+병렬 실행 가능 여부 명시
+
+Example:
 Step 1. External API latency 확인
 Step 2. Retry rate 확인
 Step 3. scale-out 여부 판단
-
 ※ scale-out은 Step 1~2 확인 후 수행
 ```
 
+> 이 문서는 RAG 시스템이 반드시 참조해야 하는 핵심 정책 문서이다.
+
 ---
 
-> 이 규약을 프로토콜에 포함하면 RAG가 훨씬 안정적으로 동작한다.
+## Systems-Math Governance Rule
 
-이 문서는 RAG 시스템이 반드시 참조해야 하는 핵심 정책 문서이다.
+Systems-Math는 단순 수학 문서가 아니다.
+
+**역할:**
+
+- queue saturation explanation
+- retry amplification reasoning
+- tail latency interpretation
+- failure propagation modeling
+- reliability interpretation
+
+AI Agent는 Scenario / Runbook / Experiment와 연결된 Systems-Math 문서를 retrieval 할 수 있다.
+
+단, **Systems-Math는 운영 Action을 직접 결정하지 않는다.**
+
+Systems-Math는 운영 현상을 정량적으로 설명하기 위한 **Operational Quantitative Analysis Layer**이다.
+
+---
+
+## Experiment Knowledge Rule
+
+Experiment는 Recommendation과 Recovery 전략을 검증하기 위한 **Reliability Validation Layer**이다.
+
+Experiment는 다음과 연결된다.
+
+- Scenario / Runbook / Systems-Math / Observability / Postmortem
+
+**Experiment 결과 평가 항목:**
+
+- recovery time
+- rollback effectiveness
+- verification effectiveness
+- recommendation safety
+
+**Experiment 필수 조건:** Human-approved / sandboxed / bounded blast radius / rollback available / verification required
+
+---
+
+## Evidence Correlation Rule
+
+AI Recommendation은 반드시 다음 간의 correlation 기반으로 생성되어야 한다.
+
+- metrics / logs / traces / alert state / deployment events
+
+**단일 metric만으로 root cause를 확정하지 않는다.**
+
+---
+
+## Degraded Retrieval Rule
+
+partial retrieval, metadata inconsistency, embedding failure, observability 부족 상황에서는:
+
+AI는 certainty를 낮추고, **degraded recommendation 상태를 명시**해야 한다.
+
+Unknown을 추정으로 대체해서는 안 된다.
+
+---
+
+## Governance Timeline Rule
+
+다음 이벤트들은 append-only governance timeline으로 기록될 수 있다.
+
+- alert / recommendation / approval
+- execution result / verification / incident resolution
+- postmortem / experiment result
+
+**Timeline 용도:** operator-facing audit / replay compatibility / governance observability
+
+Timeline은 **운영 변경을 직접 실행하지 않는다.**
+
+---
+
+## Non-Goals
+
+이 시스템은 다음을 목표로 하지 않는다.
+
+- autonomous operations
+- LLM-only operational decisions
+- automatic destructive remediation
+- human bypass
+- uncontrolled chaos execution
