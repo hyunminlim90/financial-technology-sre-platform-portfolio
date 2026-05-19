@@ -1,6 +1,6 @@
 # RAG Knowledge System
 
-> AI Agent + Human-in-the-loop 기반 SRE 운영 판단을 위한  
+> AI Agent + Human-in-the-loop 기반 SRE 운영 판단을 위한
 > **RAG Knowledge Layer**
 
 ---
@@ -39,7 +39,7 @@ postmortems/
 ```
 
 | Knowledge | 역할 |
-|------|------|
+|-----------|------|
 | `scenarios/` | 장애 정의 |
 | `runbooks/` | 표준 대응 절차 |
 | `improvements/` | 위험 Action 제한 |
@@ -54,10 +54,7 @@ Secondary Knowledge는 기술 이해를 위한 **보조 지식**이다.
 rag/docs/
 ```
 
-**역할:**
-- 기술 원리 설명
-- 장애 메커니즘 설명
-- metric / log / trace 해석 보조
+**역할:** 기술 원리 설명 / 장애 메커니즘 설명 / metric / log / trace 해석 보조
 
 **주의:**
 - `rag/docs`는 Action을 결정하지 않는다
@@ -124,6 +121,17 @@ tags:
   - timeout
   - latency
   - idempotency
+
+systems_math:
+  - systems-math/kafka-consumer-saturation.md
+
+related_experiments:
+  - experiments/kafka-lag-recovery-validation.md
+
+risk_level: HIGH
+rollback_required: true
+verification_required: true
+human_approval_required: true
 ---
 ```
 
@@ -174,7 +182,7 @@ AI Agent는 RAG 결과를 기반으로 다음을 생성한다:
 - Rollback Plan
 - Verification
 
-> **AI Agent는 실행하지 않는다.**  
+> **AI Agent는 실행하지 않는다.**
 > `AI Recommendation ≠ Execution`
 
 ---
@@ -198,8 +206,6 @@ Incident 종료
 → RAG 반영
 → 다음 장애 대응 개선
 ```
-
-**핵심:**
 
 - Runbook은 바꾸지 않는다
 - Postmortem은 쌓는다
@@ -251,3 +257,122 @@ protocols/preventive-design-authoring-protocol.md
 protocols/postmortem-protocol.md
 protocols/rag-docs-authoring-protocol.md
 ```
+
+---
+
+## Operational Knowledge Graph
+
+이 플랫폼의 핵심은 단순 Vector Search가 아니다.
+
+핵심은 다음 계층 간의 연결 구조를 유지하는 **Operational Knowledge Graph**이다.
+
+```
+Stack
+↕
+Scenario
+↕
+Runbook
+↕
+Systems-Math
+↕
+Experiment
+↕
+Postmortem
+↕
+Preventive Design
+↕
+Improvement
+```
+
+AI는 단일 문서가 아니라, **연결된 운영 Knowledge 집합을 기반으로 reasoning** 해야 한다.
+
+---
+
+## Systems-Math Layer
+
+Systems-Math는 단순 수학 학습 문서가 아니다.
+
+**역할:**
+
+- queue saturation explanation
+- retry amplification analysis
+- tail latency interpretation
+- failure propagation reasoning
+- reliability interpretation
+
+Systems-Math는 다음과 연결된다.
+
+```
+Scenario ↕ Runbook ↕ Experiment ↕ Observability
+```
+
+**예시 개념:** Little's Law / queue utilization / percentile / variance / latency distribution / retry amplification
+
+---
+
+## Experiment Knowledge Layer
+
+Experiment는 Recommendation과 Recovery 전략을 검증하기 위한 **Reliability Validation Layer**이다.
+
+Experiment는 다음과 연결된다.
+
+- Scenario / Runbook / Systems-Math / Observability / Postmortem
+
+**Experiment 결과 평가 항목:**
+
+- recovery time
+- rollback effectiveness
+- verification effectiveness
+- recommendation safety
+
+---
+
+## Retrieval Governance
+
+AI Retrieval은 반드시 다음 순서로 reasoning 해야 한다.
+
+```
+Scenario
+→ Runbook
+→ Improvement
+→ Preventive Design
+→ Postmortem
+→ Systems-Math
+→ Evidence
+```
+
+RAG/docs는 메커니즘 grounding 용도로만 사용된다.
+
+**rag/docs-only reasoning은 운영 Action을 생성할 수 없다.**
+
+---
+
+## Evidence Correlation
+
+AI Recommendation은 반드시 다음 간의 correlation 기반으로 생성되어야 한다.
+
+- metrics / logs / traces / alert state / deployment events
+
+**단일 metric만으로 root cause를 확정하지 않는다.**
+
+---
+
+## Degraded Retrieval Semantics
+
+partial retrieval, embedding failure, metadata inconsistency, observability 부족 상황에서는:
+
+AI는 certainty를 낮추고, **degraded recommendation 상태를 명시**해야 한다.
+
+Unknown을 추정으로 대체해서는 안 된다.
+
+---
+
+## Non-Goals
+
+이 플랫폼은 다음을 목표로 하지 않는다.
+
+- autonomous operations
+- LLM-only operational decisions
+- automatic destructive remediation
+- human bypass
+- uncontrolled chaos execution
