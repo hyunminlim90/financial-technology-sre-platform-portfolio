@@ -313,3 +313,170 @@ improvements/kafka-consumer-lag-rebalance-optimization.md
 
 > **Runbook**은 "할 수 있는 것"  
 > **Improvement**는 "하면 안 되는 것"
+
+---
+
+## Systems-Math Constraint Rule
+
+Improvement는 관련 Systems-Math 문서를 연결할 수 있다.
+
+예:
+
+```yaml
+related_systems_math:
+  - systems-math/retry-amplification.md
+```
+
+Systems-Math는:
+
+- queue saturation
+- retry amplification
+- tail latency
+- failure propagation
+
+등의 운영 현상을 정량적으로 설명한다.
+
+Improvement는:
+정량 분석 결과를 기반으로
+위험한 Action을 제한할 수 있다.
+
+---
+
+## Experiment Validation Rule
+
+Improvement는 관련 Experiment 결과를 연결할 수 있다.
+
+예:
+
+```yaml
+related_experiments:
+  - experiments/retry-storm-validation.md
+```
+
+Experiment 결과는:
+
+- rollback effectiveness
+- recovery time
+- verification effectiveness
+- recommendation safety
+
+평가에 사용된다.
+
+---
+
+## Guardrail Rule
+
+Improvement는 AI Recommendation Guardrail 역할을 수행할 수 있다.
+
+예:
+
+- unsafe scale-out 차단
+- retry amplification 차단
+- fallback overload 방지
+- duplicate execution 방지
+
+```text
+Improvement는:
+operational safety constraint 역할을 가진다.
+```
+
+---
+
+## Evidence Correlation Rule
+
+Improvement는 반드시:
+
+- metrics
+- logs
+- traces
+- deployment events
+
+간의 correlation 기반이어야 한다.
+
+```text
+단일 metric만으로:
+Action 제한을 생성해서는 안 된다.
+```
+
+---
+
+## Degraded Recommendation Rule
+
+partial observability,
+missing metrics,
+trace sampling loss 상황에서는:
+
+AI는 certainty를 낮추고,
+degraded recommendation 상태를 명시해야 한다.
+
+```text
+Unknown을 추정으로 대체해서는 안 된다.
+```
+
+---
+
+## Governance Timeline Rule
+
+다음 이벤트들은 append-only governance timeline으로 기록될 수 있다.
+
+- recommendation
+- approval
+- execution result
+- rollback
+- verification
+- improvement application
+
+Timeline은:
+
+- auditability
+- replay compatibility
+- operational governance
+
+용도로 사용된다.
+
+---
+
+## Recommendation Escalation Rule
+
+HIGH 이상 Risk Action은 반드시:
+
+- Human Approval
+- rollback 검증
+- verification 가능성 확인
+
+후에만 추천될 수 있다.
+
+```text
+CRITICAL Risk Action은:
+staged rollout 또는 sandbox validation 권장.
+```
+
+---
+
+## Learning Feedback Rule
+
+Improvement는 다음 입력을 기반으로 생성될 수 있다.
+
+- postmortem
+- failed recommendation
+- rollback failure
+- repeated incident
+- experiment result
+
+```text
+Improvement는:
+Operational Learning 결과를
+Safety Constraint로 변환한다.
+```
+
+---
+
+## Non-Goals
+
+Improvement는 다음을 목표로 하지 않는다.
+
+- automatic execution
+- destructive remediation
+- human bypass
+- performance-only optimization
+- LLM-only operational decision
