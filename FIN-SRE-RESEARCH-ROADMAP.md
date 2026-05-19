@@ -144,6 +144,109 @@ little-law
 
 ---
 
+# Research / Knowledge Expansion Workflow
+
+> **현재 단계 목표:**
+> 논문 작성이 아니라, **논문으로 발전 가능한 운영 안정성 지식 자산을 지속 축적**하는 것이다.
+
+---
+
+## 전체 흐름
+
+```
+Stack 문서 정독
+→ 대표 장애 유형 선정
+→ Scenario 문서 작성
+→ Runbook 문서 작성
+→ Systems-Math 문서 작성
+→ 하위 수학 개념 문서 작성
+→ 문서 상호 링크 연결
+→ (플랫폼 완성 후) 실험 / 검증 / 연구
+```
+
+---
+
+## Step 1. 00~24 Stack 문서 정독
+
+현재 기술 스택 문서를 기반으로 학습 시작.
+
+---
+
+## Step 2. 대표 장애 유형 선정
+
+- 가장 관련 깊은 장애 유형 **1개** 우선 선정
+- 문서 폭발 방지를 위해 **장애 1개 중심** 유지
+
+---
+
+## Step 3. Scenario 문서 작성
+
+| 항목 | 내용 |
+|------|------|
+| 장애 현상 정의 | 무엇이 어떻게 발생하는가 |
+| Detection Signals | metrics / logs / traces |
+| 영향 범위 | 어디까지 영향이 퍼지는가 |
+| 장애 전파 가능성 | cascading failure 경로 |
+
+---
+
+## Step 4. Runbook 문서 작성
+
+| 항목 | 내용 |
+|------|------|
+| 진단 절차 | 장애 원인 확인 순서 |
+| 완화 절차 | 피해 최소화 방법 |
+| Rollback | 되돌리기 절차 |
+| Verification | 조치 완료 확인 방법 |
+| Approval / Risk | 승인 필요 여부 및 위험도 |
+
+---
+
+## Step 5. Systems-Math 문서 작성
+
+장애 현상을 설명하는 **정량 모델** 작성. 연결 개념:
+
+```
+percentile
+queue-utilization
+Little's Law
+latency distribution
+retry amplification
+```
+
+수식보다 **운영 안정성 현상과의 연결** 중심으로 서술.
+
+---
+
+## Step 6. 하위 수학 개념 문서 작성
+
+- Systems-Math 이해에 필요한 **최소 수학 개념**만 정리
+- 수학 자체가 목적이 아니라 **운영 안정성 현상과의 연결**이 핵심
+
+---
+
+## Step 7. 문서 상호 링크 연결
+
+모든 문서는 서로 연결되어야 한다.
+
+```
+Stack ↔ Scenario ↔ Runbook ↔ Systems-Math
+```
+
+---
+
+## Step 8. 플랫폼 구축 완료 이후
+
+플랫폼이 실제로 동작하는 단계에서 수행.
+
+- 실제 Metrics / Logs / Traces 기반 검증
+- AI Recommendation 평가
+- Experiment 수행
+- Postmortem 축적
+- Reliability / AIOps 연구 진행
+
+---
+
 ## 플랫폼 구축 방향
 
 ### 1단계 — 결제 시스템 구축
