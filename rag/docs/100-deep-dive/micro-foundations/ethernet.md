@@ -25,6 +25,8 @@
 Computer(컴퓨터) [[M]](../../100-deep-dive/micro-foundations/computer.md)  
 Network (네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
 Twisted Pair Cable(트위스티드 페어 케이블) [[M]](../../100-deep-dive/micro-foundations/twisted-pair-cable.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+IEEE 802.3 [[M]](../../100-deep-dive/micro-foundations/ieee-802.3.md)  
 
 </details></br>
 
