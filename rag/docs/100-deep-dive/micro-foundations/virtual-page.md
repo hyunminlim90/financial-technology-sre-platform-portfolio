@@ -18,7 +18,7 @@ Operating System(운영 체제) [[M]](../../100-deep-dive/micro-foundations/oper
 Memory Management Unit(메모리 관리 장치) [[M]](../../100-deep-dive/micro-foundations/memory-management-unit.md)  
 Process Address Space(프로세스 주소 공간) [[M]](../../100-deep-dive/micro-foundations/process-address-space.md)  
 Byte(바이트) [[M]](../../100-deep-dive/micro-foundations/byte.md)  
-Virtual Memory(가상 메모리) [[M]](../../100-deep-dive/micro-foundations/)  
+Virtual Memory(가상 메모리) [[M]](../../100-deep-dive/micro-foundations/virtual-memory.md)  
 
 </details></br>
 
