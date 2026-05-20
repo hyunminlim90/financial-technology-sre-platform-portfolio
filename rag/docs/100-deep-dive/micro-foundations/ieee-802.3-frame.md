@@ -28,8 +28,9 @@ Application Data
 
 Ethernet(이더넷) [[M]](../../100-deep-dive/micro-foundations/ethernet.md)  
 Network(네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
-Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 IEEE 802.3 LAN(이더넷 기반 유선 LAN) [[M]](../../100-deep-dive/micro-foundations/ieee-802.3-lan.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Data Link Layer(데이터 링크 계층) [[M]](../../100-deep-dive/micro-foundations/data-link-layer.md)  
 
 </details></br>
 
