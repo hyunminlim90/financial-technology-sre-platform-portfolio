@@ -14,7 +14,13 @@ ISP의 핵심 역할은 **인터넷 연결 제공**, **IP 주소 할당**, **패
 
 대한민국 기준 예시: KT, SK Broadband, LG Uplus
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Internetwork(인터넷워크) [[M]](../../100-deep-dive/micro-foundations/internetwork.md)  
+Backbone Network(백본망) [[M]](../../100-deep-dive/micro-foundations/backbone-network.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
