@@ -18,7 +18,14 @@
 - L2 (고속 Ethernet/MPLS)
 - L3 (BGP/IP Routing)
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Internet Service Provider(인터넷 서비스 제공업체) [[M]](../../100-deep-dive/micro-foundations/internet-service-provider.md)  
+Cloud Service Provider(클라우드 서비스 제공업체) [[M]](../../100-deep-dive/micro-foundations/cloud-service-provider.md)  
+Telecommunications Carrier(통신 사업자) [[M]](../../100-deep-dive/micro-foundations/telecommunications-carrier.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
