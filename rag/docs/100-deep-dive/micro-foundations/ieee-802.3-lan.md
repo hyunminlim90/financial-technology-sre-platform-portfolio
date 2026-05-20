@@ -38,6 +38,7 @@ Another Computer
 <summary>Deep Dive</summary></br>
 
 IEEE Standard for Ethernet(IEEE 이더넷 표준) [[M]](../../100-deep-dive/micro-foundations/ieee-standard-for-ethernet.md)  
+Local Area Network(근거리 통신망) [[M]](../../100-deep-dive/micro-foundations/local-area-network.md)  
 
 </details></br>
 
