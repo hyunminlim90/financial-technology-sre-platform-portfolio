@@ -31,6 +31,7 @@ Ethernet(이더넷) [[M]](../../100-deep-dive/micro-foundations/ethernet.md)
 Network(네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 소프트웨어(Software) [[M]](../../100-deep-dive/micro-foundations/software.md)  
+계층화(Layering) [[M]](../../100-deep-dive/micro-foundations/layering.md)  
 
 </details></br>
 
