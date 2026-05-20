@@ -40,6 +40,10 @@ Virtual Machine Monitor(가상 머신 모니터) [[M]](../../100-deep-dive/micro
 Security Primitive(보안 프리미티브) [[M]](../../100-deep-dive/micro-foundations/security-primitive.md)  
 Memory Management Unit(메모리 관리 장치) [[M]](../../100-deep-dive/micro-foundations/memory-management-unit.md)  
 Motherboard Chipset(메인보드 칩셋) [[M]](../../100-deep-dive/micro-foundations/motherboard-chipset.md)  
+Hardware(하드웨어) [[M]](../../100-deep-dive/micro-foundations/hardware.md)  
+[[M]](../../100-deep-dive/micro-foundations/bit.md)  
+[[M]](../../100-deep-dive/micro-foundations/register.md)  
+[[M]](../../100-deep-dive/micro-foundations/)
 
 </details></br>
 
