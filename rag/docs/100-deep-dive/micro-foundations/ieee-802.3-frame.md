@@ -26,6 +26,7 @@ Application Data
 <details>
 <summary>Deep Dive</summary></br>
 
+Ethernet(이더넷) [[M]](../../100-deep-dive/micro-foundations/ethernet.md)  
 IEEE 802.3 LAN(이더넷 기반 유선 LAN) [[M]](../../100-deep-dive/micro-foundations/ieee-802.3-lan.md)  
 
 </details></br>
