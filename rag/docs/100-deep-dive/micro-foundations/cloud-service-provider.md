@@ -16,7 +16,14 @@ CSP는 단순 호스팅 업체가 아닙니다. 다음 전체를 통합 운영�
 
 물리 서버, 스토리지, 글로벌 백본망, 가상화 플랫폼, API 기반 제어 시스템, 데이터센터 전력/냉각, 보안 체계, 글로벌 DNS/CDN
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Hyperscale Data Center(하이퍼스케일 데이터센터) [[M]](../../100-deep-dive/micro-foundations/hyperscale-data-center.md)  
+Backbone Network(백본망) [[M]](../../100-deep-dive/micro-foundations/backbone-network.md)  
+Compute Resources(컴퓨트 자원) [[M]](../../100-deep-dive/micro-foundations/compute-resources.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
