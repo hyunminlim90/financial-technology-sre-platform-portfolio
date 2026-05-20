@@ -68,6 +68,13 @@ Virtual Page(가상 페이지) [[M]](../../100-deep-dive/micro-foundations/virtu
 - TCP/IP Packet
 - NIC Throughput
 
+<details>
+<summary>Deep Dive</summary></br>
+
+IEEE 802.3 Frame(이더넷 프레임) [[M]](../../100-deep-dive/micro-foundations/ieee-802.3-frame.md)  
+
+</details></br>
+
 ### Disk / Storage
 - SSD NAND Flash
 - Filesystem Metadata
