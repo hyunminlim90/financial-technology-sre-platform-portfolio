@@ -34,7 +34,12 @@ Another Computer
 
 > IEEE 802.3 LAN은 **Ethernet Frame들이 이동하는 실제 물리 네트워크 공간**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+IEEE Standard for Ethernet(IEEE 이더넷 표준) [[M]](../../100-deep-dive/micro-foundations/ieee-standard-for-ethernet.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
