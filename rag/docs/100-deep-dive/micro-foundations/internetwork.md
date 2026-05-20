@@ -24,7 +24,15 @@ Internet은 **전 세계 규모의 거대한 Internetwork**입니다.
 
 > Internetwork 개념의 최대 규모 구현체가 Internet입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Autonomous System(자율 시스템) [[M]](../../100-deep-dive/micro-foundations/autonomous-system.md)  
+Router(라우터) [[M]](../../100-deep-dive/micro-foundations/router.md)  
+Internet Protocol(인터넷 프로토콜) [[M]](../../100-deep-dive/micro-foundations/internet-protocol.md)  
+Network(네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
