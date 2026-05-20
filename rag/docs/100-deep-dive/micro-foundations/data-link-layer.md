@@ -25,7 +25,6 @@ OSI 7계층 기준:
 Node(노드) [[M]](../../100-deep-dive/micro-foundations/node.md)  
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 
-
 </details></br>
 
 ## 2. 시스템 어디에서 등장하는가
