@@ -19,7 +19,14 @@
 
 > Ethernet은 **데이터를 실제 케이블 위로 운반하는 물리 네트워크 기술**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Computer(컴퓨터) [[M]](../../100-deep-dive/micro-foundations/computer.md)  
+Network (네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
+Twisted Pair Cable(트위스티드 페어 케이블) [[M]](../../100-deep-dive/micro-foundations/twisted-pair-cable.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
