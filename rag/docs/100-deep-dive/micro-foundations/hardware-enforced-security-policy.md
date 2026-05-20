@@ -32,7 +32,13 @@ CPU/MMU가 실시간 강제 집행
 
 > 보안 정책이 실제 반도체 회로 판별 규칙으로 내려간 상태입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Operating System(운영체제)[[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
+Virtual Machine Monitor(가상 머신 모니터) [[M]](../../100-deep-dive/micro-foundations/virtual-machine-monitor.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
