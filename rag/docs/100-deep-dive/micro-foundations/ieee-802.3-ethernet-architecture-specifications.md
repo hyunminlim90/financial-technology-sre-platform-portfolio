@@ -24,7 +24,12 @@ IEEE 802.3 이더넷 아키텍처 규격은:
 
 입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
