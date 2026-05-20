@@ -26,6 +26,7 @@ Cloud Storage Resources(클라우드 스토리지 자원) [[M]](../../100-deep-d
 Virtual Network Resources(가상 네트워크 자원) [[M]](../../100-deep-dive/micro-foundations/virtual-network-resources.md)  
 Platform Service Resources(플랫폼 서비스 자원) [[M]](../../100-deep-dive/micro-foundations/platform-service-resources.md)  
 Software Service Resources(소프트웨어 서비스 자원) [[M]](../../100-deep-dive/micro-foundations/software-service-resources.md)  
+Internetwork(인터넷워크) [[M]](../../100-deep-dive/micro-foundations/internetwork.md)  
 
 </details></br>
 
