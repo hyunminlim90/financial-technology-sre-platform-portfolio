@@ -19,7 +19,7 @@ IP 패킷은:
 <details>
 <summary>Deep Dive</summary></br>
 
-
+Network Layer(네트워크 계층) [[M]](../../100-deep-dive/micro-foundations/network-layer.md)  
 
 </details></br>
 
