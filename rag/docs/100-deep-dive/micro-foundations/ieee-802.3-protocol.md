@@ -13,7 +13,14 @@ IEEE 802.3 프로토콜은:
 
 **"유선 Ethernet 통신의 실제 동작 규칙"** 입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Ethernet(이더넷) [[M]](../../100-deep-dive/micro-foundations/ethernet.md)  
+Node(노드) [[M]](../../100-deep-dive/micro-foundations/node.md)  
+IEEE 802.3 Ethernet Architecture Specifications(이더넷 아키텍처 규격) [[M]](../../100-deep-dive/micro-foundations/ieee-802.3-ethernet-architecture-specifications.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
