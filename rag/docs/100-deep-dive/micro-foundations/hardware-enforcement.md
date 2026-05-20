@@ -29,6 +29,7 @@
 <summary>Deep Dive</summary></br>
 
 Operating System(운영체제) [[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
+Hardware-enforced Security Policy(하드웨어 수립 보안 정책) [[M]](../../100-deep-dive/micro-foundations/hardware-enforced-security-policy.md)  
 
 </details></br>
 
