@@ -38,6 +38,8 @@ CPU/MMU가 실시간 강제 집행
 Operating System(운영체제)[[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
 Virtual Machine Monitor(가상 머신 모니터) [[M]](../../100-deep-dive/micro-foundations/virtual-machine-monitor.md)  
 Security Primitive(보안 프리미티브) [[M]](../../100-deep-dive/micro-foundations/security-primitive.md)  
+Memory Management Unit(메모리 관리 장치) [[M]](../../100-deep-dive/micro-foundations/memory-management-unit.md)  
+Motherboard Chipset(메인보드 칩셋) [[M]](../../100-deep-dive/micro-foundations/motherboard-chipset.md)  
 
 </details></br>
 
