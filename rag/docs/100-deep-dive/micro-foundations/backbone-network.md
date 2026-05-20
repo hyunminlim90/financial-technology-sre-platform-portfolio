@@ -24,6 +24,7 @@
 Internet Service Provider(인터넷 서비스 제공업체) [[M]](../../100-deep-dive/micro-foundations/internet-service-provider.md)  
 Cloud Service Provider(클라우드 서비스 제공업체) [[M]](../../100-deep-dive/micro-foundations/cloud-service-provider.md)  
 Telecommunications Carrier(통신 사업자) [[M]](../../100-deep-dive/micro-foundations/telecommunications-carrier.md)  
+Network(네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
 
 </details></br>
 
