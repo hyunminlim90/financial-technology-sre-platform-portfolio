@@ -20,7 +20,13 @@
 > L2 = 인접 노드 전달
 > L3 = 전체 네트워크 경로 전달
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Internetwork(인터넷워크) [[M]](../../100-deep-dive/micro-foundations/internetwork.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
