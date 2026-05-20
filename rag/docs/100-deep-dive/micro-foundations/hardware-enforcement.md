@@ -25,7 +25,12 @@
 
 > 현대 보안·격리·안정성의 **최하단 기반**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Operating System(운영체제) [[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
