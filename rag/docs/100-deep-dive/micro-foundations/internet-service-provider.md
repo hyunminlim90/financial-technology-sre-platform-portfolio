@@ -19,6 +19,7 @@ ISP의 핵심 역할은 **인터넷 연결 제공**, **IP 주소 할당**, **패
 
 Internetwork(인터넷워크) [[M]](../../100-deep-dive/micro-foundations/internetwork.md)  
 Backbone Network(백본망) [[M]](../../100-deep-dive/micro-foundations/backbone-network.md)  
+Internet Access Service(인터넷 접속 서비스) [[M]](../../100-deep-dive/micro-foundations/internet-access-service.md)  
 
 </details></br>
 
