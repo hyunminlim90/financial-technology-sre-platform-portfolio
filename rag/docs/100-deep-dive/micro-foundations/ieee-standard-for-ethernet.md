@@ -21,7 +21,12 @@ IEEE Standard for Ethernet은:
 
 > Ethernet 세계의 **공통 언어**이자 **공통 물리 규칙**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+IEEE 802.3 Ethernet Working Group [[M]](../../100-deep-dive/micro-foundations/ieee-802.3-ethernet-working-group.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
