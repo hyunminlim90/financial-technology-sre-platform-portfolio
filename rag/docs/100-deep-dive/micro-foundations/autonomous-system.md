@@ -24,7 +24,12 @@ AS는 일반적으로 ISP, 클라우드 사업자, 통신사, 대형 데이터�
 | AS16509 | AWS |
 | AS9644 | KT |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Internet Service Provider(인터넷 서비스 제공업체) [[M]](../../100-deep-dive/micro-foundations/internet-service-provider.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
