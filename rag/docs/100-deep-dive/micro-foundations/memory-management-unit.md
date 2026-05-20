@@ -17,6 +17,7 @@
 Virtual Address(가상 주소) [[M]](../../100-deep-dive/micro-foundations/virtual-address.md)  
 Physical Address(물리 주소) [[M]](../../100-deep-dive/micro-foundations/physical-address.md)  
 메모리 보호(Memory Protection) [[M]](../../100-deep-dive/micro-foundations/memory-protection.md)  
+Hardware Enforcement(하드웨어 강제) [[M]](../../100-deep-dive/micro-foundations/hardware-enforcement.md)
 
 </details></br>
 
