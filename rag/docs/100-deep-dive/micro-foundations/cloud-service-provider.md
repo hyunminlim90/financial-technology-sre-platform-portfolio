@@ -22,6 +22,9 @@ CSP는 단순 호스팅 업체가 아닙니다. 다음 전체를 통합 운영�
 Hyperscale Data Center(하이퍼스케일 데이터센터) [[M]](../../100-deep-dive/micro-foundations/hyperscale-data-center.md)  
 Backbone Network(백본망) [[M]](../../100-deep-dive/micro-foundations/backbone-network.md)  
 Compute Resources(컴퓨트 자원) [[M]](../../100-deep-dive/micro-foundations/compute-resources.md)  
+Cloud Storage Resources(클라우드 스토리지 자원) [[M]](../../100-deep-dive/micro-foundations/cloud-storage-resources.md)  
+Virtual Network Resources(가상 네트워크 자원) [[M]](../../100-deep-dive/micro-foundations/virtual-network-resources.md)  
+Platform Service Resources(플랫폼 서비스 자원) [[M]](../../100-deep-dive/micro-foundations/platform-service-resources.md)  
 
 </details></br>
 
