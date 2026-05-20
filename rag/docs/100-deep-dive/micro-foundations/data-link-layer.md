@@ -24,6 +24,7 @@ OSI 7계층 기준:
 
 Node(노드) [[M]](../../100-deep-dive/micro-foundations/node.md)  
 Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+IEEE 802.3 Protocol(IEEE 802.3 프로토콜) [[M]](../../100-deep-dive/micro-foundations/ieee-802.3-protocol.md)  
 
 </details></br>
 
