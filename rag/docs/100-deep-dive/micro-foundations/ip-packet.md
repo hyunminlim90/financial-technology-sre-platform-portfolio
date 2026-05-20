@@ -16,10 +16,12 @@ IP 패킷은:
 | Ethernet (L2) | 같은 LAN 내부 전달 |
 | IP (L3) | 서로 다른 네트워크 사이 전달 |
 
-> Ethernet → 옆방 전달
-> IP → 도시와 국가를 넘는 전달
+<details>
+<summary>Deep Dive</summary></br>
 
----
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
