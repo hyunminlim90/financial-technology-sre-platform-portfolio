@@ -17,8 +17,12 @@ IEEE 802.3 프로토콜은:
 <summary>Deep Dive</summary></br>
 
 Ethernet(이더넷) [[M]](../../100-deep-dive/micro-foundations/ethernet.md)  
+Network(네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
 Node(노드) [[M]](../../100-deep-dive/micro-foundations/node.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
 IEEE 802.3 Ethernet Architecture Specifications(이더넷 아키텍처 규격) [[M]](../../100-deep-dive/micro-foundations/ieee-802.3-ethernet-architecture-specifications.md)  
+Physical Layer(물리 계층) [[M]](../../100-deep-dive/micro-foundations/physical-layer.md)  
+Data Link Layer(데이터 링크 계층) [[M]](../../100-deep-dive/micro-foundations/data-link-layer.md)  
 
 </details></br>
 
