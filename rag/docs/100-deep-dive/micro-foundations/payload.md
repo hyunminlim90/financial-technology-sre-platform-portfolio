@@ -6,7 +6,7 @@
 
 페이로드(Payload)는:
 
-> 통신 과정에서 필요한 프로토콜 제어 정보와 헤더를 제외한, **실제로 전달하려는 순수 데이터 본문**
+> 통신 과정에서 필요한 프로토콜 제어 정보를 제외한, **실제로 전달하려는 순수 데이터 본문**
 
 ### 핵심 특징
 
@@ -36,6 +36,7 @@
 
 Data Communication(데이터 통신) [[M]](../../100-deep-dive/micro-foundations/data-communication.md)  
 Protocol Control Information(프로토콜 제어 정보) [[M]](../../100-deep-dive/micro-foundations/protocol-control-information.md)  
+Service Data Unit(서비스 데이터 단위) [[M]](../../100-deep-dive/micro-foundations/service-data-unit.md)  
 
 </details></br>
 
