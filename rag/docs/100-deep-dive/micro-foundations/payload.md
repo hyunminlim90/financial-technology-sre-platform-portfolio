@@ -31,7 +31,13 @@
 
 각 계층은 **상위 계층 전체를 자신의 Payload로 취급**합니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data Communication(데이터 통신) [[M]](../../100-deep-dive/micro-foundations/data-communication.md)  
+Protocol Control Information(프로토콜 제어 정보) [[M]](../../100-deep-dive/micro-foundations/protocol-control-information.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
