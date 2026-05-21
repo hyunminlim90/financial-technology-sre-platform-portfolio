@@ -83,6 +83,13 @@ Network Throughput(네트워크 처리율) [[M]](../../100-deep-dive/micro-found
 - Filesystem Metadata
 - Block Device
 
+<details>
+<summary>Deep Dive</summary></br>
+
+Flash SSD(Flash Memory-based Solid State Drive) [[M]](../../100-deep-dive/micro-foundations/flash-memory-based-solid-state-drive.md)  
+
+</details></br>
+
 ### Runtime / JVM
 - Object Header
 - Pointer
