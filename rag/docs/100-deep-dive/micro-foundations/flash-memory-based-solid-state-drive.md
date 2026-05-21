@@ -25,7 +25,12 @@ Flash SSD(Flash Memory-based Solid State Drive)는:
 
 Flash SSD는 전원이 꺼져도 데이터를 유지할 수 있는 **비휘발성 저장장치**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+NAND Flash Memory(낸드 플래시 메모리) [[M]](../../100-deep-dive/micro-foundations/nand-flash-memory.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
