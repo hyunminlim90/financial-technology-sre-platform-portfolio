@@ -29,6 +29,7 @@
 <summary>Deep Dive</summary></br>
 
 IP Data Communication(IP 데이터 통신) [[M]](../../100-deep-dive/micro-foundations/ip-data-communication.md)  
+TCP/IP 4-Layer Reference Model(TCP/IP 4계층 참조 모델) [[M]](../../100-deep-dive/micro-foundations/tcp-ip-4-layer-reference-model.md)  
 
 </details></br>
 
