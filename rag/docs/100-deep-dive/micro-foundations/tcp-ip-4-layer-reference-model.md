@@ -32,7 +32,13 @@ TCP/IP 4계층 참조 모델은:
 
 > 각 계층은 자신의 역할만 수행하며, 상하 계층과 표준 인터페이스로 연결된다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+IP Data Communication(IP 데이터 통신) [[M]](../../100-deep-dive/micro-foundations/ip-data-communication.md)  
+Abstraction Layer(추상화 계층) [[M]](../../100-deep-dive/micro-foundations/abstraction-layer.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
