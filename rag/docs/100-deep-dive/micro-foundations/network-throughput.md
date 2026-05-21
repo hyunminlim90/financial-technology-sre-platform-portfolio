@@ -24,7 +24,13 @@
 Bandwidth ≥ Throughput ≥ Goodput
 ```
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Network(네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
+Goodput(유효 처리율) [[M]](../../100-deep-dive/micro-foundations/goodput.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
