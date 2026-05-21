@@ -74,7 +74,7 @@ Virtual Page(가상 페이지) [[M]](../../100-deep-dive/micro-foundations/virtu
 IEEE 802.3 Frame(이더넷 프레임) [[M]](../../100-deep-dive/micro-foundations/ieee-802.3-frame.md)  
 Internet Protocol Suite(인터넷 프로토콜 스위트) [[M]](../../100-deep-dive/micro-foundations/internet-protocol-suite.md)  
 IP 패킷(IP Packet) [[M]](../../100-deep-dive/micro-foundations/ip-packet.md)  
-
+Network Throughput(네트워크 처리율) [[M]](../../100-deep-dive/micro-foundations/network-throughput.md)  
 
 </details></br>
 
