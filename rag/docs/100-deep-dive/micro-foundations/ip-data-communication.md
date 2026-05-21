@@ -31,7 +31,10 @@ IP 데이터 통신의 기본 전송 단위는 **IP Packet (IP Datagram)**입니
 <details>
 <summary>Deep Dive</summary></br>
 
-
+Internet Protocol(인터넷 프로토콜) [[M]](../../100-deep-dive/micro-foundations/internet-protocol.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+IP Packet(IP 패킷) [[M]](../../100-deep-dive/micro-foundations/ip-packet.md)  
+Network(네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
 
 </details></br>
 
