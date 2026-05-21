@@ -25,7 +25,12 @@
 | Internet Layer | IP 기반 글로벌 라우팅 | IP, ICMP |
 | Network Access Layer | 물리 네트워크 전달 | Ethernet, Wi-Fi |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+IP Data Communication(IP 데이터 통신) [[M]](../../100-deep-dive/micro-foundations/ip-data-communication.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
