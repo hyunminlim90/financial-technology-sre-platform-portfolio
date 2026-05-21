@@ -37,6 +37,11 @@ TCP/IP 4계층 참조 모델은:
 
 IP Data Communication(IP 데이터 통신) [[M]](../../100-deep-dive/micro-foundations/ip-data-communication.md)  
 Abstraction Layer(추상화 계층) [[M]](../../100-deep-dive/micro-foundations/abstraction-layer.md)  
+Communication Protocol(통신 프로토콜) [[M]](../../100-deep-dive/micro-foundations/communication-protocol.md)  
+Data Encapsulation and Decapsulation Flow(데이터 캡슐화 및 역캡슐화 흐름) [[M]](../../100-deep-dive/micro-foundations/data-encapsulation-and-decapsulation-flow.md)  
+Internetwork(인터넷워크) [[M]](../../100-deep-dive/micro-foundations/internetwork.md)  
+Network(네트워크) [[M]](../../100-deep-dive/micro-foundations/network.md)  
+System Architecture(시스템 아키텍처) [[M]](../../100-deep-dive/micro-foundations/system-architecture.md)  
 
 </details></br>
 
