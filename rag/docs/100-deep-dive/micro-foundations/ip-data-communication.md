@@ -28,7 +28,12 @@ IP 데이터 통신의 기본 전송 단위는 **IP Packet (IP Datagram)**입니
 
 인터넷 프로토콜 스위트 기준 **Internet Layer (L3)**에 위치합니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
