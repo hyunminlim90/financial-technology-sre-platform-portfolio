@@ -34,7 +34,13 @@ Bandwidth ≥ Throughput ≥ Goodput
 Goodput = Throughput − (Protocol Overhead + Retransmissions)
 ```
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Application Software(애플리케이션 소프트웨어) [[M]](../../100-deep-dive/micro-foundations/application-software.md)  
+Payload(페이로드) [[M]](../../100-deep-dive/micro-foundations/payload.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
