@@ -29,6 +29,8 @@ Flash SSD는 전원이 꺼져도 데이터를 유지할 수 있는 **비휘발�
 <summary>Deep Dive</summary></br>
 
 NAND Flash Memory(낸드 플래시 메모리) [[M]](../../100-deep-dive/micro-foundations/nand-flash-memory.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Non-volatility(비휘발성) [[M]](../../100-deep-dive/micro-foundations/non-volatility.md)  
 
 </details></br>
 
