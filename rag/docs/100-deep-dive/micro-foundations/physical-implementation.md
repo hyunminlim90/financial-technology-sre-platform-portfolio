@@ -28,7 +28,15 @@
 
 사용자는 논리 구조를 사용하지만, **실제 시스템 성능과 장애는 물리적 구현에서 결정되는 경우가 매우 많습니다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Logical Interface(논리 인터페이스) [[M]](../../100-deep-dive/micro-foundations/logical-interface.md)  
+Hardware(하드웨어) [[M]](../../100-deep-dive/micro-foundations/hardware.md)  
+Physical Operational Mechanism(물리적 동작 메커니즘) [[M]](../../100-deep-dive/micro-foundations/physical-operational-mechanism.md)  
+Physical Architecture(물리적 아키텍처) [[M]](../../100-deep-dive/micro-foundations/physical-architecture.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
