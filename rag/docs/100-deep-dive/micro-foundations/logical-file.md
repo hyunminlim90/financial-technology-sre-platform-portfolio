@@ -27,7 +27,16 @@ Logical File = Metadata + Data
 
 `report.pdf`, `image.png`, `video.mp4`, `database.db` 모두 논리적 파일입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Operating System(운영체제) [[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
+End User(엔드 유저) [[M]](../../100-deep-dive/micro-foundations/end-user.md)  
+Application Software(애플리케이션 소프트웨어) [[M]](../../100-deep-dive/micro-foundations/application-software.md)  
+User Level(사용자 계층) [[M]](../../100-deep-dive/micro-foundations/user-level.md)  
+Data Abstraction(데이터 추상화) [[M]](../../100-deep-dive/micro-foundations/data-abstraction.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
