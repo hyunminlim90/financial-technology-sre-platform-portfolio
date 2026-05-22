@@ -35,6 +35,7 @@ Data Transfer(데이터 전송) [[M]](../../100-deep-dive/micro-foundations/data
 Logical Block(논리 블록) [[M]](../../100-deep-dive/micro-foundations/logical-block.md)  
 I/O Processing(입출력 처리) [[M]](../../100-deep-dive/micro-foundations/io-processing.md)  
 Kernel-level I/O(커널 수준 입출력) [[M]](../../100-deep-dive/micro-foundations/kernel-level-io.md)  
+I/O Mechanism(I/O 메커니즘) [[M]](../../100-deep-dive/micro-foundations/io-mechanism.md)  
 
 </details></br>
 
