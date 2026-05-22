@@ -88,6 +88,7 @@ Network Throughput(네트워크 처리율) [[M]](../../100-deep-dive/micro-found
 
 Flash SSD(Flash Memory-based Solid State Drive) [[M]](../../100-deep-dive/micro-foundations/flash-memory-based-solid-state-drive.md)  
 Filesystem Metadata(파일시스템 메타데이터) [[M]](../../100-deep-dive/micro-foundations/filesystem-metadata.md)  
+Block Device File(블록 장치 파일) [[M]](../../100-deep-dive/micro-foundations/block-device-file.md)  
 
 </details></br>
 
