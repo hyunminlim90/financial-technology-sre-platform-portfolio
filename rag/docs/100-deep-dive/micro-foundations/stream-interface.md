@@ -28,7 +28,15 @@
 
 > **핵심:** 스트림 인터페이스는 데이터를 연속 바이트 흐름으로 추상화합니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Logical Block(논리 블록) [[M]](../../100-deep-dive/micro-foundations/logical-block.md)  
+Byte Stream(바이트 스트림) [[M]](../../100-deep-dive/micro-foundations/byte-stream.md)  
+I/O Abstraction(입출력 추상화) [[M]](../../100-deep-dive/micro-foundations/io-abstraction.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
