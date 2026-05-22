@@ -30,7 +30,14 @@
 
 > 추상화는 단순 편의 기능이 아닌 **복잡도 제어 메커니즘**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Physical Implementation(물리적 구현) [[M]](../../100-deep-dive/micro-foundations/physical-implementation.md)  
+User Level(사용자 계층) [[M]](../../100-deep-dive/micro-foundations/user-level.md)  
+Abstraction Interface(추상화 인터페이스) [[M]](../../100-deep-dive/micro-foundations/abstraction-interface.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
