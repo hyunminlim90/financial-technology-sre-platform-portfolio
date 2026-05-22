@@ -36,6 +36,7 @@
 Physical Implementation(물리적 구현) [[M]](../../100-deep-dive/micro-foundations/physical-implementation.md)  
 User Level(사용자 계층) [[M]](../../100-deep-dive/micro-foundations/user-level.md)  
 Abstraction Interface(추상화 인터페이스) [[M]](../../100-deep-dive/micro-foundations/abstraction-interface.md)  
+Abstract Semantics(추상적 시맨틱스) [[M]](../../100-deep-dive/micro-foundations/abstract-semantics.md)  
 
 </details></br>
 
