@@ -38,6 +38,9 @@
 <summary>Deep Dive</summary></br>
 
 Logical File(논리적 파일) [[M]](../../100-deep-dive/micro-foundations/logical-file.md)  
+Data Storage(데이터 저장) [[M]](../../100-deep-dive/micro-foundations/data-storage.md)  
+File Management(파일 관리) [[M]](../../100-deep-dive/micro-foundations/file-management.md)  
+File System Tracking(파일 시스템 트래킹) [[M]](../../100-deep-dive/micro-foundations/file-system-tracking.md)  
 
 </details></br>
 
