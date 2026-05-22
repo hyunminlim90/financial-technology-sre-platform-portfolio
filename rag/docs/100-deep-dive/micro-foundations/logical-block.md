@@ -23,7 +23,14 @@ Storage Device
 
 일반적으로 512B 또는 4KB 단위가 많이 쓰이며, 현대 시스템에서는 **4KB 정렬**이 중요합니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Secondary Storage Device(보조 기억 장치) [[M]](../../100-deep-dive/micro-foundations/secondary-storage-device.md)  
+Logical Block Addressing(논리 블록 주소 지정) [[M]](../../100-deep-dive/micro-foundations/logical-block-addressing.md)  
+Device Abstraction(장치 추상화) [[M]](../../100-deep-dive/micro-foundations/device-abstraction.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
