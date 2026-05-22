@@ -26,6 +26,10 @@
 <summary>Deep Dive</summary></br>
 
 Physical Device(물리 장치) [[M]](../../100-deep-dive/micro-foundations/physical-device.md)  
+Operating System(운영체제) [[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
+Uniform Control(일관된 제어) [[M]](../../100-deep-dive/micro-foundations/uniform-control.md)  
+Abstraction Interface(추상화 인터페이스) [[M]](../../100-deep-dive/micro-foundations/abstraction-interface.md)  
+Information Hiding(정보 은닉) [[M]](../../100-deep-dive/micro-foundations/information-hiding.md)  
 
 </details></br>
 
