@@ -22,7 +22,12 @@
 
 > **핵심:** 장치 추상화는 하드웨어를 표준화된 소프트웨어 객체로 변환하는 것입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Physical Device(물리 장치) [[M]](../../100-deep-dive/micro-foundations/physical-device.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
