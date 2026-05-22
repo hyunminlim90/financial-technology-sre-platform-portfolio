@@ -29,7 +29,16 @@
 
 > 논리 인터페이스는 물리 장치의 차이를 숨기고 **논리적으로 동일한 사용 경험**을 제공하는 데 목적이 있습니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Physical Implementation(물리적 구현) [[M]](../../100-deep-dive/micro-foundations/physical-implementation.md)  
+Physical Architecture(물리적 아키텍처) [[M]](../../100-deep-dive/micro-foundations/physical-architecture.md)  
+Operating System Kernel Layer(운영체제 커널 계층) [[M]](../../100-deep-dive/micro-foundations/operating-system-kernel-layer.md)  
+I/O Control Protocol(입출력 제어 프로토콜) [[M]](../../100-deep-dive/micro-foundations/io-control-protocol.md)  
+Logical Block Addressing(논리 블록 주소 지정) [[M]](../../100-deep-dive/micro-foundations/logical-block-addressing.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
