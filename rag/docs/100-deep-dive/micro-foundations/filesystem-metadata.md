@@ -34,7 +34,12 @@
 | 데이터 (Data) | 실제 파일 내용 |
 | 메타데이터 (Metadata) | 파일 관리 정보 |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Logical File(논리적 파일) [[M]](../../100-deep-dive/micro-foundations/logical-file.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
