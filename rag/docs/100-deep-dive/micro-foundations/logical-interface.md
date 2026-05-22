@@ -37,6 +37,8 @@ Physical Architecture(물리적 아키텍처) [[M]](../../100-deep-dive/micro-fo
 Operating System Kernel Layer(운영체제 커널 계층) [[M]](../../100-deep-dive/micro-foundations/operating-system-kernel-layer.md)  
 I/O Control Protocol(입출력 제어 프로토콜) [[M]](../../100-deep-dive/micro-foundations/io-control-protocol.md)  
 Logical Block Addressing(논리 블록 주소 지정) [[M]](../../100-deep-dive/micro-foundations/logical-block-addressing.md)  
+Device Driver(디바이스 드라이버) [[M]](../../100-deep-dive/micro-foundations/device-driver.md)  
+Interface(인터페이스) [[M]](../../100-deep-dive/micro-foundations/interface.md)  
 
 </details></br>
 
