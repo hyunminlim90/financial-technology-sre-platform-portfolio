@@ -26,7 +26,17 @@
 
 > **핵심:** Block I/O는 스토리지 장치와 커널 사이의 실제 데이터 트랜잭션 계층입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Secondary Storage Device(보조 기억 장치) [[M]](../../100-deep-dive/micro-foundations/secondary-storage-device.md)  
+Data(데이터) [[M]](../../100-deep-dive/micro-foundations/data.md)  
+Data Transfer(데이터 전송) [[M]](../../100-deep-dive/micro-foundations/data-transfer.md)  
+Logical Block(논리 블록) [[M]](../../100-deep-dive/micro-foundations/logical-block.md)  
+I/O Processing(입출력 처리) [[M]](../../100-deep-dive/micro-foundations/io-processing.md)  
+Kernel-level I/O(커널 수준 입출력) [[M]](../../100-deep-dive/micro-foundations/kernel-level-io.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
