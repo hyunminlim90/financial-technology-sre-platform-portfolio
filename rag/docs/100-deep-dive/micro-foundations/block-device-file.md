@@ -38,6 +38,7 @@ Device Abstraction(장치 추상화) [[M]](../../100-deep-dive/micro-foundations
 Operating System(운영체제) [[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
 Block I/O(블록 입출력) [[M]](../../100-deep-dive/micro-foundations/block-io.md)  
 Block Special File(블록 특수 파일) [[M]](../../100-deep-dive/micro-foundations/block-special-file.md)  
+File Object(파일 객체) [[M]](../../100-deep-dive/micro-foundations/file-object.md)  
 
 </details></br>
 
