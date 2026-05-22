@@ -29,7 +29,17 @@
 | Random Access 가능 | 특정 위치(LBA) 직접 접근 가능 |
 | 커널 Block Layer 연결 | 실제 디바이스 드라이버까지 연결됨 |
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Secondary Storage Device(보조 기억 장치) [[M]](../../100-deep-dive/micro-foundations/secondary-storage-device.md)  
+Stream Interface(스트림 인터페이스) [[M]](../../100-deep-dive/micro-foundations/stream-interface.md)  
+Device Abstraction(장치 추상화) [[M]](../../100-deep-dive/micro-foundations/device-abstraction.md)  
+Operating System(운영체제) [[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
+Block I/O(블록 입출력) [[M]](../../100-deep-dive/micro-foundations/block-io.md)  
+Block Special File(블록 특수 파일) [[M]](../../100-deep-dive/micro-foundations/block-special-file.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
