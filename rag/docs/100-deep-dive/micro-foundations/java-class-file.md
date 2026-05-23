@@ -36,7 +36,12 @@
 → CPU
 ```
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
