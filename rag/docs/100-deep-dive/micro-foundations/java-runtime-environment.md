@@ -29,7 +29,12 @@ JRE는 보통 다음 구성 요소를 포함합니다.
 
 > JRE는 **"자바 프로그램 실행 인프라"** 입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Java Class File(자바 클래스 파일) [[M]](../../100-deep-dive/micro-foundations/java-class-file.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
