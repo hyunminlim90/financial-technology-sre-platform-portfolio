@@ -40,6 +40,10 @@
 <summary>Deep Dive</summary></br>
 
 Java Source File(자바 소스 파일) [[M]](../../100-deep-dive/micro-foundations/java-source-file.md)  
+Java Source Code(자바 소스 코드) [[M]](../../100-deep-dive/micro-foundations/java-source-code.md)  
+Java Virtual Machine(자바 가상 머신) [[M]](../../100-deep-dive/micro-foundations/java-virtual-machine.md)  
+Runtime Execution(런타임 실행) [[M]](../../100-deep-dive/micro-foundations/runtime-execution.md)  
+Java Virtual Machine Instruction Set(자바 가상 머신 명령어 세트) [[M]](../../100-deep-dive/micro-foundations/java-virtual-machine-instruction-set.md)  
 
 </details></br>
 
