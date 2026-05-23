@@ -30,7 +30,19 @@
 - OS / Runtime / Concurrency
 - Failure / Latency / Consistency
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Host System(호스트 시스템) [[M]](../../100-deep-dive/micro-foundations/host-system.md)  
+Algorithm(알고리즘) [[M]](../../100-deep-dive/micro-foundations/algorithm.md)  
+Transaction(트랜잭션) [[M]](../../100-deep-dive/micro-foundations/transaction.md)  
+High-Level Programming Language(고수준 프로그래밍 언어) [[M]](../../100-deep-dive/micro-foundations/high-level-programming-language.md)  
+Software Architecture Design(소프트웨어 아키텍처 설계) [[M]](../../100-deep-dive/micro-foundations/software-architecture-design.md)  
+Source Code Implementation(소스코드 구현) [[M]](../../100-deep-dive/micro-foundations/source-code-implementation.md)  
+Software Verification and Validation(소프트웨어 검증 및 확인) [[M]](../../100-deep-dive/micro-foundations/software-verification-and-validation.md)  
+Software Architecture(소프트웨어 아키텍처) [[M]](../../100-deep-dive/micro-foundations/software-architecture.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
