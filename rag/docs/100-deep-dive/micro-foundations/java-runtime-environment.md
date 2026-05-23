@@ -33,6 +33,8 @@ JRE는 보통 다음 구성 요소를 포함합니다.
 <summary>Deep Dive</summary></br>
 
 Java Class File(자바 클래스 파일) [[M]](../../100-deep-dive/micro-foundations/java-class-file.md)  
+Operating System(운영체제) [[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
+Hosting(호스팅) [[M]](../../100-deep-dive/micro-foundations/hosting.md)  
 
 </details></br>
 
