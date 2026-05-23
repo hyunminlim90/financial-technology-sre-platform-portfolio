@@ -35,6 +35,7 @@ JRE는 보통 다음 구성 요소를 포함합니다.
 Java Class File(자바 클래스 파일) [[M]](../../100-deep-dive/micro-foundations/java-class-file.md)  
 Operating System(운영체제) [[M]](../../100-deep-dive/micro-foundations/operating-system.md)  
 Hosting(호스팅) [[M]](../../100-deep-dive/micro-foundations/hosting.md)  
+JVM Runtime Hosting(JVM 런타임 호스팅) [[M]](../../100-deep-dive/micro-foundations/jvm-runtime-hosting.md)  
 
 </details></br>
 
