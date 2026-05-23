@@ -24,6 +24,10 @@ Linux 커널에서는 대표적으로 `struct file` 구조체로 존재합니다
 <summary>Deep Dive</summary></br>
 
 Open File(오픈 파일) [[M]](../../100-deep-dive/micro-foundations/open-file.md)  
+Runtime State(런타임 상태) [[M]](../../100-deep-dive/micro-foundations/runtime-state.md)  
+Kernel Space(커널 공간) [[M]](../../100-deep-dive/micro-foundations/kernel-space.md)  
+Resource Management(자원 관리) [[M]](../../100-deep-dive/micro-foundations/resource-management.md)  
+Struct File(파일 구조체 객체) [[M]](../../100-deep-dive/micro-foundations/struct-file.md)  
 
 </details></br>
 
