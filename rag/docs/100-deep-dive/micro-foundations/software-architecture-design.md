@@ -35,6 +35,9 @@ Software System(소프트웨어 시스템) [[M]](../../100-deep-dive/micro-found
 Software Component(소프트웨어 구성 요소) [[M]](../../100-deep-dive/micro-foundations/software-component.md)  
 Data Flow(데이터 흐름) [[M]](../../100-deep-dive/micro-foundations/data-flow.md)  
 Software Runtime Architecture(소프트웨어 런타임 아키텍처) [[M]](../../100-deep-dive/micro-foundations/software-runtime-architecture.md)  
+Resource Management Strategy(자원 관리 전략) [[M]](../../100-deep-dive/micro-foundations/resource-management-strategy.md)  
+Dependency Relationship(의존성 관계) [[M]](../../100-deep-dive/micro-foundations/dependency-relationship.md)  
+Architecture Framework(아키텍처 프레임워크) [[M]](../../100-deep-dive/micro-foundations/architecture-framework.md)  
 
 </details></br>
 
