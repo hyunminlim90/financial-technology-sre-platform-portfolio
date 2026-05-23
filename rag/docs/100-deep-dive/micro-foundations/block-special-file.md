@@ -31,7 +31,14 @@ Linux의 **"Everything is a file"** 철학의 핵심 구현체 중 하나입니�
 
 > **핵심:** Block Special File은 스토리지 장치를 파일 시스템에 연결하는 커널 장치 객체입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Secondary Storage Device(보조 기억 장치) [[M]](../../100-deep-dive/micro-foundations/secondary-storage-device.md)  
+inode Object(아이노드 객체) [[M]](../../100-deep-dive/micro-foundations/inode-object.md)  
+Device File(장치 파일) [[M]](../../100-deep-dive/micro-foundations/device-file.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 

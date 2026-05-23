@@ -32,7 +32,12 @@ Application
 <details>
 <summary>Deep Dive</summary></br>
 
-[[M]](../../100-deep-dive/micro-foundations/iodevi)
+I/O Device(입출력 장치) [[M]](../../100-deep-dive/micro-foundations/io-device.md)  
+Data Transfer(데이터 전송) [[M]](../../100-deep-dive/micro-foundations/data-transfer.md)  
+Kernel(커널) [[M]](../../100-deep-dive/micro-foundations/kernel.md)  
+Device Driver(디바이스 드라이버) [[M]](../../100-deep-dive/micro-foundations/device-driver.md)  
+Hardware Controller(하드웨어 컨트롤러) [[M]](../../100-deep-dive/micro-foundations/hardware-controller.md)  
+I/O Processing(입출력 처리) [[M]](../../100-deep-dive/micro-foundations/io-processing.md)  
 
 </details></br>
 
