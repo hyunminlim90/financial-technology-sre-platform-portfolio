@@ -35,7 +35,12 @@
 → JVM Execution
 ```
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Programmer(프로그래머) [[M]](../../100-deep-dive/micro-foundations/programmer.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
