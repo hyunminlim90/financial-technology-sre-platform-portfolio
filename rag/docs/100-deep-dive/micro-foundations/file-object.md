@@ -20,7 +20,12 @@ Linux 커널에서는 대표적으로 `struct file` 구조체로 존재합니다
 
 > **핵심:** inode는 파일의 정적 메타데이터, file object는 열린 파일의 동적 실행 상태입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Open File(오픈 파일) [[M]](../../100-deep-dive/micro-foundations/open-file.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
