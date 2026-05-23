@@ -39,6 +39,8 @@
 <summary>Deep Dive</summary></br>
 
 Programmer(프로그래머) [[M]](../../100-deep-dive/micro-foundations/programmer.md)  
+The Java Language Specification(자바 프로그래밍 언어 사양) [[M]](../../100-deep-dive/micro-foundations/the-java-language-specification.md)  
+Source Code(소스 코드) [[M]](../../100-deep-dive/micro-foundations/source-code.md)  
 
 </details></br>
 
