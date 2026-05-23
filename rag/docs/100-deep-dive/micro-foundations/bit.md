@@ -98,6 +98,13 @@ Block Device File(블록 장치 파일) [[M]](../../100-deep-dive/micro-foundati
 - Bit Mask
 - GC Metadata
 
+<details>
+<summary>Deep Dive</summary></br>
+
+Java Runtime Environment (자바 런타임 환경) [[M]](../../100-deep-dive/micro-foundations/java-runtime-environment.md)  
+
+</details></br>
+
 ### Security
 - Hash
 - Encryption
