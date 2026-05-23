@@ -28,7 +28,15 @@
 
 Layer, Module, Service, Interface, API, Message Flow, Data Model, Dependency Direction, Runtime Boundary
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Software System(소프트웨어 시스템) [[M]](../../100-deep-dive/micro-foundations/software-system.md)  
+Software Component(소프트웨어 구성 요소) [[M]](../../100-deep-dive/micro-foundations/software-component.md)  
+Data Flow(데이터 흐름) [[M]](../../100-deep-dive/micro-foundations/data-flow.md)  
+Software Runtime Architecture(소프트웨어 런타임 아키텍처) [[M]](../../100-deep-dive/micro-foundations/software-runtime-architecture.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
