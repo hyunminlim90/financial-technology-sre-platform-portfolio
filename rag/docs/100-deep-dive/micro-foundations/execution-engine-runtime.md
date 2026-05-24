@@ -25,6 +25,8 @@ Bytecode Instruction(바이트코드 인스트럭션) [[M]](../../100-deep-dive/
 Executable State Management(실행 가능 상태 관리) [[M]](../../100-deep-dive/micro-foundations/executable-state-management.md)  
 Execution Thread(실행 스레드) [[M]](../../100-deep-dive/micro-foundations/execution-thread.md)  
 
+I/O(입출력) [[M]](../../100-deep-dive/micro-foundations/io.md)  
+
 </details></br>
 
 ## 2. 시스템 어디에서 등장하는가
