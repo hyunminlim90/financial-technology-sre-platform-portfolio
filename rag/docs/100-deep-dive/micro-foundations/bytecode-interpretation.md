@@ -24,6 +24,7 @@ JVM Execution Engine(JVM 실행 엔진) [[M]](../../100-deep-dive/micro-foundati
 Bytecode Instruction(바이트코드 인스트럭션) [[M]](../../100-deep-dive/micro-foundations/bytecode-instruction.md)  
 Instruction Fetch(명령어 인출) [[M]](../../100-deep-dive/micro-foundations/instruction-fetch.md)  
 Instruction Decode(명령어 해독) [[M]](../../100-deep-dive/micro-foundations/instruction-decode.md)  
+Instruction Execution(인스트럭션 익스큐션) [[M]](../../100-deep-dive/micro-foundations/instruction-execution.md)  
 
 </details></br>
 
