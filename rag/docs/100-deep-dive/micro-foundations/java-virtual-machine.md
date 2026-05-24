@@ -24,6 +24,7 @@ JVM은:
 <summary>Deep Dive</summary></br>
 
 Java Class File Format(자바 클래스 파일 포맷) [[M]](../../100-deep-dive/micro-foundations/java-class-file-format.md)  
+Instruction Dispatch(인스트럭션 디스패치) [[M]](../../100-deep-dive/micro-foundations/instruction-dispatch.md)  
 
 </details></br>
 
