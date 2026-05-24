@@ -18,7 +18,13 @@
 
 > 정적인 코드가 실제 시스템 프로세스로 살아 움직이게 만드는 **실행 운영 계층**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Bytecode Instruction(바이트코드 인스트럭션) [[M]](../../100-deep-dive/micro-foundations/bytecode-instruction.md)  
+Executable State Management(실행 가능 상태 관리) [[M]](../../100-deep-dive/micro-foundations/executable-state-management.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
