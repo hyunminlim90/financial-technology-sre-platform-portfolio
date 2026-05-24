@@ -20,7 +20,12 @@ JVM은:
 
 **JVM은 자바 프로그램의 실제 런타임 운영 시스템입니다.**
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Java Class File Format(자바 클래스 파일 포맷) [[M]](../../100-deep-dive/micro-foundations/java-class-file-format.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
