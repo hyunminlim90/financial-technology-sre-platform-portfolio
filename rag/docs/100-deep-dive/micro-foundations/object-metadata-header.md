@@ -31,7 +31,14 @@
     └─ reference data
 ```
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Java Virtual Machine(자바 가상 머신) [[M]](../../100-deep-dive/micro-foundations/java-virtual-machine.md)  
+Instance(인스턴스) [[M]](../../100-deep-dive/micro-foundations/instance.md)  
+Object Lifecycle Management(객체 생명 주기 관리) [[M]](../../100-deep-dive/micro-foundations/object-lifecycle-management.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
@@ -245,3 +252,7 @@ pidstat
 - high memory RSS
 - GC latency increase
 - CPU spike
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
