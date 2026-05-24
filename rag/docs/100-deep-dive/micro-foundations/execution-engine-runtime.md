@@ -23,9 +23,13 @@
 
 Bytecode Instruction(바이트코드 인스트럭션) [[M]](../../100-deep-dive/micro-foundations/bytecode-instruction.md)  
 Executable State Management(실행 가능 상태 관리) [[M]](../../100-deep-dive/micro-foundations/executable-state-management.md)  
+Central Processing Unit(중앙 처리 장치) [[M]](../../100-deep-dive/micro-foundations/cpu.md)  
+Main Memory(주기억장치) [[M]](../../100-deep-dive/micro-foundations/main-memory.md)  
 Execution Thread(실행 스레드) [[M]](../../100-deep-dive/micro-foundations/execution-thread.md)  
-
 I/O(입출력) [[M]](../../100-deep-dive/micro-foundations/io.md)  
+Computing Resources(컴퓨팅 자원) [[M]](../../100-deep-dive/micro-foundations/computing-resources.md)  
+Dynamic Resource Management(동적 자원 관리) [[M]](../../100-deep-dive/micro-foundations/dynamic-resource-management.md)  
+Runtime Environment(런타임 환경) [[M]](../../100-deep-dive/micro-foundations/runtime-environment.md)  
 
 </details></br>
 
