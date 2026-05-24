@@ -17,7 +17,12 @@
 
 > 정적인 바이트코드를 런타임에서 동적으로 실행 흐름으로 변환하는 메커니즘입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+JVM Execution Engine(JVM 실행 엔진) [[M]](../../100-deep-dive/micro-foundations/jvm-execution-engine.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
