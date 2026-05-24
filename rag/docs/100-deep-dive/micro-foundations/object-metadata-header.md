@@ -37,6 +37,10 @@
 Java Virtual Machine(자바 가상 머신) [[M]](../../100-deep-dive/micro-foundations/java-virtual-machine.md)  
 Instance(인스턴스) [[M]](../../100-deep-dive/micro-foundations/instance.md)  
 Object Lifecycle Management(객체 생명 주기 관리) [[M]](../../100-deep-dive/micro-foundations/object-lifecycle-management.md)  
+Heap Area(힙 영역) [[M]](../../100-deep-dive/micro-foundations/heap-area.md)  
+Object Header(객체 헤더) [[M]](../../100-deep-dive/micro-foundations/object-header.md)  
+Header Injection(헤더 주입) [[M]](../../100-deep-dive/micro-foundations/header-injection.md)  
+Object Control Metadata(객체 제어 메타데이터) [[M]](../../100-deep-dive/micro-foundations/object-control-metadata.md)  
 
 </details></br>
 

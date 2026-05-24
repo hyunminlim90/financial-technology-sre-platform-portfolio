@@ -25,6 +25,11 @@
 <summary>Deep Dive</summary></br>
 
 Run Time(실행 시간) [[M]](../../100-deep-dive/micro-foundations/run-time.md)  
+Dynamic Memory Allocation(동적 메모리 할당) [[M]](../../100-deep-dive/micro-foundations/dynamic-memory-allocation.md)  
+Instance(인스턴스) [[M]](../../100-deep-dive/micro-foundations/instance.md)  
+Array Instance(배열 인스턴스) [[M]](../../100-deep-dive/micro-foundations/array-instance.md)  
+Memory Loading(메모리 적재) [[M]](../../100-deep-dive/micro-foundations/memory-loading.md)  
+Thread-Shared Data Area(스레드 공유 데이터 영역) [[M]](../../100-deep-dive/micro-foundations/thread-shared-data-area.md)  
 
 </details></br>
 
@@ -242,3 +247,7 @@ heap growth
 ```
 
 > **container memory limit** 환경에서는 **heap sizing**이 매우 중요합니다.
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
