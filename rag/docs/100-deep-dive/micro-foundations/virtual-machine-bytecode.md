@@ -24,6 +24,7 @@
 <summary>Deep Dive</summary></br>
 
 High-Level Source Language(고급 소스 언어) [[M]](../../100-deep-dive/micro-foundations/high-level-source-language.md)  
+Virtual Machine Executable File(가상 머신 실행 파일) [[M]](../../100-deep-dive/micro-foundations/virtual-machine-executable-file.md)  
 
 </details></br>
 
