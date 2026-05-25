@@ -21,7 +21,9 @@
 | bytecode artifact | VM executable |
 | shared library | reusable runtime module |
 
----
+Compile-time(컴파일 타임) [[M]](../../100-deep-dive/micro-foundations/compile-time.md)  
+High-Level Source Language(고급 소스 언어) [[M]](../../100-deep-dive/micro-foundations/high-level-source-language.md)  
+
 
 ## 2. 시스템 어디에서 등장하는가
 
