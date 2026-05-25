@@ -22,7 +22,12 @@
 
 > compile-time establishes executable structure before runtime begins
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Non-Runtime Phase(비실행 시점) [[M]](../../100-deep-dive/micro-foundations/non-runtime-phase.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
