@@ -105,6 +105,7 @@ Java Runtime Environment (자바 런타임 환경) [[M]](../../100-deep-dive/mic
 Java Virtual Machine(자바 가상 머신) [[M]](../../100-deep-dive/micro-foundations/java-virtual-machine.md)  
 Object Metadata Header(객체 메타데이터 헤더) [[M]](../../100-deep-dive/micro-foundations/object-metadata-header.md)  
 
+
 </details></br>
 
 ### Security
