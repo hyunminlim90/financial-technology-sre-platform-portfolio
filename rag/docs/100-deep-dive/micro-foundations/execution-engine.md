@@ -23,7 +23,7 @@
 
 즉, 실행 엔진은 **runtime-controlled machine execution coordinator**입니다.
 
----
+Virtual Machine Bytecode(가상 머신 바이트코드) [[M]](../../100-deep-dive/micro-foundations/virtual-machine-bytecode.md)  
 
 ## 2. 시스템 어디에서 등장하는가
 
