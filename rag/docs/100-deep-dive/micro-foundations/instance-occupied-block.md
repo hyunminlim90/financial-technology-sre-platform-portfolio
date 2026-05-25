@@ -21,7 +21,7 @@
 <details>
 <summary>Deep Dive</summary></br>
 
-
+Runtime Environment(런타임 환경) [[M]](../../100-deep-dive/micro-foundations/runtime-environment.md)  
 
 </details></br>
 
