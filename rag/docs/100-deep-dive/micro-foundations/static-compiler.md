@@ -23,7 +23,7 @@
 
 Compile-time(컴파일 타임) [[M]](../../100-deep-dive/micro-foundations/compile-time.md)  
 High-Level Source Language(고급 소스 언어) [[M]](../../100-deep-dive/micro-foundations/high-level-source-language.md)  
-
+Compiler Frontend Analysis(컴파일러 프론트엔드 분석) [[M]](../../100-deep-dive/micro-foundations/compiler-frontend-analysis.md)  
 
 ## 2. 시스템 어디에서 등장하는가
 
