@@ -215,3 +215,7 @@ GC는 객체를 **movable memory block**으로 취급합니다. 따라서 copy, 
 - allocator contention
 - GC amplification
 - memory churn
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*

@@ -1,5 +1,7 @@
 # 가상 머신 바이트코드 (Virtual Machine Bytecode)
 
+> 정독: 0회
+
 ## 1. 이 기술이 무엇인가
 
 가상 머신 바이트코드(**virtual-machine executable intermediate instruction format**)는:
@@ -18,7 +20,12 @@
 
 즉, 바이트코드는 **hardware-independent executable instruction stream**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+High-Level Source Language(고급 소스 언어) [[M]](../../100-deep-dive/micro-foundations/high-level-source-language.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 

@@ -1,5 +1,7 @@
 # 실행 엔진 (Execution Engine)
 
+> 정독: 0회
+
 ## 1. 이 기술이 무엇인가
 
 실행 엔진은(**runtime instruction execution subsystem**):
