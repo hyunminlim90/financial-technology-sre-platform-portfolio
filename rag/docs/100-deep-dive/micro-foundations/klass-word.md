@@ -29,7 +29,12 @@
 
 즉, 클래스 워드는 **object identity-to-type bridge**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+Instance Occupied Block(인스턴스 점유 블록) [[M]](../../100-deep-dive/micro-foundations/instance-occupied-block.md)  
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
