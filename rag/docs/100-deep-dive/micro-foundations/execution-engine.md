@@ -28,6 +28,7 @@ Compiler Intermediate Representation(컴파일러 중간 표현) [[M]](../../100
 Virtual Instruction Set Architecture(가상 명령어 집합 아키텍처) [[M]](../../100-deep-dive/micro-foundations/virtual-instruction-set-architecture.md)  
 Native Machine Code(네이티브 기계어 코드) [[M]](../../100-deep-dive/micro-foundations/native-machine-code.md)  
 Just-In-Time Compilation(JIT 컴파일) [[M]](../../100-deep-dive/micro-foundations/just-in-time-compilation.md)  
+Instruction Execution Cycle(명령어 실행 사이클) [[M]](../../100-deep-dive/micro-foundations/instruction-execution-cycle.md)  
 
 ## 2. 시스템 어디에서 등장하는가
 

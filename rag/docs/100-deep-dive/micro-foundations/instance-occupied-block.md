@@ -4,9 +4,9 @@
 
 ## 1. 이 기술이 무엇인가
 
-인스턴스 점유 블록은(**single object contiguous memory region**):
+인스턴스 점유 블록은:
 
-> 런타임이 객체를 생성할 때 객체 헤더, 필드 데이터, 정렬 패딩까지 포함하여 하나의 객체가 실제 메모리에서 점유하는 연속된 바이트 영역 전체를 의미합니다.
+> 런타임이 객체를 생성할 때 객체 헤더, 필드 데이터, 정렬 패딩까지 포함하여 하나의 객체가 실제 메모리에서 점유하는 연속된 바이트 영역 전체를 의미
 
 ### 일반적 구조
 
@@ -18,7 +18,12 @@
 
 핵심은 **contiguous object memory layout**입니다. 즉, 객체는 논리적 개념 이전에 **physically allocated memory block**입니다.
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 
