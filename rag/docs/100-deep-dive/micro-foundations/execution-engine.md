@@ -4,7 +4,7 @@
 
 ## 1. 이 기술이 무엇인가
 
-실행 엔진은(**runtime instruction execution subsystem**):
+실행 엔진은:
 
 > 바이트코드, 중간 표현(IR), 가상 명령어를 실제 CPU가 실행 가능한 기계어 흐름으로 변환하고 실행
 

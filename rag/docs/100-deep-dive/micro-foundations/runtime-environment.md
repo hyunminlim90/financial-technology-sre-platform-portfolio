@@ -27,7 +27,12 @@
 - 입출력(I/O)
 - 네트워크 인터페이스 연결
 
----
+<details>
+<summary>Deep Dive</summary></br>
+
+
+
+</details></br>
 
 ## 2. 시스템 어디에서 등장하는가
 

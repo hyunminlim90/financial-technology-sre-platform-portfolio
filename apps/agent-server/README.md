@@ -1719,6 +1719,14 @@ See:
 docs/governance-timeline-projection-backed-aggregation-final-consistency-checklist.md
 ```
 
+### Governance Timeline Projection-backed Aggregation Architecture Phase Closure
+
+See:
+
+```text
+docs/governance-timeline-projection-backed-aggregation-architecture-phase-closure.md
+```
+
 ### Governance Timeline Architecture Phase Closure
 
 See:
