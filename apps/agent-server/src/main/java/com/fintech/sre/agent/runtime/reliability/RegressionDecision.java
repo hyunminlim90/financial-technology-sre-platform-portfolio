@@ -65,7 +65,9 @@ public record RegressionDecision(
 			RegressionAssessment assessment
 	) {
 		if (assessment.signals().stream()
-				.anyMatch(signal -> signal.type() == RegressionSignalType.PAYMENT_SAFETY)) {
+				.anyMatch(signal -> signal.type() == RegressionSignalType.PAYMENT_SAFETY
+						|| signal.type()
+						== RegressionSignalType.PAYMENT_INCONSISTENCY)) {
 			return RegressionSeverity.HIGH;
 		}
 		if (assessment.signals().stream()

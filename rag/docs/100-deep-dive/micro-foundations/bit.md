@@ -104,7 +104,8 @@ Block Device File(블록 장치 파일) [[M]](../../100-deep-dive/micro-foundati
 Java Runtime Environment (자바 런타임 환경) [[M]](../../100-deep-dive/micro-foundations/java-runtime-environment.md)  
 Java Virtual Machine(자바 가상 머신) [[M]](../../100-deep-dive/micro-foundations/java-virtual-machine.md)  
 Object Metadata Header(객체 메타데이터 헤더) [[M]](../../100-deep-dive/micro-foundations/object-metadata-header.md)  
-[[M]](../../100-deep-dive/micro-foundations/object-reference.md)  
+Object Reference(객체 참조) [[M]](../../100-deep-dive/micro-foundations/object-reference.md)  
+Bitmask(비트마스크) [[M]](../../100-deep-dive/micro-foundations/bitmask.md)  
 
 </details></br>
 

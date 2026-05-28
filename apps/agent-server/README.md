@@ -1903,6 +1903,14 @@ See:
 docs/governance-timeline-final-consistency-checklist.md
 ```
 
+### Runtime Operational Reliability Semantic Runtime Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-semantic-runtime-phase-closure.md
+```
+
 ### Governance Search Resilience Policy
 
 The governance search resilience policy is documented in:

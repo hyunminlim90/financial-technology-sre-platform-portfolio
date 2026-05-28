@@ -1,0 +1,9 @@
+package com.fintech.sre.agent.runtime.reliability;
+
+public enum RecommendationScope {
+	NONE,
+	ADVISORY_ONLY,
+	ADVISORY_WITH_VERIFICATION_REQUIREMENT,
+	ADVISORY_WITH_ROLLBACK_AND_VERIFICATION_REQUIREMENT,
+	HUMAN_APPROVAL_GATED_ADVISORY
+}
