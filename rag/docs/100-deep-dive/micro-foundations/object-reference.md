@@ -26,6 +26,9 @@ Runtime Environment(런타임 환경) [[M]](../../100-deep-dive/micro-foundation
 Memory Base Address(메모리 시작 주소) [[M]](../../100-deep-dive/micro-foundations/memory-base-address.md)  
 Logical Address(논리 주소) [[M]](../../100-deep-dive/micro-foundations/logical-address.md)  
 Execution Engine(실행 엔진) [[M]](../../100-deep-dive/micro-foundations/execution-engine.md)  
+Memory Manager(메모리 관리자) [[M]](../../100-deep-dive/micro-foundations/memory-manager.md)  
+Reference Tracing(참조 추적) [[M]](../../100-deep-dive/micro-foundations/reference-tracing.md)  
+Object Access(객체 접근) [[M]](../../100-deep-dive/micro-foundations/object-access.md)  
 
 </details></br>
 

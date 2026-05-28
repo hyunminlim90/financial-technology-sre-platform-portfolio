@@ -35,7 +35,7 @@ Stability(안정성)는:
 
 System(시스템) [[M]](../../100-deep-dive/micro-foundations/system.md)  
 Fault(결함) [[M]](../../100-deep-dive/micro-foundations/fault.md)  
-Load(부하) [[M]](../../100-deep-dive/micro-foundations/load.md)  
+Load(부하) [[M]](../../100-deep-dive/micro-foundations/system-load.md)  
 Error(오류) [[M]](../../100-deep-dive/micro-foundations/error.md)  
 Spike(충격) [[M]](../../100-deep-dive/micro-foundations/spike.md)  
 

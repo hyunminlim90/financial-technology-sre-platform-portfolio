@@ -30,7 +30,15 @@
 <details>
 <summary>Deep Dive</summary></br>
 
-
+Program(프로그램) [[M]](../../100-deep-dive/micro-foundations/program.md)  
+Executable File(실행 파일) [[M]](../../100-deep-dive/micro-foundations/executable-file.md)  
+Process Execution(프로세스 실행) [[M]](../../100-deep-dive/micro-foundations/process-execution.md)  
+Normal Execution(정상 실행) [[M]](../../100-deep-dive/micro-foundations/normal-execution.md)  
+Execution Engine(실행 엔진) [[M]](../../100-deep-dive/micro-foundations/execution-engine.md)  
+Main Memory(주기억장치) [[M]](../../100-deep-dive/micro-foundations/main-memory.md)  
+Runtime Library(런타임 라이브러리) [[M]](../../100-deep-dive/micro-foundations/runtime-library.md)  
+System Call Interface(시스템 콜 인터페이스) [[M]](../../100-deep-dive/micro-foundations/system-call-interface.md)  
+Execution Platform(실행 플랫폼) [[M]](../../100-deep-dive/micro-foundations/execution-platform.md)  
 
 </details></br>
 

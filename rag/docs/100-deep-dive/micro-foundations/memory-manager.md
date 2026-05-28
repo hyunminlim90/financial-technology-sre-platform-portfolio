@@ -23,6 +23,10 @@
 <summary>Deep Dive</summary></br>
 
 Process(프로세스) [[M]](../../100-deep-dive/micro-foundations/process.md)  
+Runtime Environment(런타임 환경) [[M]](../../100-deep-dive/micro-foundations/runtime-environment.md)  
+Memory Allocation(메모리 할당) [[M]](../../100-deep-dive/micro-foundations/memory-allocation.md)  
+Memory Tracking(메모리 추적) [[M]](../../100-deep-dive/micro-foundations/memory-tracking.md)  
+Memory Reclamation(메모리 회수) [[M]](../../100-deep-dive/micro-foundations/memory-reclamation.md)  
 
 </details></br>
 

@@ -6,7 +6,7 @@
 
 실행 상태는:
 
-> 프로세스 또는 스레드가 실제 CPU 코어를 점유[(여기까지 진행됨 스케줄링)하여 명령어를 수행 중인 상태
+> 프로세스 또는 스레드가 실제 CPU 코어를 점유하여 명령어를 수행 중인 상태
 
 메모리에 존재하는 것만으로는 실행 상태가 아닙니다.
 
@@ -26,6 +26,7 @@ Process(프로세스) [[M]](../../100-deep-dive/micro-foundations/process.md)
 Thread(스레드) [[M]](../../100-deep-dive/micro-foundations/thread.md)  
 Processing Core(프로세싱 코어) [[M]](../../100-deep-dive/micro-foundations/processing-core.md)  
 Scheduling(스케줄링) [[M]](../../100-deep-dive/micro-foundations/scheduling.md)  
+Instruction Cycle(명령어 사이클) [[M]](../../100-deep-dive/micro-foundations/instruction-cycle.md)  
 
 </details></br>
 
