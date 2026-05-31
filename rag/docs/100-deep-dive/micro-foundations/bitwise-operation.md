@@ -37,7 +37,10 @@
 
 Operand(피연산자) [[M]](../../100-deep-dive/micro-foundations/operand.md)  
 Arithmetic Operation(산술 연산) [[M]](../../100-deep-dive/micro-foundations/arithmetic-operation.md)  
+Bit Index(비트 인덱스) [[M]](../../100-deep-dive/micro-foundations/bit-index.md)  
+Parallel Logical Operation(병렬 논리 연산) [[M]](../../100-deep-dive/micro-foundations/parallel-logical-operation.md)  
 Bit Field(비트 필드) [[M]](../../100-deep-dive/micro-foundations/bit-field.md)  
+Boolean Operation(부울 연산) [[M]](../../100-deep-dive/micro-foundations/boolean-operation.md)  
 
 </details></br>
 

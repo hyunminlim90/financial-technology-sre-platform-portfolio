@@ -30,6 +30,9 @@
 
 Word(워드) [[M]](../../100-deep-dive/micro-foundations/word.md)  
 Bit Field Member(비트 필드 멤버) [[M]](../../100-deep-dive/micro-foundations/bit-field-member.md)  
+Bit Segment(비트 세그먼트) [[M]](../../100-deep-dive/micro-foundations/bit-segment.md)  
+Bit Field Member Value(비트 필드 멤버 값) [[M]](../../100-deep-dive/micro-foundations/bit-field-member-value.md)  
+Bit Field Encoding(비트 필드 인코딩) [[M]](../../100-deep-dive/micro-foundations/bit-field-encoding.md)  
 
 </details></br>
 

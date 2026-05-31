@@ -30,6 +30,8 @@
 Word(워드) [[M]](../../100-deep-dive/micro-foundations/word.md)  
 Data Container(데이터 컨테이너) [[M]](../../100-deep-dive/micro-foundations/data-container.md)  
 Bit Segment(비트 세그먼트) [[M]](../../100-deep-dive/micro-foundations/bit-segment.md)  
+Bit Field Allocation(비트 필드 할당) [[M]](../../100-deep-dive/micro-foundations/bit-field-allocation.md)  
+Data Field(데이터 필드) [[M]](../../100-deep-dive/micro-foundations/data-field.md)  
 
 </details></br>
 
