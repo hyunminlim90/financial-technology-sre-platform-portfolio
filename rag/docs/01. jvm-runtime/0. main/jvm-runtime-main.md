@@ -1,6 +1,6 @@
 # Fin-Tech 결제 시스템 SRE 관점의 JVM Runtime E2E 아키텍처 및 장애 징후 대응 명세
 
-> **대상 환경**: OpenJDK 21/25 LTS · Kubernetes · Cgroup v2 · 2026년 기준 Production Baseline
+**대상 환경**: OpenJDK 21/25 LTS · Kubernetes · Cgroup v2 · 2026년 기준 Production Baseline
 
 > 정독: 0회
 
