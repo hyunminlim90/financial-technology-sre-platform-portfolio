@@ -101,9 +101,8 @@ perf top -p 12345 -d 10
 ThreadPool의 CPU 점유가 71%로 확인됨
 → ThreadPool 포화가 CPU Saturation의 직접 원인으로 판단
 
-#### eBPF runqlat 분석
+#### eBPF runqlat 분석 (실행 명령)
 
-#### 실행 명령
 runqlat-bpfcc -p 12345 10
 
 #### 관측 결과
