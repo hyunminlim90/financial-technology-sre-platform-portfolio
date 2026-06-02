@@ -1,9 +1,8 @@
 # 05. Observability and Deep Evidence Strategy
 
-> **목적**: SRE 플랫폼의 관측 체계를 1차(상시 자동화)와 2차(심층 진단)로 구분하고,
-> 각 도구의 역할, 사용 시점, 플랫폼과의 협동 전략을 정의합니다.
+> 정독: 0회
 
----
+**목적**: SRE 플랫폼의 관측 체계를 1차(상시 자동화)와 2차(심층 진단)로 구분하고, 각 도구의 역할, 사용 시점, 플랫폼과의 협동 전략을 정의합니다.
 
 ## 1. 관측 계층 구조 개요
 
@@ -30,8 +29,6 @@
                        → 플랫폼 재평가
                        → experiments / systems-math / 논문 근거
 ```
-
----
 
 ## 2. 1차 관측 계층: 상시 자동 모니터링
 
@@ -72,8 +69,6 @@ Loki:
     TimeoutException: 184건 / 1분
     Connection refused: 47건 / 1분
 ```
-
----
 
 ## 3. 2차 관측 계층: 심층 진단 도구
 
@@ -145,8 +140,6 @@ SRE 플랫폼: Evidence 평가
 | `strace -p <PID>` | 시스템 콜 추적 | 과다 시스템 콜, Blocking I/O |
 | `ss -s` | 소켓 상태 요약 | TCP 연결 상태, CLOSE_WAIT 누수 |
 
----
-
 ## 4. 플랫폼과의 협동 전략 (Full Flow)
 
 ```
@@ -155,7 +148,7 @@ SRE 플랫폼: Evidence 평가
     Loki: Timeout 184건
     Tempo: P99 3.1s
         ↓
-[2단계] SRE 플랫폼 판단]
+[2단계] SRE 플랫폼 판단
     Evidence 평가
     Scenario Match: JVM CPU Saturation (신뢰도 72%)
         ↓
@@ -189,8 +182,6 @@ SRE 플랫폼: Evidence 평가
 [7단계] Verification → Re-Assessment → Incident Close
 ```
 
----
-
 ## 5. Evidence 등급 분류
 
 ```
@@ -206,8 +197,6 @@ Secondary Evidence (2차 심층 진단)
     jstack: Thread 상태 덤프
     tcpdump: 네트워크 패킷 레벨 분석
 ```
-
----
 
 ## 6. 논문에서 심층 진단 데이터의 역할
 
@@ -225,3 +214,7 @@ Secondary Evidence (2차 심층 진단)
 
 → 2차 Deep Evidence가 논문 심사 가치를 결정한다.
 ```
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
