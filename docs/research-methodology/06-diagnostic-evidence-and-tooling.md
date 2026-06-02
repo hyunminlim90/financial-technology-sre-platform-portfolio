@@ -30,7 +30,6 @@ experiments/ 문서에는 아래 섹션을 포함한다.
 
 ### 2-1. 실험 메타데이터
 
-```markdown
 ## 실험 메타데이터
 
 - 실험 ID: EXP-20260115-001
@@ -44,7 +43,6 @@ experiments/ 문서에는 아래 섹션을 포함한다.
     - Spring Boot: 3.4.0
     - WebFlux / Netty
     - 컨테이너 사양: 4 CPU / 8GB Memory
-```
 
 ### 2-2. 장애 주입 명세
 
