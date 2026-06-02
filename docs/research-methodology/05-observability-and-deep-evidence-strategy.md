@@ -94,9 +94,9 @@ SRE 플랫폼: Evidence 평가
             ↓
         Human Approval (심층 진단 도구 실행 승인)
             ↓
-        운영자가 심층 진단 도구 실행
+        운영자가 심층 진단 도구 실행 (diagnostic-agent가 실행 대행)
             ↓
-        결과를 추가 Evidence로 플랫폼에 제출
+        결과를 추가 Evidence로 플랫폼에 제출 (diagnostic-agent가 수집 대행)
             ↓
         Evidence Reliability 재평가
             ↓
