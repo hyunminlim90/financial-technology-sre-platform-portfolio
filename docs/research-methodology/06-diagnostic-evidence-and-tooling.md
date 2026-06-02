@@ -85,9 +85,8 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 - 심층 진단 권고 시각: 2026-01-15 14:23:11 KST
 - Human Approval: 승인 (14:23:45 KST)
 
-#### perf 분석
+#### perf 분석 (실행 명령)
 
-#### 실행 명령
 perf top -p 12345 -d 10
 
 #### 관측 결과
