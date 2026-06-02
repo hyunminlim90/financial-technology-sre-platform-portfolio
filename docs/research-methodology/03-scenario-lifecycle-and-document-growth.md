@@ -1,5 +1,7 @@
 # 03. Scenario Lifecycle and Document Growth
 
+> 정독: 1회
+
 > **목적**: 7종 운영 문서 각각의 생명주기, 성장 모델, 버전 관리 전략을 정의합니다.
 
 ---
@@ -222,3 +224,7 @@ scenario 문서는 버전 히스토리를 문서 내부에 기록한다.
     scenarios, runbooks → 연구 방법론 섹션 근거
     preventive-designs  → 예방 효과 증명 근거
 ```
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*

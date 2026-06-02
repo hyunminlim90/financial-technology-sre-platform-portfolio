@@ -1,5 +1,7 @@
 # 01. Research Scope and Stack Model
 
+> 정독: 1회
+
 > **목적**: FIN-SRE 플랫폼 연구의 대상 범위를 9개 핵심 스택으로 한정하고, 스택별 장애 유형 카탈로그 전략을 정의합니다.
 
 ---
@@ -138,3 +140,7 @@ Stack 09: Guardrail
 > Evidence Reliability + Scenario Matching + Guardrail 기반 SRE 플랫폼이
 > 복합 장애 상황에서 단일 알람 기반 대응보다 더 안정적이고 신뢰 가능한
 > 권장 조치를 생성하며, 서비스 안정성 99P를 보장한다.
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*

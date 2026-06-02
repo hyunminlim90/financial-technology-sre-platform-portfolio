@@ -1,5 +1,7 @@
 # 02. Knowledge and Document Hierarchy
 
+> 정독: 0회
+
 > **목적**: rag/docs(학습 자산)와 7종 운영 문서(판단 자산)의 계층 구조, 역할, 우선순위를 정의합니다.
 
 ---
@@ -219,3 +221,7 @@ systems-math/ → 정량 데이터 축적
     ↓
 논문 데이터셋
 ```
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
