@@ -161,7 +161,7 @@ SRE 플랫폼: Evidence 평가
         jstack <PID>
     Human Approval: 승인
         ↓
-[4단계] 운영자 심층 진단 실행
+[4단계] 운영자 심층 진단 실행 (diagnostic-agent가 진단 실행)
     perf top 결과:
         ThreadPoolExecutor.run: 71% CPU
     async-profiler Flame Graph:
@@ -169,9 +169,9 @@ SRE 플랫폼: Evidence 평가
     eBPF runqlat:
         P99 Run Queue Latency: 1.8ms
         ↓
-[5단계] 추가 Evidence 플랫폼 제출
+[5단계] 추가 Evidence 플랫폼 제출 (diagnostic-agent가 수집)
     Evidence Reliability: 72% → 91% 상승
-    Scenario Match 확도 상승
+    Scenario Match 정확도 상승
         ↓
 [6단계] 최종 Recommendation 생성
     1순위 권장: ThreadPool 크기 조정 + DB Connection Pool 점검
@@ -179,7 +179,11 @@ SRE 플랫폼: Evidence 평가
     Verification 기준 포함
     Human Approval
         ↓
-[7단계] Verification → Re-Assessment → Incident Close
+[7단계] Verification → Re-Assessment 
+        ↓
+[8단계] 필요시 반복
+        ↓
+[9단계] Incident Close (사용자 종료 선언 + 시스템 정상화 평가)
 ```
 
 ## 5. Evidence 등급 분류
