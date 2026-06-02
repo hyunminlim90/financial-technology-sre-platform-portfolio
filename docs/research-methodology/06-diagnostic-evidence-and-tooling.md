@@ -128,10 +128,10 @@ CPU Run Queue Latency P99가 1.8ms까지 증가
 ```
 
 #### 관측 결과
-Flame Graph 주요 핫스팟:
-    HikariCP.getConnection: 38% (DB Connection 대기)
-    ThreadPoolExecutor.execute: 23%
-    JSON Serialization: 11%
+Flame Graph 주요 핫스팟:  
+    HikariCP.getConnection: 38% (DB Connection 대기)  
+    ThreadPoolExecutor.execute: 23%  
+    JSON Serialization: 11%  
 
 #### 판단 기여
 DB Connection Pool 고갈로 인한 대기가 전체 CPU의 38%를 차지
