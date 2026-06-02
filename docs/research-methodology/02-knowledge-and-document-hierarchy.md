@@ -1,6 +1,6 @@
 # 02. Knowledge and Document Hierarchy
 
-> 정독: 0회
+> 정독: 1회
 
 **목적**: rag/docs(학습 자산)와 7종 운영 문서(판단 자산)의 계층 구조, 역할, 우선순위를 정의합니다.
 
