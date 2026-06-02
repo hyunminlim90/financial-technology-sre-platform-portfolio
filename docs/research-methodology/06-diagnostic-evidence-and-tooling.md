@@ -56,8 +56,6 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 
 ### 2-3. 1차 Evidence (Primary Evidence)
 
-## Primary Evidence
-
 ### Prometheus 수집 결과
 | 지표 | 정상값 (Baseline) | 주입 중 측정값 | 단위 |
 |------|-------------------|----------------|------|
