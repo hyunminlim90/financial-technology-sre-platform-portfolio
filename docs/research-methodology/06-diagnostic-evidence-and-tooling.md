@@ -1,9 +1,10 @@
 # 06. Diagnostic Evidence and Tooling
 
-> **목적**: 심층 진단 도구(eBPF, perf, async-profiler, jstack, tcpdump 등)의 실험 문서 기록 표준 형식을 정의합니다.
-> experiments/, systems-math/, postmortems/ 문서에서 Deep Evidence를 어떻게 기록하고 논문 근거로 활용하는지를 명세합니다.
+> 정독: 1회
 
----
+**목적**: 심층 진단 도구(eBPF, perf, async-profiler, jstack, tcpdump 등)의 실험 문서 기록 표준 형식을 정의합니다.
+
+experiments/, systems-math/, postmortems/ 문서에서 Deep Evidence를 어떻게 기록하고 논문 근거로 활용하는지를 명세합니다.
 
 ## 1. 심층 진단 기록의 필요성
 
@@ -22,8 +23,6 @@
     이를 기반으로 CPU 포화의 직접 원인이 ThreadPool 포화임을 확인하고
     Connection Pool 조정과 ThreadPool 크기 재설정을 권장 조치로 선정하였다.
 ```
-
----
 
 ## 2. experiments/ 문서 Deep Evidence 기록 표준 형식
 
@@ -101,8 +100,6 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 - 심층 진단 권고 시각: 2026-01-15 14:23:11 KST
 - Human Approval: 승인 (14:23:45 KST)
 
----
-
 ### perf 분석
 
 #### 실행 명령
@@ -119,8 +116,6 @@ perf top -p 12345 -d 10
 #### 판단 기여
 ThreadPool의 CPU 점유가 71%로 확인됨
 → ThreadPool 포화가 CPU Saturation의 직접 원인으로 판단
-
----
 
 ### eBPF runqlat 분석
 
@@ -139,8 +134,6 @@ runqlat-bpfcc -p 12345 10
 CPU Run Queue Latency P99가 1.8ms까지 증가
 → CPU 스케줄러 대기가 전체 Latency에 기여하고 있음 확인
 
----
-
 ### async-profiler 분석
 
 #### 실행 명령
@@ -155,8 +148,6 @@ Flame Graph 주요 핫스팟:
 #### 판단 기여
 DB Connection Pool 고갈로 인한 대기가 전체 CPU의 38%를 차지
 → Connection Pool 크기 조정이 필요한 근거 확보
-
----
 
 ### jstack 분석
 
@@ -174,8 +165,6 @@ jstack 12345 > /tmp/thread_dump_20260115_142350.txt
 #### 판단 기여
 WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
 ```
-
----
 
 ## 3. systems-math/ 문서 Deep Evidence 기록 표준 형식
 
@@ -217,8 +206,6 @@ WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
 | 3차 | Connection Pool 최적화 + ThreadPool 재조정 | CPU 38% → 정상 |
 ```
 
----
-
 ## 4. 장애 유형별 권장 심층 진단 도구 매핑
 
 | 장애 유형 | 1순위 심층 도구 | 2순위 심층 도구 | 주요 확인 항목 |
@@ -232,8 +219,6 @@ WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
 | Container OOM | eBPF runqlat | perf stat | 메모리 압력, GC 빈도 |
 | Network Timeout | tcpdump | eBPF tcpretrans | TCP 재전송, 패킷 손실 |
 | CPU Throttling (Cgroup) | eBPF runqlat | perf stat | Run Queue Latency, IPC |
-
----
 
 ## 5. 논문 데이터 체인 전체 구조
 
@@ -257,3 +242,7 @@ WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
                     ▼
             논문 심사 → 석사 / 박사 학위
 ```
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
