@@ -87,7 +87,9 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 
 #### perf 분석 (실행 명령)
 
+```
 perf top -p 12345 -d 10
+```
 
 #### 관측 결과
 | 함수 | CPU 점유율 |
@@ -103,7 +105,9 @@ ThreadPool의 CPU 점유가 71%로 확인됨
 
 #### eBPF runqlat 분석 (실행 명령)
 
+```
 runqlat-bpfcc -p 12345 10
+```
 
 #### 관측 결과
 | 구간 | Latency |
