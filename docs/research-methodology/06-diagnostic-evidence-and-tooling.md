@@ -121,10 +121,11 @@ runqlat-bpfcc -p 12345 10
 CPU Run Queue Latency P99가 1.8ms까지 증가
 → CPU 스케줄러 대기가 전체 Latency에 기여하고 있음 확인
 
-### async-profiler 분석
+#### async-profiler 분석 (실행 명령)
 
-#### 실행 명령
+```
 ./profiler.sh -p 12345 -d 30 -f /tmp/cpu_profile.html
+```
 
 #### 관측 결과
 Flame Graph 주요 핫스팟:
