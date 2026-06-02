@@ -30,8 +30,6 @@ experiments/ 문서에는 아래 섹션을 포함한다.
 
 ### 2-1. 실험 메타데이터
 
-## 실험 메타데이터
-
 - 실험 ID: EXP-20260115-001
 - 실험 날짜: 2026-01-15
 - 스택: JVM Runtime
@@ -46,7 +44,6 @@ experiments/ 문서에는 아래 섹션을 포함한다.
 
 ### 2-2. 장애 주입 명세
 
-```md
 ## 장애 주입
 
 ### 주입 도구
@@ -58,7 +55,6 @@ stress-ng --cpu 16 --timeout 600
 ### 주입 의도
 JVM 프로세스 외부에서 CPU 포화를 유발하여
 ThreadPool 대기 시간 및 API Latency 증가 측정
-```
 
 ### 2-3. 1차 Evidence (Primary Evidence)
 
