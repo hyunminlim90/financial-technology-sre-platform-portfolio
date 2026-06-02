@@ -44,13 +44,13 @@ experiments/ 문서에는 아래 섹션을 포함한다.
 
 ### 2-2. 장애 주입 명세
 
-### 주입 도구
+#### 주입 도구
 stress-ng
 
-### 주입 명령
+#### 주입 명령
 stress-ng --cpu 16 --timeout 600
 
-### 주입 의도
+#### 주입 의도
 JVM 프로세스 외부에서 CPU 포화를 유발하여
 ThreadPool 대기 시간 및 API Latency 증가 측정
 
