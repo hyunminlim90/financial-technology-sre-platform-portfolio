@@ -30,7 +30,6 @@ experiments/ 문서에는 아래 섹션을 포함한다.
 
 ### 2-1. 실험 메타데이터
 
-```
 - 실험 ID: EXP-20260115-001
 - 실험 날짜: 2026-01-15
 - 스택: JVM Runtime
@@ -42,11 +41,9 @@ experiments/ 문서에는 아래 섹션을 포함한다.
     - Spring Boot: 3.4.0
     - WebFlux / Netty
     - 컨테이너 사양: 4 CPU / 8GB Memory
-```
 
 ### 2-2. 장애 주입 명세
 
-```
 ### 주입 도구
 stress-ng
 
@@ -59,7 +56,6 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 
 ### 2-3. 1차 Evidence (Primary Evidence)
 
-```markdown
 ## Primary Evidence
 
 ### Prometheus 수집 결과
@@ -84,11 +80,9 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 | API P99 Latency | 120ms | 3,100ms | ms |
 | DB Query P99 | 45ms | 1,800ms | ms |
 | Trace Completion Rate | 99.8% | 87.2% | % |
-```
 
 ### 2-4. 2차 Evidence (Secondary / Deep Evidence)
 
-```markdown
 ## Secondary Evidence (Deep Diagnostic)
 
 ### 승인 정보
@@ -159,11 +153,9 @@ jstack 12345 > /tmp/thread_dump_20260115_142350.txt
 
 #### 판단 기여
 WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
-```
 
 ## 3. systems-math/ 문서 Deep Evidence 기록 표준 형식
 
-```markdown
 ## Primary Evidence 테이블
 
 | Evidence 출처 | 지표 | Baseline | Injection | 단위 |
@@ -199,7 +191,6 @@ WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
 | 1차 | ThreadPool 상태 점검 | CPU 95% → 여전히 높음 |
 | 2차 | DB Connection Pool 확장 | CPU 65% → 개선 |
 | 3차 | Connection Pool 최적화 + ThreadPool 재조정 | CPU 38% → 정상 |
-```
 
 ## 4. 장애 유형별 권장 심층 진단 도구 매핑
 
