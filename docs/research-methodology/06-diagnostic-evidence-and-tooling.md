@@ -56,7 +56,7 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 
 ### 2-3. 1차 Evidence (Primary Evidence)
 
-### Prometheus 수집 결과
+#### Prometheus 수집 결과
 | 지표 | 정상값 (Baseline) | 주입 중 측정값 | 단위 |
 |------|-------------------|----------------|------|
 | JVM CPU Utilization | 35% | 97% | % |
@@ -65,14 +65,14 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 | HTTP Error Rate | 0.1% | 12.4% | % |
 | JVM Metaspace Used | 320MB | 321MB | MB |
 
-### Loki 로그 패턴
+#### Loki 로그 패턴
 | 로그 패턴 | 빈도 (정상) | 빈도 (주입 중) |
 |-----------|------------|----------------|
 | TimeoutException | 0건/분 | 184건/분 |
 | Connection refused | 0건/분 | 47건/분 |
 | Thread pool exhausted | 0건/분 | 31건/분 |
 
-### Tempo 트레이스
+#### Tempo 트레이스
 | 지표 | 정상값 | 주입 중 측정값 | 단위 |
 |------|--------|----------------|------|
 | API P99 Latency | 120ms | 3,100ms | ms |
@@ -81,13 +81,11 @@ ThreadPool 대기 시간 및 API Latency 증가 측정
 
 ### 2-4. 2차 Evidence (Secondary / Deep Evidence)
 
-## Secondary Evidence (Deep Diagnostic)
-
-### 승인 정보
+#### 승인 정보
 - 심층 진단 권고 시각: 2026-01-15 14:23:11 KST
 - Human Approval: 승인 (14:23:45 KST)
 
-### perf 분석
+#### perf 분석
 
 #### 실행 명령
 perf top -p 12345 -d 10
@@ -104,7 +102,7 @@ perf top -p 12345 -d 10
 ThreadPool의 CPU 점유가 71%로 확인됨
 → ThreadPool 포화가 CPU Saturation의 직접 원인으로 판단
 
-### eBPF runqlat 분석
+#### eBPF runqlat 분석
 
 #### 실행 명령
 runqlat-bpfcc -p 12345 10
