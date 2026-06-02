@@ -71,11 +71,11 @@ LLM / RAG / AI-Agent / Guardrail (각 스택 인터페이스 및 장애 메커�
 ### 2-3. 플랫폼 추론 시 참조 우선순위
 
 ```
-1순위: runbooks
-2순위: postmortems
-3순위: preventive-designs
+1순위: scenarios
+2순위: runbooks 
+3순위: postmortems
 4순위: improvements
-5순위: scenarios
+5순위: preventive-designs
 6순위: experiments
 7순위: systems-math
 최후순위: rag/docs
