@@ -137,10 +137,11 @@ Flame Graph 주요 핫스팟:
 DB Connection Pool 고갈로 인한 대기가 전체 CPU의 38%를 차지
 → Connection Pool 크기 조정이 필요한 근거 확보
 
-### jstack 분석
+#### jstack 분석 (실행 명령)
 
-#### 실행 명령
+```
 jstack 12345 > /tmp/thread_dump_20260115_142350.txt
+```
 
 #### 주요 스레드 상태
 | 상태 | 스레드 수 |
