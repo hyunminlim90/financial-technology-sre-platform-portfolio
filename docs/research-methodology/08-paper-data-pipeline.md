@@ -245,6 +245,8 @@ datasets/{phase}/ 에 CSV / JSON 형태로 저장
     figures/ 그래프 생성
     datasets/ 데이터셋 정제
 
+    [] 8대 실험 문서 (papers/ 포함) 정독
+
 단계 5 (대학원 진학):
     석사 논문 심사
     데이터셋 공개 (재현 가능성 보장)
