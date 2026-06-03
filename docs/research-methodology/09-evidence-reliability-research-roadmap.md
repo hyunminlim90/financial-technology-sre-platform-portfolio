@@ -1,9 +1,10 @@
 # 09. Evidence Reliability Research Roadmap
 
-> **목적**: FIN-SRE 플랫폼 연구의 핵심 학문적 주제인 Evidence Reliability Framework를 정의하고,
-> 석사 → 박사 → 산업 적용까지의 장기 연구 로드맵을 명세합니다.
+> 정독: 1회
 
----
+**목적**: FIN-SRE 플랫폼 연구의 핵심 학문적 주제인 Evidence Reliability Framework를 정의하고,  
+
+석사 → 박사 → 산업 적용까지의 장기 연구 로드맵을 명세합니다.
 
 ## 1. 핵심 연구 주제
 
@@ -34,8 +35,6 @@ FIN-SRE 플랫폼의 차별점:
     Scenario Matching + Runbook Mapping 통합 Lifecycle
     복합 장애 실험을 통한 정량적 검증
 ```
-
----
 
 ## 2. Evidence Reliability Framework 정의
 
@@ -132,8 +131,6 @@ Decision Reliability:
     Rollback 계획 포함
 ```
 
----
-
 ## 3. 연구 로드맵
 
 ### 3-1. 석사 연구 (Master's Thesis)
@@ -165,8 +162,6 @@ Decision Reliability:
     Conclusion (기여, 향후 연구)
 ```
 
----
-
 ### 3-2. 박사 연구 (PhD Dissertation)
 
 ```
@@ -192,8 +187,6 @@ Decision Reliability:
     최적 Evidence 수집 전략 도출
 ```
 
----
-
 ### 3-3. 산업 적용 연구
 
 ```
@@ -211,8 +204,6 @@ Decision Reliability:
     오픈소스 FIN-SRE Platform 공개
     금융 SRE 플랫폼 표준 방법론 제안
 ```
-
----
 
 ## 4. 관련 연구 분야 (Related Works 기반)
 
@@ -240,8 +231,6 @@ Evidence-Based Medicine:
     관련성: Evidence Reliability Framework 설계 참조
 ```
 
----
-
 ## 5. 연구 자산 현황 및 로드맵
 
 ```
@@ -266,3 +255,7 @@ Evidence-Based Medicine:
     석사 논문 심사 통과
     학회 논문 제출
 ```
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
