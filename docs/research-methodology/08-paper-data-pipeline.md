@@ -216,20 +216,17 @@ datasets/{phase}/ 에 CSV / JSON 형태로 저장
          ├── [✔️] CS 기초
          └── [✔️] B.S. in CS, Pursuing (micro-foundations/*.md 학습 문서로 축적)
 
-    [] rag/docs/01. jvm-runtime (산업축) 학습 문서 정독
-    [] rag/docs/02. distributed-cache (산업축) 학습 문서 정독
-    [] rag/docs/03. distributed-messaging (산업축) 학습 문서 정독
-    [] rag/docs/04. container-orchestration (산업축) 학습 문서 정독
-    [] rag/docs/05. observability (산업축) 학습 문서 정독
-    [] rag/docs/06. llm (연구축) 학습 문서 정독
-    [] rag/docs/07. rag (연구축) 학습 문서 정독
-    [] rag/docs/08. ai-agent (연구축) 학습 문서 정독
-    [] rag/docs/09. guardrail (연구축) 학습 문서 정독
+    [] (산업축) (정독) rag/docs/01. jvm-runtime
+    [] (산업축) (정독) rag/docs/02. distributed-cache
+    [] (산업축) (정독) rag/docs/03. distributed-messaging
+    [] (산업축) (정독) rag/docs/04. container-orchestration
+    [] (산업축) (정독) rag/docs/05. observability
+    [] (연구축) (정독) rag/docs/06. llm
+    [] (연구축) (정독) rag/docs/07. rag
+    [] (연구축) (정독) rag/docs/08. ai-agent
+    [] (연구축) (정독) rag/docs/09. guardrail
 
-
-
-
-    [] docs/research-methodology/ 방법론 문서 작성 중
+    [] (방법론) (정독) docs/research-methodology/*.md
 
 단계 1 (플랫폼 완성):
     Scenario Matcher / Runbook Resolver 구현 완료
