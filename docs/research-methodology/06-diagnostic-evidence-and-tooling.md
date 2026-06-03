@@ -156,7 +156,7 @@ WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
 
 ## 3. systems-math/ 문서 Deep Evidence 기록 표준 형식
 
-## Primary Evidence 테이블
+### Primary Evidence 테이블
 
 | Evidence 출처 | 지표 | Baseline | Injection | 단위 |
 |---------------|------|----------|-----------|------|
@@ -165,7 +165,7 @@ WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
 | Tempo | API P99 Latency | 120 | 3,100 | ms |
 | Loki | TimeoutException | 0 | 184 | 건/분 |
 
-## Secondary Evidence 테이블
+### Secondary Evidence 테이블
 
 | Evidence 출처 | 도구 | 지표 | 측정값 |
 |---------------|------|------|--------|
@@ -174,7 +174,7 @@ WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
 | async-profiler | JVM Profiler | HikariCP.getConnection 점유 | 38% |
 | jstack | JVM | WAITING 스레드 수 | 47개 |
 
-## MTTD / MTTR
+### MTTD / MTTR
 
 | 지표 | 측정값 |
 |------|--------|
@@ -184,7 +184,7 @@ WAITING 상태 스레드 47개 → DB Connection Pool 대기 확인
 | Rollback 성공 여부 | 성공 |
 | Verification 통과 여부 | 통과 |
 
-## Recommendation 순환 횟수
+### Recommendation 순환 횟수
 
 | 순환 | 권장 조치 | 결과 |
 |------|-----------|------|
