@@ -1,10 +1,10 @@
 # 07. Human-in-the-Loop Operational Model
 
-> **목적**: FIN-SRE 플랫폼의 장애 대응 Lifecycle 전체를 정의합니다.
-> 권장 조치 1회 승인으로 종료하는 것이 아니라, 장애 종료 선언 조건이 충족될 때까지
-> Recommendation → Approval → Execution → Verification → Re-Assessment 사이클이 반복됨을 명세합니다.
+> 정독: 1회
 
----
+**목적**: FIN-SRE 플랫폼의 장애 대응 Lifecycle 전체를 정의합니다.
+
+권장 조치 1회 승인으로 종료하는 것이 아니라, 장애 종료 선언 조건이 충족될 때까지 Recommendation → Approval → Execution → Verification → Re-Assessment 사이클이 반복됨을 명세합니다.
 
 ## 1. 플랫폼 정체성 정의
 
@@ -31,8 +31,6 @@ FIN-SRE 플랫폼 정의:
     Re-Assessment    O
 ```
 
----
-
 ## 2. 불변 원칙 (Core Principles)
 
 ```
@@ -45,8 +43,6 @@ AI는 권장 / 보고 / 근거 제시만 수행한다
     (2) Verification 통과
     (3) 사용자 장애 종료 승인
 ```
-
----
 
 ## 3. 장애 대응 Lifecycle 전체 흐름
 
@@ -124,8 +120,6 @@ AI는 권장 / 보고 / 근거 제시만 수행한다
     → 사용자가 직접 문서 반영
 ```
 
----
-
 ## 4. Recommendation 보고서 표준 내용
 
 ```
@@ -153,8 +147,6 @@ AI는 권장 / 보고 / 근거 제시만 수행한다
     - 측정 대기 시간 (예: 조치 후 5분 안정화 대기)
     - Verification 도구 (Prometheus / Loki / Tempo 지표)
 ```
-
----
 
 ## 5. Recommendation 순환 예시 (JVM CPU Saturation)
 
@@ -193,8 +185,6 @@ AI는 권장 / 보고 / 근거 제시만 수행한다
 사용자 장애 종료 승인 → Incident Close
 ```
 
----
-
 ## 6. 장애 종료 조건 체크리스트
 
 ```
@@ -212,8 +202,6 @@ AI는 권장 / 보고 / 근거 제시만 수행한다
     □ 운영자가 최종 정상화 확인
     □ 장애 종료 선언
 ```
-
----
 
 ## 7. Incident Close 이후 문서화 플로우
 
@@ -237,3 +225,7 @@ Incident Closed
             사용자 Git 반영
             논문 데이터셋 축적
 ```
+
+</br>
+
+*이 문서는 SRE 팀의 Base Knowledge로 관리됩니다. 내용 수정 시 SRE 채널에 변경 사항을 공유해주세요.*
