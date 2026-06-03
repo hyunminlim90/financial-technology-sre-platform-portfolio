@@ -4,7 +4,9 @@
 
 **목적**: FIN-SRE 플랫폼의 장애 대응 Lifecycle 전체를 정의합니다.
 
-권장 조치 1회 승인으로 종료하는 것이 아니라, 장애 종료 선언 조건이 충족될 때까지 Recommendation → Approval → Execution → Verification → Re-Assessment 사이클이 반복됨을 명세합니다.
+권장 조치 1회 승인으로 종료하는 것이 아니라, 장애 종료 선언 조건이 충족될 때까지  
+
+Recommendation → Approval → Execution → Verification → Re-Assessment 사이클이 반복됨을 명세합니다.
 
 ## 1. 플랫폼 정체성 정의
 
