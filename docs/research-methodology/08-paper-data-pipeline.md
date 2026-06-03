@@ -209,6 +209,8 @@ datasets/{phase}/ 에 CSV / JSON 형태로 저장
 ## 5. 논문화 단계별 타임라인
 
 ```
+2026.06.03 (수)
+
 현재 단계:
     [✔️] FIN-SRE 플랫폼 구축 중
     [✔️] rag/docs/100. deep-dive/micro-foundations/*.md 학습 문서 축적 중
