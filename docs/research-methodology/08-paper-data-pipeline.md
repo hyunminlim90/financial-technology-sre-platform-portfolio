@@ -210,8 +210,13 @@ datasets/{phase}/ 에 CSV / JSON 형태로 저장
 
 ```
 현재 단계:
-    FIN-SRE 플랫폼 구축 중
-    rag/docs 학습 문서 축적 중
+    [✔️] FIN-SRE 플랫폼 구축 중
+    [✔️] rag/docs 학습 문서 축적 중
+         ├── [✔️] CS 기초 (micro-foundations)
+         ├──
+         ├──
+    
+     ()
     docs/research-methodology/ 방법론 문서 작성 중
 
 단계 1 (플랫폼 완성):
