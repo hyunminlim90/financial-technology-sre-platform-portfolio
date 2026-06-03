@@ -74,7 +74,7 @@ papers/
 
 ## 3. 논문 섹션과 실험 데이터 연결
 
-### 3-1. Abstract
+### 3-1. Abstract (drafts/)
 
 ```
 연구 질문:
