@@ -72,9 +72,9 @@ papers/
     └── conference-paper-draft-v1.pdf
 ```
 
-## 3. 논문 섹션과 실험 데이터 연결
+## 3. 논문 섹션과 실험 데이터 연결 (papers/drafts/)
 
-### 3-1. Abstract (drafts/)
+### 3-1. Abstract
 
 ```
 연구 질문:
