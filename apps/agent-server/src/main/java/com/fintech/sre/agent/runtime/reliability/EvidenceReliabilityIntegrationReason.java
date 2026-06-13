@@ -1,0 +1,12 @@
+package com.fintech.sre.agent.runtime.reliability;
+
+public enum EvidenceReliabilityIntegrationReason {
+	BLOCKED_RELIABILITY,
+	UNRELIABLE_EVIDENCE,
+	LOW_RELIABILITY,
+	MEDIUM_RELIABILITY,
+	HIGH_RELIABILITY,
+	PAYMENT_SAFETY_UNCERTAINTY,
+	RESTRICTED_RELIABILITY,
+	UNKNOWN
+}

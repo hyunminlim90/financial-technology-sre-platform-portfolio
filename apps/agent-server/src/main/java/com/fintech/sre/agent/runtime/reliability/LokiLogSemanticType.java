@@ -1,0 +1,13 @@
+package com.fintech.sre.agent.runtime.reliability;
+
+public enum LokiLogSemanticType {
+	ERROR_EVENT,
+	WARN_EVENT,
+	TIMEOUT_EVENT,
+	RETRY_EVENT,
+	PAYMENT_CONSISTENCY_EVENT,
+	ROLLBACK_EVENT,
+	VERIFICATION_EVENT,
+	SECURITY_REDACTED_EVENT,
+	UNKNOWN
+}

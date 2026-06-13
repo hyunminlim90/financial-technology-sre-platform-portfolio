@@ -1,0 +1,12 @@
+package com.fintech.sre.agent.runtime.reliability;
+
+public enum EvidenceRuntimeSummaryResourceReason {
+	PAYMENT_SAFETY_UNCERTAINTY,
+	PAYMENT_INCONSISTENCY,
+	ADAPTER_FAILURE,
+	PARTIAL_EVIDENCE,
+	UNKNOWN_EVIDENCE,
+	CONTRADICTORY_EVIDENCE,
+	OBSERVABILITY_UNAVAILABLE,
+	UNKNOWN
+}

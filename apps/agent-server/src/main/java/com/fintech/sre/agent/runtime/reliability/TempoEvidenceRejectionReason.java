@@ -1,0 +1,8 @@
+package com.fintech.sre.agent.runtime.reliability;
+
+public enum TempoEvidenceRejectionReason {
+	TRACES_SOURCE_REQUIRED,
+	SENSITIVE_PAYLOAD_FORBIDDEN,
+	HIGH_CARDINALITY_IDENTIFIER_FORBIDDEN,
+	PAYMENT_CONSISTENCY_METADATA_REQUIRED
+}

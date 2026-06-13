@@ -1,0 +1,11 @@
+package com.fintech.sre.agent.runtime.reliability;
+
+public enum EvidenceLineageIntegrationReason {
+	INCOMPLETE_LINEAGE,
+	BLOCKED_LINEAGE,
+	RESTRICTED_LINEAGE,
+	CONTRADICTORY_LINEAGE_RISK,
+	PAYMENT_LINEAGE_RESTRICTED,
+	MISSING_PROVENANCE_LINEAGE,
+	UNKNOWN
+}

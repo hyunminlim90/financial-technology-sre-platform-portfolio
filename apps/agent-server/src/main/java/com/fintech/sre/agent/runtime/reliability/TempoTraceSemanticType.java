@@ -1,0 +1,13 @@
+package com.fintech.sre.agent.runtime.reliability;
+
+public enum TempoTraceSemanticType {
+	LATENCY_TRACE,
+	ERROR_TRACE,
+	TIMEOUT_TRACE,
+	RETRY_TRACE,
+	DEPENDENCY_TRACE,
+	PAYMENT_CONSISTENCY_TRACE,
+	ROLLBACK_TRACE,
+	VERIFICATION_TRACE,
+	UNKNOWN
+}

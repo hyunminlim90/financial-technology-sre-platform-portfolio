@@ -1911,6 +1911,158 @@ See:
 docs/runtime-operational-reliability-semantic-runtime-phase-closure.md
 ```
 
+### Runtime Operational Reliability Observable Runtime Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-observable-runtime-phase-closure.md
+```
+
+### Runtime Operational Reliability Adapter Normalization Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-adapter-normalization-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence Routing Dispatch Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-routing-dispatch-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence Execution Runtime Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-execution-runtime-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence Runtime Read Model Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-runtime-read-model-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence API Resource Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-api-resource-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence Governance Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-governance-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence Lineage Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-lineage-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence Trust Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-trust-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence Confidence Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-confidence-phase-closure.md
+```
+
+### Runtime Operational Reliability Evidence Reliability Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-evidence-reliability-phase-closure.md
+```
+
+### Runtime Operational Reliability Assessment Reliability Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-assessment-reliability-phase-closure.md
+```
+
+### Runtime Operational Reliability Decision Reliability Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-decision-reliability-phase-closure.md
+```
+
+### Runtime Operational Reliability Recommendation Reliability Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-recommendation-reliability-phase-closure.md
+```
+
+### Runtime Operational Reliability Approval Reliability Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-approval-reliability-phase-closure.md
+```
+
+### Runtime Operational Reliability Verification Reliability Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-verification-reliability-phase-closure.md
+```
+
+### Runtime Operational Reliability Action Admission Reliability Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-action-admission-reliability-phase-closure.md
+```
+
+### Runtime Operational Reliability Lifecycle Reliability Chain Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-lifecycle-reliability-chain-closure.md
+```
+
+### Runtime Operational Reliability Readiness Chain Closure
+
+See:
+
+```text
+docs/runtime-operational-reliability-readiness-chain-closure.md
+```
+
 ### Governance Search Resilience Policy
 
 The governance search resilience policy is documented in:
