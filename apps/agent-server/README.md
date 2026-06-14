@@ -2063,6 +2063,30 @@ See:
 docs/runtime-operational-reliability-readiness-chain-closure.md
 ```
 
+### Runtime Operational Recommendation Candidate Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-recommendation-candidate-phase-closure.md
+```
+
+### Runtime Operational Recommendation Content Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-recommendation-content-phase-closure.md
+```
+
+### Runtime Operational Recommendation Model Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-recommendation-model-phase-closure.md
+```
+
 ### Governance Search Resilience Policy
 
 The governance search resilience policy is documented in:

@@ -1,0 +1,12 @@
+package com.fintech.sre.agent.runtime.recommendation;
+
+public enum RecommendationModelReason {
+	SCENARIO_MATCH,
+	RUNBOOK_REFERENCE,
+	POSTMORTEM_REFERENCE,
+	PREVENTIVE_DESIGN_REFERENCE,
+	IMPROVEMENT_REFERENCE,
+	EXPERIMENT_REFERENCE,
+	EVIDENCE_CORRELATION,
+	UNKNOWN
+}
