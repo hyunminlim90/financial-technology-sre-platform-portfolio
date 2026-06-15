@@ -2087,6 +2087,22 @@ See:
 docs/runtime-operational-recommendation-model-phase-closure.md
 ```
 
+### Runtime Operational Recommendation Presentation Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-recommendation-presentation-phase-closure.md
+```
+
+### Runtime Operational Approval Request Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-approval-request-phase-closure.md
+```
+
 ### Governance Search Resilience Policy
 
 The governance search resilience policy is documented in:
