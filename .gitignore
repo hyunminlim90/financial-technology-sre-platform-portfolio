@@ -1,3 +1,12 @@
 .gradle/
 .gradle-home/
-build/
+# build 전체 제외
+build/**
+
+# 테스트 리포트만 허용
+!build/reports/
+!build/reports/**
+!build/reports/tests/
+!build/reports/tests/**
+!build/reports/tests/test/
+!build/reports/tests/test/**
