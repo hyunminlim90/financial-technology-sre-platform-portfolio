@@ -2103,6 +2103,22 @@ See:
 docs/runtime-operational-approval-request-phase-closure.md
 ```
 
+### Runtime Operational Approval State Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-approval-state-phase-closure.md
+```
+
+### Runtime Operational Approval Decision Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-approval-decision-phase-closure.md
+```
+
 ### Governance Search Resilience Policy
 
 The governance search resilience policy is documented in:
