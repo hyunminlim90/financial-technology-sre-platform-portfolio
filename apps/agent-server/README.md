@@ -2119,6 +2119,86 @@ See:
 docs/runtime-operational-approval-decision-phase-closure.md
 ```
 
+### Runtime Operational Verification Request Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-verification-request-phase-closure.md
+```
+
+### Runtime Operational Action Command Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-action-command-phase-closure.md
+```
+
+### Runtime Operational Execution Permission Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-permission-phase-closure.md
+```
+
+### Runtime Operational Execution Plan Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-plan-phase-closure.md
+```
+
+### Runtime Operational Execution Dispatch Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-dispatch-phase-closure.md
+```
+
+### Runtime Operational Execution Engine Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-engine-phase-closure.md
+```
+
+### Runtime Operational Execution Engine Registry Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-engine-registry-phase-closure.md
+```
+
+### Runtime Operational Execution Engine Selector Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-engine-selector-phase-closure.md
+```
+
+### Runtime Operational Execution Adapter Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-adapter-phase-closure.md
+```
+
+### Runtime Operational Execution Executor Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-executor-phase-closure.md
+```
+
 ### Governance Search Resilience Policy
 
 The governance search resilience policy is documented in:

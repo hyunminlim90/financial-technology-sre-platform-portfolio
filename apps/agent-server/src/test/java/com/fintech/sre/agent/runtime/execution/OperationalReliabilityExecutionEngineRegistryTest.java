@@ -1,0 +1,637 @@
+package com.fintech.sre.agent.runtime.execution;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.Instant;
+
+import org.junit.jupiter.api.Test;
+
+import com.fintech.sre.agent.runtime.action.ActionCommand;
+import com.fintech.sre.agent.runtime.action.ActionCommandIntegrationReason;
+import com.fintech.sre.agent.runtime.action.ActionCommandIntegrationResult;
+import com.fintech.sre.agent.runtime.action.ActionCommandIntegrationScope;
+import com.fintech.sre.agent.runtime.action.ActionCommandIntegrationStatus;
+import com.fintech.sre.agent.runtime.action.ActionCommandLevel;
+import com.fintech.sre.agent.runtime.action.ActionCommandReason;
+import com.fintech.sre.agent.runtime.action.ActionCommandScope;
+import com.fintech.sre.agent.runtime.approval.ApprovalDecision;
+import com.fintech.sre.agent.runtime.approval.ApprovalDecisionIntegrationReason;
+import com.fintech.sre.agent.runtime.approval.ApprovalDecisionIntegrationResult;
+import com.fintech.sre.agent.runtime.approval.ApprovalDecisionIntegrationScope;
+import com.fintech.sre.agent.runtime.approval.ApprovalDecisionIntegrationStatus;
+import com.fintech.sre.agent.runtime.approval.ApprovalDecisionLevel;
+import com.fintech.sre.agent.runtime.approval.ApprovalDecisionReason;
+import com.fintech.sre.agent.runtime.approval.ApprovalDecisionScope;
+import com.fintech.sre.agent.runtime.approval.ApprovalRequest;
+import com.fintech.sre.agent.runtime.approval.ApprovalRequestIntegrationReason;
+import com.fintech.sre.agent.runtime.approval.ApprovalRequestIntegrationResult;
+import com.fintech.sre.agent.runtime.approval.ApprovalRequestIntegrationScope;
+import com.fintech.sre.agent.runtime.approval.ApprovalRequestIntegrationStatus;
+import com.fintech.sre.agent.runtime.approval.ApprovalRequestLevel;
+import com.fintech.sre.agent.runtime.approval.ApprovalRequestReason;
+import com.fintech.sre.agent.runtime.approval.ApprovalRequestScope;
+import com.fintech.sre.agent.runtime.approval.ApprovalState;
+import com.fintech.sre.agent.runtime.approval.ApprovalStateIntegrationReason;
+import com.fintech.sre.agent.runtime.approval.ApprovalStateIntegrationResult;
+import com.fintech.sre.agent.runtime.approval.ApprovalStateIntegrationScope;
+import com.fintech.sre.agent.runtime.approval.ApprovalStateIntegrationStatus;
+import com.fintech.sre.agent.runtime.approval.ApprovalStateLevel;
+import com.fintech.sre.agent.runtime.approval.ApprovalStateReason;
+import com.fintech.sre.agent.runtime.approval.ApprovalStateScope;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationModelReason;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationModelType;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationPresentation;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationPresentationIntegrationReason;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationPresentationIntegrationResult;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationPresentationIntegrationScope;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationPresentationIntegrationStatus;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationPresentationReason;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationPresentationScope;
+import com.fintech.sre.agent.runtime.recommendation.RecommendationPresentationStatus;
+import com.fintech.sre.agent.runtime.reliability.OperationalUncertainty;
+import com.fintech.sre.agent.runtime.verification.VerificationRequest;
+import com.fintech.sre.agent.runtime.verification.VerificationRequestIntegrationReason;
+import com.fintech.sre.agent.runtime.verification.VerificationRequestIntegrationResult;
+import com.fintech.sre.agent.runtime.verification.VerificationRequestIntegrationScope;
+import com.fintech.sre.agent.runtime.verification.VerificationRequestIntegrationStatus;
+import com.fintech.sre.agent.runtime.verification.VerificationRequestLevel;
+import com.fintech.sre.agent.runtime.verification.VerificationRequestReason;
+import com.fintech.sre.agent.runtime.verification.VerificationRequestScope;
+
+class OperationalReliabilityExecutionEngineRegistryTest {
+
+	private static final String APPROVAL_STATE_IDENTIFIER = "approval-state/payments/001";
+	private static final String DECISION_IDENTIFIER = "approval-decision/payments/001";
+	private static final String OPERATOR_CONTEXT = "operator/oncall/payments";
+	private static final String APPROVAL_POLICY = "policy/high-risk-human-approval";
+	private static final String VERIFICATION_REQUEST_IDENTIFIER = "verification-request/payments/001";
+	private static final String VERIFICATION_POLICY = "policy/post-change-verification";
+	private static final String ACTION_COMMAND_IDENTIFIER = "action-command/payments/001";
+	private static final String ACTION_TYPE = "ROLLING_RESTART";
+	private static final String TARGET_LAYER = "KUBERNETES_WORKLOAD";
+	private static final String BLAST_RADIUS = "namespace/payments-prod";
+	private static final String EXECUTION_PERMISSION_IDENTIFIER = "execution-permission/payments/001";
+	private static final String OPERATOR_AUTHORIZATION = "authorized/oncall/payments";
+	private static final String EXECUTION_PLAN_IDENTIFIER = "execution-plan/payments/001";
+	private static final String EXECUTION_SEQUENCE = "step-1: cordon; step-2: rolling restart";
+	private static final String DISPATCH_IDENTIFIER = "dispatch/payments/001";
+	private static final String EXECUTION_ENDPOINT = "engine://payments-prod/restart";
+	private static final String DISPATCH_POLICY = "policy/manual-dispatch";
+	private static final String EXECUTION_ENGINE_IDENTIFIER = "execution-engine/payments/001";
+	private static final String EXECUTION_ENGINE_TYPE = "KUBERNETES_MANUAL_GATE";
+	private static final String EXECUTION_POLICY = "policy/execution-engine-selection";
+	private static final String REGISTRY_IDENTIFIER = "execution-engine-registry/payments/001";
+	private static final String REGISTRY_POLICY = "policy/execution-engine-registry";
+	private static final Instant PRESENTED_AT = Instant.parse("2026-06-20T00:00:00Z");
+
+	private final ExecutionEngineRegistryEvaluator evaluator =
+			new ExecutionEngineRegistryEvaluator();
+
+	@Test
+	void shouldRemainReadOnlyAndNonExecutable() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineReadyView(),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.readOnly()).isTrue();
+		assertThat(registry.registryImplementation()).isFalse();
+		assertThat(registry.engineDiscovery()).isFalse();
+		assertThat(registry.springBeanRegistry()).isFalse();
+		assertThat(registry.serviceLoader()).isFalse();
+		assertThat(registry.actualExecutionEngineSelection()).isFalse();
+		assertThat(registry.actionExecution()).isFalse();
+	}
+
+	@Test
+	void shouldBeExecutionEngineRegistryReadyWhenExecutionEngineReadyAndRequirementsPresent() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineReadyView(),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level())
+				.isEqualTo(ExecutionEngineRegistryLevel.EXECUTION_ENGINE_REGISTRY_READY);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.EXECUTION_ENGINE_READY);
+		assertThat(registry.scope())
+				.isEqualTo(ExecutionEngineRegistryScope.EXECUTION_ENGINE_REGISTRY);
+	}
+
+	@Test
+	void shouldBlockWhenRegistryIdentifierMissing() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineReadyView(),
+				" ",
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.BLOCKED);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.MISSING_REGISTRY_IDENTIFIER);
+		assertThat(registry.scope())
+				.isEqualTo(ExecutionEngineRegistryScope.EXECUTION_ENGINE_REGISTRY);
+	}
+
+	@Test
+	void shouldBlockWhenEngineRegistrationMissing() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineReadyView(),
+				REGISTRY_IDENTIFIER,
+				false,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.BLOCKED);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.MISSING_ENGINE_REGISTRATION);
+		assertThat(registry.scope())
+				.isEqualTo(ExecutionEngineRegistryScope.ENGINE_REGISTRATION);
+	}
+
+	@Test
+	void shouldBlockWhenRegistryPolicyMissing() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineReadyView(),
+				REGISTRY_IDENTIFIER,
+				true,
+				" ",
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.BLOCKED);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.MISSING_REGISTRY_POLICY);
+		assertThat(registry.scope())
+				.isEqualTo(ExecutionEngineRegistryScope.REGISTRY_POLICY);
+	}
+
+	@Test
+	void shouldBlockWhenRegistryGuardrailMissing() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineReadyView(),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				false,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.BLOCKED);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.MISSING_REGISTRY_GUARDRAIL);
+		assertThat(registry.scope())
+				.isEqualTo(ExecutionEngineRegistryScope.REGISTRY_GUARDRAIL);
+	}
+
+	@Test
+	void shouldBlockWhenPaymentSafetyUncertaintyExists() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineReadyView(),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				true
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.BLOCKED);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.PAYMENT_SAFETY_UNCERTAINTY);
+		assertThat(registry.scope())
+				.isEqualTo(ExecutionEngineRegistryScope.PAYMENT_SAFETY);
+	}
+
+	@Test
+	void shouldBlockWhenLifecycleRiskIsCritical() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineReadyView(),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.CRITICAL,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.BLOCKED);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.CRITICAL_LIFECYCLE_RISK);
+		assertThat(registry.scope()).isEqualTo(ExecutionEngineRegistryScope.LIFECYCLE_RISK);
+	}
+
+	@Test
+	void shouldRemainPartialWhenExecutionEngineIsPartial() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineWithStatus(ExecutionEngineIntegrationStatus.PARTIAL_EXECUTION_ENGINE),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.PARTIAL);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.PARTIAL_EXECUTION_ENGINE);
+	}
+
+	@Test
+	void shouldRemainNotReadyWhenExecutionEngineIsNotReady() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineWithStatus(ExecutionEngineIntegrationStatus.NOT_READY),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.NOT_READY);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.NOT_READY_EXECUTION_ENGINE);
+	}
+
+	@Test
+	void shouldRemainUnreliableWhenExecutionEngineIsUnreliable() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineWithStatus(ExecutionEngineIntegrationStatus.UNRELIABLE),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.UNRELIABLE);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.UNRELIABLE_EXECUTION_ENGINE);
+	}
+
+	@Test
+	void shouldRemainBlockedWhenExecutionEngineIsBlocked() {
+		ExecutionEngineRegistry registry = evaluator.evaluate(
+				executionEngineWithStatus(ExecutionEngineIntegrationStatus.BLOCKED),
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+
+		assertThat(registry.level()).isEqualTo(ExecutionEngineRegistryLevel.BLOCKED);
+		assertThat(registry.reason())
+				.isEqualTo(ExecutionEngineRegistryReason.BLOCKED_EXECUTION_ENGINE);
+	}
+
+	@Test
+	void shouldRejectNullExecutionEngineIntegration() {
+		assertThatThrownBy(() -> evaluator.evaluate(
+				null,
+				REGISTRY_IDENTIFIER,
+				true,
+				REGISTRY_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		))
+				.isInstanceOf(NullPointerException.class)
+				.hasMessage("executionEngineIntegration must not be null");
+	}
+
+	private ExecutionEngineIntegrationResult executionEngineReadyView() {
+		return executionEngineWithStatus(
+				ExecutionEngineIntegrationStatus.EXECUTION_ENGINE_READY_VIEW
+		);
+	}
+
+	private ExecutionEngineIntegrationResult executionEngineWithStatus(
+			ExecutionEngineIntegrationStatus status
+	) {
+		return new ExecutionEngineIntegrationResult(
+				executionEngine(status),
+				status,
+				executionEngineIntegrationReason(status),
+				ExecutionEngineIntegrationScope.OPERATOR_VIEW,
+				status == ExecutionEngineIntegrationStatus.EXECUTION_ENGINE_READY_VIEW,
+				status == ExecutionEngineIntegrationStatus.EXECUTION_ENGINE_READY_VIEW
+		);
+	}
+
+	private ExecutionEngine executionEngine(ExecutionEngineIntegrationStatus status) {
+		return new ExecutionEngine(
+				executionEngineLevel(status),
+				executionEngineReason(status),
+				ExecutionEngineScope.EXECUTION_ENGINE,
+				dispatchReadyView(),
+				EXECUTION_ENGINE_IDENTIFIER,
+				EXECUTION_ENGINE_TYPE,
+				EXECUTION_ENDPOINT,
+				EXECUTION_POLICY,
+				OperationalUncertainty.LOW,
+				false
+		);
+	}
+
+	private ExecutionEngineLevel executionEngineLevel(
+			ExecutionEngineIntegrationStatus status
+	) {
+		return switch (status) {
+			case EXECUTION_ENGINE_READY_VIEW -> ExecutionEngineLevel.EXECUTION_ENGINE_READY;
+			case PARTIAL_EXECUTION_ENGINE -> ExecutionEngineLevel.PARTIAL;
+			case NOT_READY -> ExecutionEngineLevel.NOT_READY;
+			case UNRELIABLE -> ExecutionEngineLevel.UNRELIABLE;
+			case BLOCKED -> ExecutionEngineLevel.BLOCKED;
+			case UNKNOWN -> ExecutionEngineLevel.UNKNOWN;
+		};
+	}
+
+	private ExecutionEngineReason executionEngineReason(
+			ExecutionEngineIntegrationStatus status
+	) {
+		return switch (status) {
+			case EXECUTION_ENGINE_READY_VIEW -> ExecutionEngineReason.DISPATCH_READY;
+			case PARTIAL_EXECUTION_ENGINE -> ExecutionEngineReason.PARTIAL_DISPATCH;
+			case NOT_READY -> ExecutionEngineReason.NOT_READY_DISPATCH;
+			case UNRELIABLE -> ExecutionEngineReason.UNRELIABLE_DISPATCH;
+			case BLOCKED -> ExecutionEngineReason.BLOCKED_DISPATCH;
+			case UNKNOWN -> ExecutionEngineReason.UNKNOWN;
+		};
+	}
+
+	private ExecutionEngineIntegrationReason executionEngineIntegrationReason(
+			ExecutionEngineIntegrationStatus status
+	) {
+		return switch (status) {
+			case EXECUTION_ENGINE_READY_VIEW ->
+				ExecutionEngineIntegrationReason.EXECUTION_ENGINE_READY;
+			case PARTIAL_EXECUTION_ENGINE ->
+				ExecutionEngineIntegrationReason.PARTIAL_EXECUTION_ENGINE;
+			case NOT_READY -> ExecutionEngineIntegrationReason.NOT_READY_EXECUTION_ENGINE;
+			case UNRELIABLE -> ExecutionEngineIntegrationReason.UNRELIABLE_EXECUTION_ENGINE;
+			case BLOCKED -> ExecutionEngineIntegrationReason.BLOCKED_EXECUTION_ENGINE;
+			case UNKNOWN -> ExecutionEngineIntegrationReason.UNKNOWN;
+		};
+	}
+
+	private ExecutionDispatchIntegrationResult dispatchReadyView() {
+		return new ExecutionDispatchIntegrationResult(
+				dispatch(),
+				ExecutionDispatchIntegrationStatus.DISPATCH_READY_VIEW,
+				ExecutionDispatchIntegrationReason.DISPATCH_READY,
+				ExecutionDispatchIntegrationScope.OPERATOR_VIEW,
+				true,
+				true
+		);
+	}
+
+	private ExecutionDispatch dispatch() {
+		return new ExecutionDispatch(
+				ExecutionDispatchLevel.DISPATCH_READY,
+				ExecutionDispatchReason.EXECUTION_PLAN_READY,
+				ExecutionDispatchScope.EXECUTION_DISPATCH,
+				executionPlanReadyView(),
+				DISPATCH_IDENTIFIER,
+				EXECUTION_ENDPOINT,
+				DISPATCH_POLICY,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+	}
+
+	private ExecutionPlanIntegrationResult executionPlanReadyView() {
+		return new ExecutionPlanIntegrationResult(
+				executionPlan(),
+				ExecutionPlanIntegrationStatus.EXECUTION_PLAN_READY_VIEW,
+				ExecutionPlanIntegrationReason.EXECUTION_PLAN_READY,
+				ExecutionPlanIntegrationScope.OPERATOR_VIEW,
+				true,
+				true
+		);
+	}
+
+	private ExecutionPlan executionPlan() {
+		return new ExecutionPlan(
+				ExecutionPlanLevel.EXECUTION_PLAN_READY,
+				ExecutionPlanReason.EXECUTION_PERMISSION_READY,
+				ExecutionPlanScope.EXECUTION_PLAN,
+				executionPermissionReady(),
+				EXECUTION_PLAN_IDENTIFIER,
+				EXECUTION_SEQUENCE,
+				true,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+	}
+
+	private ExecutionPermissionIntegrationResult executionPermissionReady() {
+		return new ExecutionPermissionIntegrationResult(
+				new ExecutionPermission(
+						ExecutionPermissionLevel.EXECUTION_PERMITTED,
+						ExecutionPermissionReason.ACTION_COMMAND_CANDIDATE_READY,
+						ExecutionPermissionScope.EXECUTION_PERMISSION,
+						actionCommandCandidateReady(),
+						EXECUTION_PERMISSION_IDENTIFIER,
+						"policy/manual-execution-gate",
+						OPERATOR_AUTHORIZATION,
+						true,
+						OperationalUncertainty.LOW,
+						false
+				),
+				ExecutionPermissionIntegrationStatus.EXECUTION_PERMISSION_READY,
+				ExecutionPermissionIntegrationReason.EXECUTION_PERMITTED,
+				ExecutionPermissionIntegrationScope.OPERATOR_VIEW,
+				true,
+				true
+		);
+	}
+
+	private ActionCommandIntegrationResult actionCommandCandidateReady() {
+		return new ActionCommandIntegrationResult(
+				actionCommand(),
+				ActionCommandIntegrationStatus.ACTION_COMMAND_CANDIDATE_READY,
+				ActionCommandIntegrationReason.ACTION_COMMAND_READY,
+				ActionCommandIntegrationScope.OPERATOR_VIEW,
+				true,
+				true
+		);
+	}
+
+	private ActionCommand actionCommand() {
+		return new ActionCommand(
+				ActionCommandLevel.ACTION_COMMAND_READY,
+				ActionCommandReason.VERIFICATION_REQUEST_READY,
+				ActionCommandScope.ACTION_COMMAND,
+				verificationRequestReady(),
+				ACTION_COMMAND_IDENTIFIER,
+				ACTION_TYPE,
+				TARGET_LAYER,
+				BLAST_RADIUS,
+				true,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+	}
+
+	private VerificationRequestIntegrationResult verificationRequestReady() {
+		return new VerificationRequestIntegrationResult(
+				verificationRequest(),
+				VerificationRequestIntegrationStatus.VERIFICATION_REQUEST_READY,
+				VerificationRequestIntegrationReason.VERIFICATION_REQUESTABLE,
+				VerificationRequestIntegrationScope.OPERATOR_VIEW,
+				true,
+				true
+		);
+	}
+
+	private VerificationRequest verificationRequest() {
+		return new VerificationRequest(
+				VerificationRequestLevel.VERIFICATION_REQUESTABLE,
+				VerificationRequestReason.APPROVAL_DECISION_PENDING_VIEW,
+				VerificationRequestScope.APPROVAL_DECISION,
+				approvalDecisionPendingView(),
+				VERIFICATION_REQUEST_IDENTIFIER,
+				VERIFICATION_POLICY,
+				true,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+	}
+
+	private ApprovalDecisionIntegrationResult approvalDecisionPendingView() {
+		return new ApprovalDecisionIntegrationResult(
+				approvalDecision(),
+				ApprovalDecisionIntegrationStatus.APPROVAL_DECISION_PENDING_VIEW,
+				ApprovalDecisionIntegrationReason.DECISION_PENDING,
+				ApprovalDecisionIntegrationScope.OPERATOR_VIEW,
+				true,
+				true
+		);
+	}
+
+	private ApprovalDecision approvalDecision() {
+		return new ApprovalDecision(
+				ApprovalDecisionLevel.DECISION_PENDING,
+				ApprovalDecisionReason.APPROVAL_PENDING_VIEW,
+				ApprovalDecisionScope.APPROVAL_STATE,
+				approvalPendingView(),
+				DECISION_IDENTIFIER,
+				APPROVAL_POLICY,
+				OPERATOR_CONTEXT,
+				true,
+				OperationalUncertainty.LOW,
+				false
+		);
+	}
+
+	private ApprovalStateIntegrationResult approvalPendingView() {
+		return new ApprovalStateIntegrationResult(
+				approvalState(),
+				ApprovalStateIntegrationStatus.APPROVAL_PENDING_VIEW,
+				ApprovalStateIntegrationReason.PENDING_APPROVAL_STATE,
+				ApprovalStateIntegrationScope.OPERATOR_VIEW,
+				true,
+				true
+		);
+	}
+
+	private ApprovalState approvalState() {
+		return new ApprovalState(
+				ApprovalStateLevel.PENDING_APPROVAL,
+				ApprovalStateReason.APPROVAL_REQUEST_READY,
+				ApprovalStateScope.APPROVAL_REQUEST,
+				approvalRequestReady(),
+				APPROVAL_STATE_IDENTIFIER,
+				APPROVAL_POLICY,
+				OPERATOR_CONTEXT,
+				OperationalUncertainty.LOW,
+				false
+		);
+	}
+
+	private ApprovalRequestIntegrationResult approvalRequestReady() {
+		return new ApprovalRequestIntegrationResult(
+				approvalRequest(),
+				ApprovalRequestIntegrationStatus.APPROVAL_REQUEST_READY,
+				ApprovalRequestIntegrationReason.REQUESTABLE_APPROVAL_REQUEST,
+				ApprovalRequestIntegrationScope.APPROVAL_REQUEST,
+				true,
+				true
+		);
+	}
+
+	private ApprovalRequest approvalRequest() {
+		return new ApprovalRequest(
+				ApprovalRequestLevel.REQUESTABLE,
+				ApprovalRequestReason.EXPOSABLE_PRESENTATION,
+				ApprovalRequestScope.APPROVAL_REQUEST,
+				exposablePresentation(),
+				OPERATOR_CONTEXT,
+				true,
+				APPROVAL_POLICY,
+				OperationalUncertainty.LOW,
+				false
+		);
+	}
+
+	private RecommendationPresentationIntegrationResult exposablePresentation() {
+		return new RecommendationPresentationIntegrationResult(
+				presentation(),
+				RecommendationPresentationIntegrationStatus.EXPOSABLE,
+				RecommendationPresentationIntegrationReason.VALID_RECOMMENDATION_PRESENTATION,
+				RecommendationPresentationIntegrationScope.RECOMMENDATION,
+				true,
+				true
+		);
+	}
+
+	private RecommendationPresentation presentation() {
+		return new RecommendationPresentation(
+				"rec-001",
+				"Mitigate payment latency degradation",
+				"Use the matched runbook with rollback and verification references.",
+				RecommendationModelType.INCIDENT_RESPONSE,
+				RecommendationModelReason.SCENARIO_MATCH,
+				"scenario/payments-degradation",
+				"runbook/payment-latency-mitigation",
+				"rollback/payments",
+				"verification/payments",
+				"evidence/payment-latency-correlation",
+				"PAYMENT_SAFE_REVIEWED",
+				PRESENTED_AT,
+				RecommendationPresentationStatus.PRESENTABLE,
+				RecommendationPresentationReason.VALID_RECOMMENDATION,
+				RecommendationPresentationScope.PRESENTATION
+		);
+	}
+}
