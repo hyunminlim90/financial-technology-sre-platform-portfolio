@@ -2199,6 +2199,22 @@ See:
 docs/runtime-operational-execution-executor-phase-closure.md
 ```
 
+### Runtime Operational Execution Session Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-session-phase-closure.md
+```
+
+### Runtime Operational Execution Context Phase Closure
+
+See:
+
+```text
+docs/runtime-operational-execution-context-phase-closure.md
+```
+
 ### Governance Search Resilience Policy
 
 The governance search resilience policy is documented in:
